@@ -1,0 +1,36 @@
+#######################################
+# Syntax Coloring Map For Ndef
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+NdefMessage	KEYWORD1
+NdefRecord	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+getTnf KEYWORD2
+getType KEYWORD2
+getPayload KEYWORD2
+getId KEYWORD2
+setTnf KEYWORD2
+setType KEYWORD2
+setPayload KEYWORD2
+setId KEYWORD2
+print KEYWORD2
+recordCount KEYWORD2
+encode KEYWORD2
+add KEYWORD2
+get KEYWORD2
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+#######################################
+# Constants (LITERAL1)
+#######################################
