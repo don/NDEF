@@ -112,33 +112,38 @@ int NdefRecord::getEncodedSize()
     return size;
 }
 
-void NdefRecord::encode(bool firstRecord, bool lastRecord)
+void NdefRecord::encode(uint8_t* data, bool firstRecord, bool lastRecord)
 {
-    
-    byte data[getEncodedSize()];
-    int index = 0;
+    // assert data > getEncodedSize()
 
-    data[index++] = getTnfByte(firstRecord, lastRecord);
-    data[index++] = _typeLength;
-    data[index++] = _payloadLength; // TODO handle sr == false
+    uint8_t* data_ptr = &data[0];
+
+    *data_ptr = getTnfByte(firstRecord, lastRecord);
+    data_ptr += 1;
+
+    *data_ptr = _typeLength;
+    data_ptr += 1;
+
+    *data_ptr = _payloadLength; // TODO handle sr == false
+    data_ptr += 1;
     if (_idLength)
     {
-        data[index++] = _idLength;
+        *data_ptr = _idLength;
+        data_ptr += 1;
     }
 
-    memcpy(&data[index], _type, _typeLength);
-    index += _typeLength;
+    //Serial.println(2);
+    memcpy(data_ptr, _type, _typeLength);
+    data_ptr += _typeLength;
 
-    memcpy(&data[index], _payload, _payloadLength);
-    index += _payloadLength;
+    memcpy(data_ptr, _payload, _payloadLength);
+    data_ptr += _payloadLength;
 
     if (_idLength)
     {
-        memcpy(&data[index], _id, _idLength);
-        index += _idLength;
+        memcpy(data_ptr, _id, _idLength);
+        data_ptr += _idLength;
     }
-
-    PrintHex(data, sizeof(data));
 }
 
 uint8_t NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
@@ -347,18 +352,23 @@ int NdefMessage::getEncodedSize()
     return size;
 }
 
-byte * NdefMessage::encode()
+void NdefMessage::encode(uint8_t* data)
 {
-    // TODO return bytes that can be written to the tag
-    byte data[getEncodedSize()];
+    // assert sizeof(data) >= getEncodedSize()
+    uint8_t* data_ptr = &data[0];
+
+    Serial.println("Encoded before encoding");
+    PrintHex(data, getEncodedSize());
 
     int i;
     for (i = 0; i < _recordCount; i++) 
-    {        
-        _records[i].encode(i == 0, (i + 1) == _recordCount);
+    {    
+        _records[i].encode(data_ptr, i == 0, (i + 1) == _recordCount);        
+        data_ptr += _records[i].getEncodedSize(); // encode could return size
     }
-    //return size;
-    return data;
+
+    Serial.println("Encoded after encoding");
+    PrintHex(data, getEncodedSize());
 }
 
 void NdefMessage::add(NdefRecord record)

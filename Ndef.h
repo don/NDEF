@@ -18,7 +18,7 @@ class NdefRecord
         ~NdefRecord(); 
         NdefRecord& operator=(const NdefRecord& rhs);       
         int getEncodedSize();
-        void encode(bool firstRecord, bool lastRecord);
+        void encode(uint8_t* data, bool firstRecord, bool lastRecord);
         uint8_t getTnf();
         uint8_t getTypeLength();
         int getPayloadLength();
@@ -50,7 +50,7 @@ public:
     ~NdefMessage();     
     int recordCount(); // TODO getRecordCount() or read only property instead of a function?
     int getEncodedSize(); // need so we can pass array to encode
-    uint8_t * encode(); // TODO is getBytes better?
+    void encode(uint8_t* data); // TODO is getBytes better?
 
     void add(NdefRecord record); // addRecord?
     NdefRecord get(int index); // TODO overload [] or use an iterator

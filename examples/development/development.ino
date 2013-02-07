@@ -13,7 +13,34 @@ void setup() {
   message.print();
 
   Serial.println("\n");
-  message.encode();
+  uint8_t encoded[message.getEncodedSize()];
+  int i;
+  for (i = 0; i < sizeof(encoded); i++)
+  {
+  	// zero out to help debugging
+  	encoded[i] = 0x0;
+  }
+
+  message.encode(encoded);
+  
+  // assert encoded == data
+  if (sizeof(data) == sizeof(encoded)) 
+  {
+    int i;
+    for (i = 0; i < sizeof(data); i++) 
+    {
+      //Serial.print(data[i], HEX);Serial.print(" ");Serial.println(encoded[i], HEX);
+    	if (data[i] != encoded[i])
+    	{
+    		Serial.print("Data mismatch at index ");Serial.println(i);    		
+    		break;
+    	}
+    }        
+  } 
+  else 
+  {
+    Serial.println("Size Mismatch");
+  }
 
 }
 
