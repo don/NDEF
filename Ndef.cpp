@@ -457,7 +457,9 @@ void NdefMessage::addUriRecord(String uri)
 
 void NdefMessage::addEmptyRecord()
 {
-
+    NdefRecord* r = new NdefRecord();
+    r->setTnf(TNF_EMPTY);
+    add(*r);
 }
 
 
