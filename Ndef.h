@@ -18,6 +18,7 @@ class NdefRecord
         ~NdefRecord(); 
         NdefRecord& operator=(const NdefRecord& rhs);       
         int getEncodedSize();
+        void encode(bool firstRecord, bool lastRecord);
         uint8_t getTnf();
         uint8_t getTypeLength();
         int getPayloadLength();
@@ -31,6 +32,7 @@ class NdefRecord
         void setId(uint8_t * id, const int numBytes);
         void print();
     private:
+        uint8_t getTnfByte(bool firstRecord, bool lastRecord);
         uint8_t _tnf;
         int _typeLength; // uint8_t
         int _payloadLength;        

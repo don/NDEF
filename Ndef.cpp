@@ -92,8 +92,8 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 // size of records in bytes
 int NdefRecord::getEncodedSize()
 {
-    int size = 2; // tnf + payloadLength
-    if (_typeLength > 0xFF) 
+    int size = 2; // tnf + typeLength
+    if (_payloadLength > 0xFF) 
     {
         size += 4;
     } 
@@ -110,6 +110,63 @@ int NdefRecord::getEncodedSize()
     size += (_typeLength + _payloadLength + _idLength);
 
     return size;
+}
+
+void NdefRecord::encode(bool firstRecord, bool lastRecord)
+{
+    
+    byte data[getEncodedSize()];
+    int index = 0;
+
+    data[index++] = getTnfByte(firstRecord, lastRecord);
+    data[index++] = _typeLength;
+    data[index++] = _payloadLength; // TODO handle sr == false
+    if (_idLength)
+    {
+        data[index++] = _idLength;
+    }
+
+    memcpy(&data[index], _type, _typeLength);
+    index += _typeLength;
+
+    memcpy(&data[index], _payload, _payloadLength);
+    index += _payloadLength;
+
+    if (_idLength)
+    {
+        memcpy(&data[index], _id, _idLength);
+        index += _idLength;
+    }
+
+    PrintHex(data, sizeof(data));
+}
+
+uint8_t NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
+{
+    int value = _tnf;
+
+    if (firstRecord) { // mb
+        value = value | 0x80;
+    }
+
+    if (lastRecord) { //
+        value = value | 0x40;
+    }
+
+    // chunked flag is always false for now
+    // if (cf) {
+    //     value = value | 0x20;
+    // }
+
+    if (_typeLength <= 0xFF) { // TODO test 0xFF on tag
+        value = value | 0x10;
+    }
+
+    if (_idLength) {
+        value = value | 0x8;
+    }
+
+    return value;
 }
 
 uint8_t NdefRecord::getTnf()
@@ -205,6 +262,8 @@ NdefMessage::NdefMessage(void)
 
 NdefMessage::NdefMessage(byte * data, const int numBytes)
 {
+    Serial.print("Decoding ");Serial.print(numBytes);Serial.println(" bytes");    
+    PrintHex(data, numBytes);
     // _records = (NdefRecord*)malloc(sizeof(NdefRecord *) * MAX_NDEF_RECORDS);
     _recordCount = 0;
     
@@ -291,6 +350,15 @@ int NdefMessage::getEncodedSize()
 byte * NdefMessage::encode()
 {
     // TODO return bytes that can be written to the tag
+    byte data[getEncodedSize()];
+
+    int i;
+    for (i = 0; i < _recordCount; i++) 
+    {        
+        _records[i].encode(i == 0, (i + 1) == _recordCount);
+    }
+    //return size;
+    return data;
 }
 
 void NdefMessage::add(NdefRecord record)
