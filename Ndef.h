@@ -15,6 +15,14 @@
 #define TNF_UNCHANGED 0x06
 #define TNF_RESERVED 0x07
 
+// RTD_TEXT: [0x54], // "T"
+// RTD_URI: [0x55], // "U" 
+// RTD_SMART_POSTER: [0x53, 0x70], // "Sp"
+// RTD_ALTERNATIVE_CARRIER: [0x61, 0x63], // "ac"
+// RTD_HANDOVER_CARRIER: [0x48, 0x63], // "Hc"
+// RTD_HANDOVER_REQUEST: [0x48, 0x72], // "Hr"
+// RTD_HANDOVER_SELECT: [0x48, 0x73], // "Hs"
+
 // TODO see what is useful here
 // http://w3c.github.com/nfc/proposals/intel/nfc.html
 // which is based on 
@@ -65,6 +73,10 @@ public:
     void add(NdefRecord record); // addRecord?
     void addMimeMediaRecord(String mimeType, String payload);
     void addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength);
+    void addTextRecord(String text);
+    void addTextRecord(String text, String encoding);
+    void addUriRecord(String uri);
+    void addEmptyRecord();
     NdefRecord get(int index); // TODO overload [] or use an iterator
     void print();
 private:
