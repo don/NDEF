@@ -261,7 +261,6 @@ void NdefRecord::print()
 
 NdefMessage::NdefMessage(void)
 {
-    Serial.println("NdefMessage constructor"); 
     _recordCount = 0;       
 }
 
@@ -357,17 +356,16 @@ void NdefMessage::encode(uint8_t* data)
     // assert sizeof(data) >= getEncodedSize()
     uint8_t* data_ptr = &data[0];
 
-    Serial.println("Encoded before encoding");
-    PrintHex(data, getEncodedSize());
-
     int i;
     for (i = 0; i < _recordCount; i++) 
     {    
-        _records[i].encode(data_ptr, i == 0, (i + 1) == _recordCount);        
-        data_ptr += _records[i].getEncodedSize(); // encode could return size
+        _records[i].encode(data_ptr, i == 0, (i + 1) == _recordCount);
+        // TODO can NdefRecord.encode return the record size?        
+        data_ptr += _records[i].getEncodedSize(); 
     }
 
-    Serial.println("Encoded after encoding");
+    // TODO don't print here
+    Serial.println("\nEncoded");
     PrintHex(data, getEncodedSize());
 }
 
