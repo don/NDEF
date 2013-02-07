@@ -425,18 +425,7 @@ void NdefMessage::addMimeMediaRecord(String mimeType, uint8_t* payload, int payl
 
 void NdefMessage::addTextRecord(String text)
 {
-    NdefRecord* r = new NdefRecord();
-    r->setTnf(TNF_WELL_KNOWN);
-
-    uint8_t RTD_TEXT[1] = { 0x54 }; // TODO this should be a constant or preprocessor
-    r->setType(RTD_TEXT, sizeof(RTD_TEXT));
-
-    // TODO language encoding
-    byte payload[text.length() + 1];
-    text.getBytes(payload, sizeof(payload));
-    r->setPayload(payload, text.length());
-
-    add(*r);
+    addTextRecord(text, "en");
 }
 
 void NdefMessage::addTextRecord(String text, String encoding)
