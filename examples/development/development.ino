@@ -11,6 +11,7 @@ void setup() {
   NdefMessage message = NdefMessage(data, sizeof(data));
   
   message.print();  
+
 }
 
 void loop() {

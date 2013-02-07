@@ -17,9 +17,10 @@ class NdefRecord
         NdefRecord(const NdefRecord& rhs);
         ~NdefRecord(); 
         NdefRecord& operator=(const NdefRecord& rhs);       
+        int getEncodedSize();
         uint8_t getTnf();
         uint8_t getTypeLength();
-        uint8_t getPayloadLength();
+        int getPayloadLength();
         uint8_t getIdLength();
         uint8_t * getType();  // TODO don't return array
         uint8_t * getPayload();
@@ -31,7 +32,7 @@ class NdefRecord
         void print();
     private:
         uint8_t _tnf;
-        int _typeLength;
+        int _typeLength; // uint8_t
         int _payloadLength;        
         int _idLength;    
         uint8_t * _type;        
@@ -46,7 +47,9 @@ public:
     NdefMessage(uint8_t * data, const int numBytes);  
     ~NdefMessage();     
     int recordCount(); // TODO getRecordCount() or read only property instead of a function?
+    int getEncodedSize(); // need so we can pass array to encode
     uint8_t * encode(); // TODO is getBytes better?
+
     void add(NdefRecord record); // addRecord?
     NdefRecord get(int index); // TODO overload [] or use an iterator
     void print();

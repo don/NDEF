@@ -89,6 +89,29 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
     return *this;
 }
 
+// size of records in bytes
+int NdefRecord::getEncodedSize()
+{
+    int size = 2; // tnf + payloadLength
+    if (_typeLength > 0xFF) 
+    {
+        size += 4;
+    } 
+    else 
+    {
+        size += 1;
+    }
+    
+    if (_idLength)
+    {
+        size += 1;
+    }
+
+    size += (_typeLength + _payloadLength + _idLength);
+
+    return size;
+}
+
 uint8_t NdefRecord::getTnf()
 {
     return _tnf;
@@ -104,7 +127,7 @@ uint8_t NdefRecord::getTypeLength()
     return _typeLength;
 }
 
-uint8_t NdefRecord::getPayloadLength()
+int NdefRecord::getPayloadLength()
 {
     return _payloadLength;
 }
@@ -170,6 +193,8 @@ void NdefRecord::print()
     {
         Serial.print("    Id ");PrintHex(_id, _idLength);  
     }
+    Serial.print("    Record is ");Serial.print(getEncodedSize());Serial.println(" bytes");
+
 }
 
 NdefMessage::NdefMessage(void)
@@ -252,6 +277,17 @@ int NdefMessage::recordCount()
     return _recordCount;
 }
 
+int NdefMessage::getEncodedSize()
+{
+    int size = 0;
+    int i;
+    for (i = 0; i < _recordCount; i++) 
+    {
+        size += _records[i].getEncodedSize();
+    }
+    return size;
+}
+
 byte * NdefMessage::encode()
 {
     // TODO return bytes that can be written to the tag
@@ -282,8 +318,9 @@ NdefRecord NdefMessage::get(int index)
 
 void NdefMessage::print()
 {
-    Serial.print("\nNDEF Message ");Serial.print("  ");Serial.print(_recordCount);Serial.print(" record");
-    _recordCount == 1 ? Serial.println() : Serial.println("s");
+    Serial.print("\nNDEF Message ");Serial.print(_recordCount);Serial.print(" record");
+    _recordCount == 1 ? Serial.print(", ") : Serial.print("s, ");
+    Serial.print(getEncodedSize());Serial.println(" bytes");
 
     int i;
     for (i = 0; i < _recordCount; i++) 
