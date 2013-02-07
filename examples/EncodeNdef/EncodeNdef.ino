@@ -23,7 +23,7 @@ void setup() {
   NdefMessage* message = new NdefMessage();
   message->add(*r);
   
-  // a more records using the helper methods
+  // add more records using the helper methods
   message->addMimeMediaRecord("foo", "17");
   message->addMimeMediaRecord("foo", payloadBytes, payload.length());
   message->addTextRecord("foo");
