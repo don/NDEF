@@ -20,6 +20,8 @@ void setup() {
   
   NdefMessage* message = new NdefMessage();
   message->add(*r);
+  message->addMimeMediaRecord("foo", "17");
+  message->addMimeMediaRecord("foo", payloadBytes, payload.length());
   message->print();
   
   uint8_t encoded[message->getEncodedSize()];

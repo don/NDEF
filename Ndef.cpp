@@ -384,6 +384,46 @@ void NdefMessage::add(NdefRecord record)
     }
 }
 
+// TODO would NdefRecord::mimeMediaRecord be better?
+void NdefMessage::addMimeMediaRecord(String mimeType, String payload)
+{
+    NdefRecord* r = new NdefRecord();
+    r->setTnf(TNF_MIME_MEDIA);
+
+    byte type[mimeType.length() + 1];
+    mimeType.getBytes(type, sizeof(type));
+    r->setType(type, mimeType.length());
+
+    byte payloadBytes[payload.length() + 1];
+    payload.getBytes(payloadBytes, sizeof(payloadBytes));
+    r->setPayload(payloadBytes, payload.length());
+
+    add(*r);
+
+    /*
+    TODO call other method
+    byte payloadBytes[payload.length() + 1];
+    payload.getBytes(payloadBytes, sizeof(payloadBytes));
+    
+    addMimeMediaRecord(mimeType, payloadBytes, payload.length);
+    */
+}
+
+void NdefMessage::addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength)
+{
+    NdefRecord* r = new NdefRecord();
+    r->setTnf(TNF_MIME_MEDIA);
+
+    byte type[mimeType.length() + 1];
+    mimeType.getBytes(type, sizeof(type));
+    r->setType(type, mimeType.length());
+
+    r->setPayload(payload, payloadLength);
+
+    add(*r);
+}
+
+
 NdefRecord NdefMessage::get(int index)
 {
     if (index > -1 && index < _recordCount)
