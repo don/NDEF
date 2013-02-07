@@ -442,7 +442,7 @@ void NdefMessage::addTextRecord(String text, String encoding)
     byte payload[payloadString.length() + 1];
     payloadString.getBytes(payload, sizeof(payload));
 
-    // replace X with the real length
+    // replace X with the real encoding length
     payload[0] = encoding.length();
 
     r->setPayload(payload, payloadString.length());
@@ -452,7 +452,24 @@ void NdefMessage::addTextRecord(String text, String encoding)
 
 void NdefMessage::addUriRecord(String uri)
 {
+    NdefRecord* r = new NdefRecord();
+    r->setTnf(TNF_WELL_KNOWN);
 
+    uint8_t RTD_URI[1] = { 0x55 }; // TODO this should be a constant or preprocessor
+    r->setType(RTD_URI, sizeof(RTD_URI));
+
+    // X is a placeholder for identifier code
+    String payloadString = "X" + uri;
+
+    byte payload[payloadString.length() + 1];
+    payloadString.getBytes(payload, sizeof(payload));
+
+    // add identifier code 0x0, meaning no prefix substitution
+    payload[0] = 0x0;
+
+    r->setPayload(payload, payloadString.length());
+
+    add(*r);
 }
 
 void NdefMessage::addEmptyRecord()
@@ -461,7 +478,6 @@ void NdefMessage::addEmptyRecord()
     r->setTnf(TNF_EMPTY);
     add(*r);
 }
-
 
 NdefRecord NdefMessage::get(int index)
 {
