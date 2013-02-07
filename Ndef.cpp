@@ -28,6 +28,24 @@ NdefRecord::NdefRecord()
     _idLength = 0;
 }
 
+NdefRecord::NdefRecord(const NdefRecord& rhs)
+{
+    _tnf = rhs._tnf;
+    _typeLength = rhs._typeLength;
+    _payloadLength = rhs._payloadLength;
+    _idLength = rhs._idLength;
+
+    _type = (uint8_t*)malloc(_typeLength);
+    memcpy(_type, rhs._type, _typeLength);
+
+    _payload = (uint8_t*)malloc(_payloadLength);
+    memcpy(_payload, rhs._payload, _payloadLength);
+
+    _id = (uint8_t*)malloc(_idLength);
+    memcpy(_id, rhs._id, _idLength);    
+}
+
+
 // TODO NdefRecord::NdefRecord(tnf, type, payload, id)
 
 NdefRecord::~NdefRecord()
@@ -48,7 +66,29 @@ NdefRecord::~NdefRecord()
     }
 }
 
-// This is Java style, what is the C++/Arduino way?
+NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
+{
+    if (this != &rhs)
+    {
+        _tnf = rhs._tnf;
+        _typeLength = rhs._typeLength;
+        _payloadLength = rhs._payloadLength;
+        _idLength = rhs._idLength;
+
+        // TODO need to free _type, _payload, and _id if they exist
+
+        _type = (uint8_t*)malloc(_typeLength);
+        memcpy(_type, rhs._type, _typeLength);
+
+        _payload = (uint8_t*)malloc(_payloadLength);
+        memcpy(_payload, rhs._payload, _payloadLength);
+
+        _id = (uint8_t*)malloc(_idLength);
+        memcpy(_id, rhs._id, _idLength);    
+    }
+    return *this;
+}
+
 uint8_t NdefRecord::getTnf()
 {
     return _tnf;
@@ -59,6 +99,24 @@ void NdefRecord::setTnf(uint8_t tnf)
     _tnf = tnf;
 }
 
+uint8_t NdefRecord::getTypeLength()
+{
+    return _typeLength;
+}
+
+uint8_t NdefRecord::getPayloadLength()
+{
+    return _payloadLength;
+}
+
+uint8_t NdefRecord::getIdLength()
+{
+    return _idLength;
+}
+
+// TODO don't return an array we created
+// NdefRecord::getType(uint8_t * type) and copy into their array
+// OR return an object that has the type and the array
 uint8_t * NdefRecord::getType()
 {
     return _type;
@@ -122,7 +180,7 @@ NdefMessage::NdefMessage(void)
 
 NdefMessage::NdefMessage(byte * data, const int numBytes)
 {
-    _records = (NdefRecord*)malloc(sizeof(NdefRecord) * 10);
+    // _records = (NdefRecord*)malloc(sizeof(NdefRecord *) * MAX_NDEF_RECORDS);
     _recordCount = 0;
     
     int index = 0;
@@ -177,11 +235,7 @@ NdefMessage::NdefMessage(byte * data, const int numBytes)
         record.setPayload(&data[index], payloadLength);          
         index += payloadLength;          
 
-        // DEBUG
-        record.print();
-
-        Serial.println("WARNING: not adding record to _records\n");
-        // add(record); // TODO fix this
+        add(record);
         
         if (me) break; // last message
     }
@@ -190,7 +244,7 @@ NdefMessage::NdefMessage(byte * data, const int numBytes)
 
 NdefMessage::~NdefMessage()
 {
-    free(_records);
+    //free(_records);
 }
 
 int NdefMessage::recordCount()
@@ -205,10 +259,17 @@ byte * NdefMessage::encode()
 
 void NdefMessage::add(NdefRecord record)
 {
-    Serial.println("Adding Record");
-    _records[_recordCount] = record;
-    _recordCount++;                
-    Serial.println("DONE Record");    
+
+    if (_recordCount < MAX_NDEF_RECORDS)
+    {
+        _records[_recordCount] = record;
+        _recordCount++;                
+    }
+    else
+    {
+        // TODO consider returning status
+        Serial.println("WARNING: Too many records. Increase MAX_NDEF_RECORDS.");
+    }
 }
 
 NdefRecord NdefMessage::get(int index)
