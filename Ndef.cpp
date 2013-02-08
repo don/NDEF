@@ -199,12 +199,10 @@ uint8_t NdefRecord::getIdLength()
     return _idLength;
 }
 
-// TODO don't return an array we created
-// NdefRecord::getType(uint8_t * type) and copy into their array
-// OR return an object that has the type and the array
-uint8_t * NdefRecord::getType()
+void NdefRecord::getType(uint8_t* type)
 {
-    return _type;
+    // assert sizeof(type) >= sizeof(_type)
+    memcpy(type, _type, sizeof(_type));
 }
 
 void NdefRecord::setType(uint8_t * type, const int numBytes)
@@ -214,9 +212,9 @@ void NdefRecord::setType(uint8_t * type, const int numBytes)
     _typeLength = numBytes;
 }
 
-uint8_t * NdefRecord::getPayload()
+void NdefRecord::getPayload(uint8_t * payload)
 {
-    return _payload;
+    memcpy(payload, _payload, sizeof(_payload));
 }
 
 void NdefRecord::setPayload(uint8_t * payload, const int numBytes)
@@ -226,9 +224,9 @@ void NdefRecord::setPayload(uint8_t * payload, const int numBytes)
     _payloadLength = numBytes;
 }
 
-uint8_t * NdefRecord::getId()
+void NdefRecord::getId(uint8_t * id)
 {
-    return _id;
+    memcpy(id, _id, sizeof(_id));
 }
 
 void NdefRecord::setId(uint8_t * id, const int numBytes)

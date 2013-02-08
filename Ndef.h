@@ -37,17 +37,22 @@ class NdefRecord
         NdefRecord& operator=(const NdefRecord& rhs);       
         int getEncodedSize();
         void encode(uint8_t* data, bool firstRecord, bool lastRecord);
+        
         uint8_t getTnf();
+        
         uint8_t getTypeLength();
         int getPayloadLength();
         uint8_t getIdLength();
-        uint8_t * getType();  // TODO don't return array
-        uint8_t * getPayload();
-        uint8_t * getId(); 
+        
+        void getType(uint8_t* type); 
+        void getPayload(uint8_t* payload);
+        void getId(uint8_t* id); 
+        
         void setTnf(uint8_t tnf);
         void setType(uint8_t * type, const int numBytes);
         void setPayload(uint8_t * payload, const int numBytes);
         void setId(uint8_t * id, const int numBytes);
+        
         void print();
     private:
         uint8_t getTnfByte(bool firstRecord, bool lastRecord);
@@ -84,5 +89,24 @@ private:
     NdefRecord _records[MAX_NDEF_RECORDS];
     int _recordCount;
 };
+
+/*
+// Maybe for something like NdefField NdefRecord::getType() 
+// Less useful for Payload
+// Really need subclasses of NdefRecord with additonal constructors and getters
+class NdefField
+{
+public:
+    NdefField();
+    ~NdefField();
+    NdefField& operator=(const NdefField& rhs);
+    int length();
+    int getLength();
+    void getBytes(uint8_t* data);
+    String getValueAsString();
+    void setValue(String value);
+    void setValue(uint8_t* data, int dataLength);
+};
+*/
 
 #endif
