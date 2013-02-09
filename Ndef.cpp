@@ -20,6 +20,32 @@ void PrintHex(const byte * data, const uint32_t numBytes)
   Serial.println("");
 }
 
+// Borrowed from Adafruit_NFCShield_I2C
+void PrintHexChar(const byte * data, const uint32_t numBytes)
+{
+  uint32_t szPos;
+  for (szPos=0; szPos < numBytes; szPos++) 
+  {
+    // Append leading 0 for small values
+    if (data[szPos] <= 0xF)
+      Serial.print("0");
+    Serial.print(data[szPos], HEX);
+    if ((numBytes > 1) && (szPos != numBytes - 1))
+    {
+      Serial.print(" ");
+    }
+  }
+  Serial.print("  ");
+  for (szPos=0; szPos < numBytes; szPos++) 
+  {
+    if (data[szPos] <= 0x1F)
+      Serial.print(".");
+    else
+      Serial.print((char)data[szPos]);
+  }
+  Serial.println("");
+}
+
 NdefRecord::NdefRecord()
 {
     _tnf = 0;
@@ -237,6 +263,7 @@ void NdefRecord::setId(uint8_t * id, const int numBytes)
     _idLength = numBytes;
 }
 
+/*
 void NdefRecord::print()
 {
     Serial.println("  NDEF Record");    
@@ -256,6 +283,57 @@ void NdefRecord::print()
     Serial.print("    Record is ");Serial.print(getEncodedSize());Serial.println(" bytes");
 
 }
+*/
+
+void NdefRecord::print()
+{
+    Serial.println("  NDEF Record");    
+    Serial.print("    TNF 0x");Serial.print(_tnf, HEX);Serial.print(" ");
+    switch (_tnf) {
+    case TNF_EMPTY:
+        Serial.println("Empty");
+        break; 
+    case TNF_WELL_KNOWN:
+        Serial.println("Well Known");
+        break;     
+    case TNF_MIME_MEDIA:
+        Serial.println("Mime Media");
+        break;     
+    case TNF_ABSOLUTE_URI:
+        Serial.println("Absolute URI");
+        break;     
+    case TNF_EXTERNAL_TYPE:
+        Serial.println("External");
+        break;     
+    case TNF_UNKNOWN:
+        Serial.println("Unknown");
+        break;     
+    case TNF_UNCHANGED:
+        Serial.println("Unchanged");
+        break;     
+    case TNF_RESERVED:
+        Serial.println("Reserved");
+        break;
+    default:
+        Serial.println();     
+    }
+    Serial.print("    Type Length 0x");Serial.print(_typeLength, HEX);Serial.print(" ");Serial.println(_typeLength);
+    Serial.print("    Payload Length 0x");Serial.print(_payloadLength, HEX);;Serial.print(" ");Serial.println(_payloadLength);    
+    if (_idLength)
+    {
+        Serial.print("    Id Length 0x");Serial.println(_idLength, HEX);  
+    }
+    Serial.print("    Type ");PrintHexChar(_type, _typeLength);  
+    // TODO chunk large payloads so this is readable
+    Serial.print("    Payload ");PrintHexChar(_payload, _payloadLength);
+    if (_idLength)
+    {
+        Serial.print("    Id ");PrintHexChar(_id, _idLength);  
+    }
+    Serial.print("    Record is ");Serial.print(getEncodedSize());Serial.println(" bytes");
+
+}
+
 
 NdefMessage::NdefMessage(void)
 {
@@ -497,3 +575,5 @@ void NdefMessage::print()
          _records[i].print();
     }
 }
+
+
