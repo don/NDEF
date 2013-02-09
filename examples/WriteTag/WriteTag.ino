@@ -60,6 +60,9 @@ void loop(void) {
       NdefMessage* m = new NdefMessage();
       m->addTextRecord("Hello, World");
       m->addUriRecord("http://arduino.cc");
+      m->addEmptyRecord();
+      m->addTextRecord("Goodbye, World");
+      
       m->print();
 
       write(*m, uid, uidLength);
@@ -81,12 +84,23 @@ void loop(void) {
 // TODO return success / failure
 void write(NdefMessage& m, uint8_t * uid, int uidLength)
 {
+    int BLOCK_SIZE = 16;
 
     uint8_t encoded[m.getEncodedSize()];
     m.encode(encoded);
         
     // TLV wrapper 
     // assuming short TLV  3 bytes type +  byte length of data + NDEF_DATA + 1 byte terminator
+    int buffer_size = sizeof(encoded) + 5;
+    Serial.print("buffer_size ");Serial.println(buffer_size);
+
+    // buffer_size needs to be a multiple of BLOCK_SIZE
+    if (buffer_size % BLOCK_SIZE != 0)
+    {
+      buffer_size = ((buffer_size / BLOCK_SIZE) + 1) * BLOCK_SIZE;
+      Serial.print("Adjusted buffer_size to ");Serial.println(buffer_size);
+    }
+
     uint8_t buffer[sizeof(encoded) + 5];
     buffer[0] = 0x0;        
     buffer[1] = 0x0;        
@@ -98,41 +112,39 @@ void write(NdefMessage& m, uint8_t * uid, int uidLength)
     // Write to tag
     int index = 0;
     int currentBlock = 4;
-    int BLOCK_SIZE = 16;
-
-    // lame check dues to bad implemenation
-    if (sizeof(buffer) > BLOCK_SIZE * 3) {
-      Serial.println();
-      Serial.println("ERROR: Message is too large.");
-      Serial.println("Message can not exceed 3 blocks or 48 bytes (with TLV)");          
-      while(1); // halt
-    }
-
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 }; // this is Sector 1 - 15 key
-    
-    // Start with block 4, the first block of sector 1. Note sector 0 contains the manufacturer data.
-    uint8_t success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);
-    
-    if (success)
-    {
-      Serial.println("Sector 1 (Blocks 4..7) has been authenticated");
-              
-      while (index < sizeof(buffer))
-      {  
-        int write_success = nfc.mifareclassic_WriteDataBlock (currentBlock, &buffer[index]);
-        if (write_success) {
-            Serial.print("wrote block ");Serial.println(currentBlock);
-        } else {
-            Serial.println("write failed");
+
+    while (index < sizeof(buffer))
+    {  
+
+      if (nfc.mifareclassic_IsFirstBlock(currentBlock))
+      {
+        int success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
+        if (!success)
+        {
+          Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
+          while (1); // halt
         }
-        index += BLOCK_SIZE;                   
-        currentBlock++; // this will fail on block 7
       }
-                                
+
+      int write_success = nfc.mifareclassic_WriteDataBlock (currentBlock, &buffer[index]);
+      if (write_success) {
+          Serial.print("wrote block ");Serial.println(currentBlock);
+      } else {
+          Serial.println("write failed");
+          while (1); // halt
+      }
+      index += BLOCK_SIZE;                   
+      currentBlock++;
+
+      if (nfc.mifareclassic_IsTrailerBlock(currentBlock))
+      {
+        // can't write to trailer block
+        Serial.print("skipping block ");Serial.println(currentBlock);
+        currentBlock++;    
+      }
+
     }
-    else
-    {
-      Serial.println("Error. Block Authentication failed.");
-    }
+        
 }
 
