@@ -2,6 +2,7 @@
 #include <Adafruit_NFCShield_I2C.h>
 #include <Ndef.h>
 #include <MifareClassic.h>
+#include <MifareUltralight.h>
 
 #define IRQ   (2)
 #define RESET (3)  // Not connected by default on the NFC Shield
@@ -60,7 +61,8 @@ void loop(void) {
     }
     else
     {
-      Serial.println("This sketch only supports Mifare Classic tags with 4 byte UIDs");
+      NdefMessage ndefMessage = readMifareUltralight(nfc);
+      ndefMessage.print();
       delay(5000);
     }
     
