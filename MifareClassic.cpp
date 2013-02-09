@@ -2,10 +2,122 @@
 #include "Ndef.h"
 #include <Adafruit_NFCShield_I2C.h>
 
+#define BLOCK_SIZE 16
+
+NdefMessage& read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
+{
+    uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 };
+    int currentBlock = 4;
+    int messageLength = 0;
+    byte data[16];
+
+    // read first block to get message length
+    int success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);
+    if (success)
+    {
+      success = nfc.mifareclassic_ReadDataBlock(currentBlock, data);
+      if (success)
+      {
+        messageLength = getNdefLength(data);        
+      }
+      else
+      {
+        Serial.print("Error. Failed read block ");Serial.println(currentBlock); 
+      }
+    }
+    else
+    {
+      Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
+    }
+
+    // this should be nested in the message length loop
+    int index = 0;
+    int buffer_size = getBufferSize(messageLength);
+    uint8_t buffer[buffer_size];
+
+    Serial.print("Message Length ");Serial.println(messageLength);
+    Serial.print("Buffer Size ");Serial.println(buffer_size);
+
+    while (index < buffer_size)
+    {
+      // authenticate on every sector
+      if (nfc.mifareclassic_IsFirstBlock(currentBlock))
+      {
+        success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
+        if (!success)
+        {
+          Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
+        }
+      }
+
+      // read the data
+      success = nfc.mifareclassic_ReadDataBlock(currentBlock, &buffer[index]);
+      if (success) 
+      {
+        Serial.print("Read block ");Serial.println(currentBlock);
+      } 
+      else 
+      {
+        Serial.print("Read failed");Serial.println(currentBlock);
+      }
+
+      index += BLOCK_SIZE;                   
+      currentBlock++;
+
+      // skip the trailer block
+      if (nfc.mifareclassic_IsTrailerBlock(currentBlock))
+      {
+        Serial.print("Skipping block ");Serial.println(currentBlock);
+        currentBlock++;    
+      }
+
+    }
+
+    nfc.PrintHex(&buffer[4], messageLength);
+
+    NdefMessage* ndefMessage = new NdefMessage(&buffer[4], messageLength);
+    return *ndefMessage;
+}
+
+int getBufferSize(int messageLength)
+{ 
+
+  // TLV header is 4 bytes. TLV terminator is 1 byte.
+  int buffer_size = messageLength + 5;
+
+  // buffer_size needs to be a multiple of BLOCK_SIZE
+  if (buffer_size % BLOCK_SIZE != 0)
+  {
+      buffer_size = ((messageLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;    
+  }
+
+  return buffer_size;
+}
+
+// get the ndef data length from the mifare TLV
+// assuming the type and the length are in the first 4 bytes
+// { 0x0, 0x0, 0x3, LENGTH }
+// { 0x3, 0xFF, LENGTH, LENGTH }
+int getNdefLength(byte *data)
+{
+    int ndefLength;
+    if (data[0] == 0x03 && data[1] == 0xFF) {
+        // would rather find spec, but using 
+        // http://www.developer.nokia.com/Community/Discussion/showthread.php?131601-Problem-decoding-NDEF-message-on-Mifare-Card&p=407235&viewfull=1#post407235
+        ndefLength = ((0xFF & data[2]) << 8) | (0xFF & data[3]);
+    } else if (data[2] == 0x03) { // 1 byte
+        ndefLength = data[3];
+    } else {
+        Serial.println("ERROR: Do not know how to decode length.");
+        ndefLength = -1;
+    }
+    
+    return ndefLength;
+}
+
 // TODO return success / failure
 void write(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * uid, int uidLength)
 {
-    int BLOCK_SIZE = 16;
 
     uint8_t encoded[m.getEncodedSize()];
     m.encode(encoded);
@@ -49,11 +161,14 @@ void write(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * uid, int uidLe
       }
 
       int write_success = nfc.mifareclassic_WriteDataBlock (currentBlock, &buffer[index]);
-      if (write_success) {
-          Serial.print("wrote block ");Serial.println(currentBlock);
-      } else {
-          Serial.println("write failed");
-          while (1); // halt
+      if (write_success) 
+      {
+        Serial.print("wrote block ");Serial.println(currentBlock);
+      } 
+      else 
+      {
+        Serial.print("write failed");Serial.println(currentBlock);
+        while (1); // halt
       }
       index += BLOCK_SIZE;                   
       currentBlock++;
