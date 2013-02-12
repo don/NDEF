@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include "Arduino.h"
 
-#define MAX_NDEF_RECORDS 10
+#define MAX_NDEF_RECORDS 3
 
 #define TNF_EMPTY 0x0
 #define TNF_WELL_KNOWN 0x01

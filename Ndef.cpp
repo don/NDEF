@@ -440,7 +440,6 @@ void NdefMessage::encode(uint8_t* data)
         data_ptr += _records[i].getEncodedSize(); 
     }
 
-    // TODO don't print here
     Serial.println("\nEncoded");
     PrintHex(data, getEncodedSize());
 }

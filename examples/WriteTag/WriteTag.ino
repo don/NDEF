@@ -59,10 +59,10 @@ void loop(void) {
       Serial.println("Seems to be a Mifare Classic card (4 byte UID)");
 	  
       NdefMessage* m = new NdefMessage();
-      m->addTextRecord("Hello, World");
+      //m->addTextRecord("Hello, World");
       m->addUriRecord("http://arduino.cc");
-      m->addEmptyRecord();
-      m->addTextRecord("Goodbye, World");
+      //m->addEmptyRecord();
+      //m->addTextRecord("Goodbye, World");
       
       m->print();
 
