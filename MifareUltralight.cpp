@@ -3,7 +3,7 @@
 #include <Adafruit_NFCShield_I2C.h>
 
 #define ULTRALIGHT_PAGE_SIZE 4
-#define ULTRALIGHT_READ_SIZE 32
+#define ULTRALIGHT_READ_SIZE 4
 
 // MIFARE ULTRALIGHT C - NFC FORUM TYPE 2
 
@@ -49,7 +49,7 @@ NdefMessage& readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
     Serial.print("Buffer Size ");Serial.println(bufferSize);
 
     // TODO special case 
-    // Message Length == 0 should return an TNF_EMPTY  0x44 0x03 0x00 0xFE
+    // Message Length == 0 should return an TNF_EMPTY data is 0x44 0x03 0x00 0xFE
 
     // for (page = 6; page < 63; page++) {      
     while (index < messageLength)
