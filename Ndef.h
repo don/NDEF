@@ -90,6 +90,7 @@ private:
     int _recordCount;
 };
 
+
 /*
 // Maybe for something like NdefField NdefRecord::getType() 
 // Less useful for Payload

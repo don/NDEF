@@ -55,10 +55,12 @@ NdefMessage& readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int u
       if (success) 
       {
         Serial.print("Read block ");Serial.println(currentBlock);
+        // Serial.print("Block ");Serial.print(currentBlock);Serial.print(" ");
+        // nfc.PrintHexChar(&buffer[index], BLOCK_SIZE);
       } 
       else 
       {
-        Serial.print("Read failed");Serial.println(currentBlock);
+        Serial.print("Read failed ");Serial.println(currentBlock);
       }
 
       index += BLOCK_SIZE;                   
@@ -72,6 +74,17 @@ NdefMessage& readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int u
       }
 
     }
+
+    // print out for debugging (this would be easier block by block)
+    Serial.println("\nRaw NDEF data");
+    uint8_t* buffer_ptr = &buffer[0];    
+    int j = 0;
+    for (j = 0; j < (buffer_size / BLOCK_SIZE); j++)    
+    {
+        nfc.PrintHexChar(buffer_ptr, BLOCK_SIZE);
+        buffer_ptr += BLOCK_SIZE;
+    }
+    Serial.println();
 
     nfc.PrintHex(&buffer[4], messageLength);
 
@@ -167,7 +180,7 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
       } 
       else 
       {
-        Serial.print("write failed");Serial.println(currentBlock);
+        Serial.print("write failed ");Serial.println(currentBlock);
         while (1); // halt
       }
       index += BLOCK_SIZE;                   

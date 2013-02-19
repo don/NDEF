@@ -46,6 +46,17 @@ void PrintHexChar(const byte * data, const uint32_t numBytes)
   Serial.println("");
 }
 
+// Note if buffer % blockSize != 0, last block will not be written
+void DumpHex(const byte * data, const uint32_t numBytes, const uint8_t blockSize)
+{
+    int i;
+    for (i = 0; i < (numBytes / blockSize); i++)    
+    {
+        PrintHexChar(data, blockSize);
+        data += blockSize;
+    }
+}
+
 NdefRecord::NdefRecord()
 {
     _tnf = 0;
@@ -343,8 +354,9 @@ NdefMessage::NdefMessage(void)
 NdefMessage::NdefMessage(byte * data, const int numBytes)
 {
     Serial.print("Decoding ");Serial.print(numBytes);Serial.println(" bytes");    
-    PrintHex(data, numBytes);
-    // _records = (NdefRecord*)malloc(sizeof(NdefRecord *) * MAX_NDEF_RECORDS);
+    //PrintHex(data, numBytes);
+    DumpHex(data, numBytes, 16);
+
     _recordCount = 0;
     
     int index = 0;
