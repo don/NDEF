@@ -1,4 +1,18 @@
-NDEF Library for Arduino
+= NDEF Library for Arduino = 
 
-Translate NDEF bytes into NdefRecords
+Read and Write NDEF messages on NFC Tags
 
+Supports 
+ - Reading from Mifare Classic Tags with 4 byte UIDs.
+ - Writing to Mifare Classic Tags with 4 byte UIDs.
+ - Reading from Mifare Ultralight tags.
+
+== Requires ==
+
+[Adafruit NFC Shield](https://www.adafruit.com/products/364)
+
+[Adafruit NFC Shield I2C library](https://github.com/don/Adafruit_NFCShield_I2C) you'll need the "guard" branch)
+
+== Warning == 
+
+This software is in active development. It works for the happy path. Error handling is bad. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages
