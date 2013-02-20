@@ -22,8 +22,8 @@ boolean NfcAdapter::tagPresent()
 {
 	uint8_t success;
 	// reset uid and length
-    uid = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
-  	uidLength = 0;                    // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  uid = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
+  uidLength = 0;                    // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
 
 	success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
 
