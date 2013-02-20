@@ -482,16 +482,16 @@ void NdefMessage::addMimeMediaRecord(String mimeType, String payload)
 
 void NdefMessage::addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength)
 {
-    NdefRecord* r = new NdefRecord();
-    r->setTnf(TNF_MIME_MEDIA);
+    NdefRecord r = NdefRecord();
+    r.setTnf(TNF_MIME_MEDIA);
 
     byte type[mimeType.length() + 1];
     mimeType.getBytes(type, sizeof(type));
-    r->setType(type, mimeType.length());
+    r.setType(type, mimeType.length());
 
-    r->setPayload(payload, payloadLength);
+    r.setPayload(payload, payloadLength);
 
-    add(*r);
+    add(r);
 }
 
 void NdefMessage::addTextRecord(String text)
