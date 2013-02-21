@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include "Arduino.h"
 
-#define MAX_NDEF_RECORDS 3
+#define MAX_NDEF_RECORDS 29
 
 #define TNF_EMPTY 0x0
 #define TNF_WELL_KNOWN 0x01
@@ -75,7 +75,7 @@ public:
     int getEncodedSize(); // need so we can pass array to encode
     void encode(uint8_t* data); // TODO is getBytes better?
 
-    void add(NdefRecord record); // addRecord?
+    void add(NdefRecord& record); // addRecord?
     void addMimeMediaRecord(String mimeType, String payload);
     void addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength);
     void addTextRecord(String text);

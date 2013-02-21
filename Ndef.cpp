@@ -58,7 +58,8 @@ void DumpHex(const byte * data, const uint32_t numBytes, const uint8_t blockSize
 }
 
 NdefRecord::NdefRecord()
-{
+{   
+    Serial.println("NdefRecord Constructor 1");
     _tnf = 0;
     _typeLength = 0;
     _payloadLength = 0;    
@@ -67,6 +68,8 @@ NdefRecord::NdefRecord()
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
 {
+    // TODO this needs similar checks like ASSIGNMENT!
+    Serial.println("NdefRecord Constructor 2 (copy)");
     _tnf = rhs._tnf;
     _typeLength = rhs._typeLength;
     _payloadLength = rhs._payloadLength;
@@ -87,6 +90,7 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
 
 NdefRecord::~NdefRecord()
 {
+    Serial.println("NdefRecord Destructor");
     if (_typeLength) 
     {
         free(_type);
@@ -105,8 +109,26 @@ NdefRecord::~NdefRecord()
 
 NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 {
+    Serial.println("NdefRecord ASSIGN");
+
     if (this != &rhs)
     {
+
+        if (_typeLength) 
+        {
+            free(_type);
+        }
+
+        if (_payloadLength)
+        {
+            free(_payload);        
+        }
+
+        if (_idLength)
+        {
+            free(_id);        
+        }
+
         _tnf = rhs._tnf;
         _typeLength = rhs._typeLength;
         _payloadLength = rhs._payloadLength;
@@ -114,14 +136,23 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 
         // TODO need to free _type, _payload, and _id if they exist
 
-        _type = (uint8_t*)malloc(_typeLength);
-        memcpy(_type, rhs._type, _typeLength);
+        if (_typeLength)
+        {
+            _type = (uint8_t*)malloc(_typeLength);
+            memcpy(_type, rhs._type, _typeLength);
+        }
 
-        _payload = (uint8_t*)malloc(_payloadLength);
-        memcpy(_payload, rhs._payload, _payloadLength);
+        if (_payloadLength)
+        {
+            _payload = (uint8_t*)malloc(_payloadLength);
+            memcpy(_payload, rhs._payload, _payloadLength);
+        }
 
-        _id = (uint8_t*)malloc(_idLength);
-        memcpy(_id, rhs._id, _idLength);    
+        if (_idLength)
+        {
+            _id = (uint8_t*)malloc(_idLength);
+            memcpy(_id, rhs._id, _idLength);    
+        }
     }
     return *this;
 }
@@ -256,6 +287,8 @@ void NdefRecord::getPayload(uint8_t * payload)
 
 void NdefRecord::setPayload(uint8_t * payload, const int numBytes)
 {
+    // TODO free existing value (or error)
+    // TODO ensure numBytes > 0
     _payload = (uint8_t*)malloc(numBytes);    
     memcpy(_payload, payload, numBytes);
     _payloadLength = numBytes;
@@ -421,6 +454,13 @@ NdefMessage::NdefMessage(byte * data, const int numBytes)
 NdefMessage::~NdefMessage()
 {
     //free(_records);
+    /*
+    int i;
+    for (i = 0; i < MAX_NDEF_RECORDS; i++)
+    {
+        delete &_records[i];
+    }
+    */
 }
 
 int NdefMessage::recordCount()
@@ -457,7 +497,7 @@ void NdefMessage::encode(uint8_t* data)
 }
 
 // TODO Dave: should the be NdefRecord& to avoid a copy when calling?
-void NdefMessage::add(NdefRecord record)
+void NdefMessage::add(NdefRecord& record)
 {
 
     if (_recordCount < MAX_NDEF_RECORDS)
