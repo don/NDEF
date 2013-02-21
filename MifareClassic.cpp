@@ -88,8 +88,8 @@ NdefMessage& readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int u
 
     nfc.PrintHex(&buffer[4], messageLength);
 
-    NdefMessage* ndefMessage = new NdefMessage(&buffer[4], messageLength);
-    return *ndefMessage;
+    NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
+    return ndefMessage;
 }
 
 int getBufferSize(int messageLength)
