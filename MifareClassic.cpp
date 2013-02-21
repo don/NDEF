@@ -4,7 +4,7 @@
 
 #define BLOCK_SIZE 16
 
-NdefMessage& readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
+NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
 {
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 };
     int currentBlock = 4;

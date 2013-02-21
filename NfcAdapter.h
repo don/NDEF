@@ -25,7 +25,7 @@
     ~NfcAdapter(void); 
     void begin(void);
     boolean tagPresent(); // tagAvailable
-    NdefMessage& read();
+    NdefMessage read();
   	boolean write(NdefMessage& ndefMessage);
   private:
     Adafruit_NFCShield_I2C* shield;

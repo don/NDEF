@@ -40,26 +40,30 @@ boolean NfcAdapter::tagPresent()
 
 	success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
 
-	if (success)
-	{
-		Serial.println("Found an ISO14443A card");
-    Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
-    Serial.print("  UID Value: ");
-    shield->PrintHex(uid, uidLength);
-    Serial.println("");
-	}
+  // if (success)
+  // {
+  //   Serial.println("Found an ISO14443A card");
+  //   Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+  //   Serial.print("  UID Value: ");
+  //   shield->PrintHex(uid, uidLength);
+  //   Serial.println("");
+  // }
+
+  return success;
 }
 
-// TODO return a Tag
-NdefMessage& NfcAdapter::read() 
+// TODO return a NfcTag
+NdefMessage NfcAdapter::read() 
 {
 	if (uidLength == 4)
   {
     Serial.println("Mifare Classic card (4 byte UID)");
 
-    NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic");
+    // NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
 
-    return readMifareClassic(*shield, uid, uidLength);
+    NdefMessage message = readMifareClassic(*shield, uid, uidLength);
+    //message.print();
+    return message;
   }    
   else
   {

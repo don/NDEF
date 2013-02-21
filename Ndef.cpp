@@ -68,21 +68,31 @@ NdefRecord::NdefRecord()
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
 {
-    // TODO this needs similar checks like ASSIGNMENT!
     Serial.println("NdefRecord Constructor 2 (copy)");
+
     _tnf = rhs._tnf;
     _typeLength = rhs._typeLength;
     _payloadLength = rhs._payloadLength;
     _idLength = rhs._idLength;
 
-    _type = (uint8_t*)malloc(_typeLength);
-    memcpy(_type, rhs._type, _typeLength);
+    if (_typeLength)
+    {
+        _type = (uint8_t*)malloc(_typeLength);
+        memcpy(_type, rhs._type, _typeLength);
+    }
 
-    _payload = (uint8_t*)malloc(_payloadLength);
-    memcpy(_payload, rhs._payload, _payloadLength);
+    if (_payloadLength)
+    {
+        _payload = (uint8_t*)malloc(_payloadLength);
+        memcpy(_payload, rhs._payload, _payloadLength);
+    }
 
-    _id = (uint8_t*)malloc(_idLength);
-    memcpy(_id, rhs._id, _idLength);    
+    if (_idLength)
+    {
+        _id = (uint8_t*)malloc(_idLength);
+        memcpy(_id, rhs._id, _idLength);    
+    }  
+
 }
 
 
