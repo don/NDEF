@@ -10,5 +10,4 @@ NdefMessage readMifareUltralight(Adafruit_NFCShield_I2C& nfc);
 //int getBufferSize(int messageLength);
 //int getNdefLength(byte *data);
 
-
 #endif
