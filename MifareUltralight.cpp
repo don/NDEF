@@ -5,6 +5,11 @@
 #define ULTRALIGHT_PAGE_SIZE 4
 #define ULTRALIGHT_READ_SIZE 4
 
+#define ULTRALIGHT_DATA_START_PAGE 5
+#define ULTRALIGHT_MESSAGE_LENGTH_INDEX 2
+#define ULTRALIGHT_DATA_START_INDEX 3
+#define ULTRALIGHT_MAX_PAGE 63
+
 // MIFARE ULTRALIGHT C - NFC FORUM TYPE 2
 
 // TODO verify these assumptions!
@@ -26,18 +31,19 @@ int getUltralightBufferSize(int messageLength)
 
 NdefMessage readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
 {
-    int currentPage = 5; // data starts on page 5
+    int page = ULTRALIGHT_DATA_START_PAGE;
     int messageLength = 0;
-    byte pageData[ULTRALIGHT_READ_SIZE]; // TODO RTFM, I think we get many pages, can I read less often?
+    byte pageData[ULTRALIGHT_READ_SIZE]; 
  
-    int success = nfc.mifareultralight_ReadPage (currentPage, pageData);
+    int success = nfc.mifareultralight_ReadPage (page, pageData);
     if (success)
     {
-      messageLength = pageData[2];      
+      messageLength = pageData[ULTRALIGHT_MESSAGE_LENGTH_INDEX];      
     }
     else
     {
-      Serial.print("Error. Failed read page ");Serial.println(currentPage); 
+      Serial.print("Error. Failed read page ");Serial.println(page); 
+      // TODO handle error, currently will return TNF_EMPTY below
     }
 
     // this should be nested in the message length loop
@@ -48,36 +54,41 @@ NdefMessage readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
     Serial.print("Message Length ");Serial.println(messageLength);
     Serial.print("Buffer Size ");Serial.println(bufferSize);
 
-    // TODO special case 
-    // Message Length == 0 should return an TNF_EMPTY data is 0x44 0x03 0x00 0xFE
+    // TODO handle unformatted tags properly
 
-    // for (page = 6; page < 63; page++) {      
-    while (index < messageLength)
+    if (messageLength == 0) { // data is 0x44 0x03 0x00 0xFE
+      NdefMessage message = NdefMessage();
+      message.addEmptyRecord();
+      return message;
+    }
+
+    for (page = ULTRALIGHT_DATA_START_PAGE; page < ULTRALIGHT_MAX_PAGE; page++)     
     {
 
       // read the data
-      success = nfc.mifareultralight_ReadPage(currentPage, &buffer[index]);
+      success = nfc.mifareultralight_ReadPage(page, &buffer[index]);
       if (success) 
       {
-        Serial.print("Page ");Serial.print(currentPage);Serial.print(" ");
+        Serial.print("Page ");Serial.print(page);Serial.print(" ");
         nfc.PrintHexChar(&buffer[index], ULTRALIGHT_PAGE_SIZE);
       } 
       else 
       {
-        Serial.print("Read failed");Serial.println(currentPage);
+        Serial.print("Read failed");Serial.println(page);
         // TODO error handling
+        break;
+      }
+      
+      if (index > messageLength)
+      {
+        break;
       }
 
-      index += ULTRALIGHT_PAGE_SIZE; // TODO ULTRALIGHT_READ_SIZE                  
-      currentPage++;  // TODO jump multiple pages!!!
-
-      // TODO don't read past block 63
+      index += ULTRALIGHT_PAGE_SIZE;               
 
     }
 
-    nfc.PrintHex(&buffer[3], messageLength); // TODO MIFARE_DATA_START_INDEX 3
-
-    NdefMessage ndefMessage = NdefMessage(&buffer[3], messageLength);
+    NdefMessage ndefMessage = NdefMessage(&buffer[ULTRALIGHT_DATA_START_INDEX], messageLength);
     return ndefMessage;
 }
 
