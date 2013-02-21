@@ -456,6 +456,7 @@ void NdefMessage::encode(uint8_t* data)
     PrintHex(data, getEncodedSize());
 }
 
+// TODO Dave: should the be NdefRecord& to avoid a copy when calling?
 void NdefMessage::add(NdefRecord record)
 {
 
@@ -501,11 +502,11 @@ void NdefMessage::addTextRecord(String text)
 
 void NdefMessage::addTextRecord(String text, String encoding)
 {
-    NdefRecord* r = new NdefRecord();
-    r->setTnf(TNF_WELL_KNOWN);
+    NdefRecord r = NdefRecord();
+    r.setTnf(TNF_WELL_KNOWN);
 
     uint8_t RTD_TEXT[1] = { 0x54 }; // TODO this should be a constant or preprocessor
-    r->setType(RTD_TEXT, sizeof(RTD_TEXT));
+    r.setType(RTD_TEXT, sizeof(RTD_TEXT));
 
     // X is a placeholder for encoding length
     String payloadString = "X" + encoding + text;
@@ -516,9 +517,9 @@ void NdefMessage::addTextRecord(String text, String encoding)
     // replace X with the real encoding length
     payload[0] = encoding.length();
 
-    r->setPayload(payload, payloadString.length());
+    r.setPayload(payload, payloadString.length());
 
-    add(*r);
+    add(r);
 }
 
 void NdefMessage::addUriRecord(String uri)
@@ -541,6 +542,7 @@ void NdefMessage::addUriRecord(String uri)
     r->setPayload(payload, payloadString.length());
 
     add(*r);
+    delete(r);
 }
 
 void NdefMessage::addEmptyRecord()
@@ -548,6 +550,7 @@ void NdefMessage::addEmptyRecord()
     NdefRecord* r = new NdefRecord();
     r->setTnf(TNF_EMPTY);
     add(*r);
+    delete(r);
 }
 
 NdefRecord NdefMessage::get(int index)

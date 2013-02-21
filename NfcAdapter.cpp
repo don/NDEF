@@ -3,6 +3,8 @@
 #include <MifareClassic.h>
 #include <MifareUltralight.h>
 
+#include <NfcTag.h>
+
 NfcAdapter::NfcAdapter(void)
 {
 	shield = new Adafruit_NFCShield_I2C(IRQ, RESET);
@@ -34,9 +36,7 @@ void NfcAdapter::begin()
 boolean NfcAdapter::tagPresent()
 {
 	uint8_t success;
-	// reset uid and length
-  //uid = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
-  uidLength = 0;                    // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  uidLength = 0; 
 
 	success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
 
@@ -50,11 +50,14 @@ boolean NfcAdapter::tagPresent()
 	}
 }
 
+// TODO return a Tag
 NdefMessage& NfcAdapter::read() 
 {
 	if (uidLength == 4)
   {
     Serial.println("Mifare Classic card (4 byte UID)");
+
+    NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic");
 
     return readMifareClassic(*shield, uid, uidLength);
   }    
