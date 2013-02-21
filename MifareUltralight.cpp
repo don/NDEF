@@ -24,7 +24,7 @@ int getUltralightBufferSize(int messageLength)
   return bufferSize;
 }
 
-NdefMessage& readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
+NdefMessage readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
 {
     int currentPage = 5; // data starts on page 5
     int messageLength = 0;
@@ -76,7 +76,7 @@ NdefMessage& readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
 
     nfc.PrintHex(&buffer[3], messageLength); // TODO MIFARE_DATA_START_INDEX 3
 
-    NdefMessage* ndefMessage = new NdefMessage(&buffer[3], messageLength);
-    return *ndefMessage;
+    NdefMessage ndefMessage = NdefMessage(&buffer[3], messageLength);
+    return ndefMessage;
 }
 

@@ -55,15 +55,16 @@ boolean NfcAdapter::tagPresent()
 // TODO return a NfcTag
 NdefMessage NfcAdapter::read() 
 {
+
+  NdefMessage ndefMessage;
+
 	if (uidLength == 4)
   {
     Serial.println("Mifare Classic card (4 byte UID)");
 
     // NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
 
-    NdefMessage message = readMifareClassic(*shield, uid, uidLength);
-    //message.print();
-    return message;
+    ndefMessage = readMifareClassic(*shield, uid, uidLength);
   }    
   else
   {
@@ -71,8 +72,9 @@ NdefMessage NfcAdapter::read()
     // Since I have Mifare Classic cards with 7 byte UIDs
     Serial.println("Mifare Ultralight card (7 byte UID)");
 
-    return readMifareUltralight(*shield);
+    ndefMessage = readMifareUltralight(*shield);
   }
+  return ndefMessage;
 }
 
 boolean NfcAdapter::write(NdefMessage& ndefMessage)
