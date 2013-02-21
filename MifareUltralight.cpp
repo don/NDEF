@@ -172,6 +172,126 @@ void getMessageLength() // TODO need to make a class!
 
 }
 
+MifareUltralight::MifareUltralight(Adafruit_NFCShield_I2C& nfcShield)
+{
+  nfc = nfcShield;
+}
+
+MifareUltralight::~MifareUltralight()
+{
+  delete nfc;
+}
+
+// page 3 has tag capabilities
+void MifareUltralight::readCapabilityContainer()
+{
+  byte data[ULTRALIGHT_PAGE_SIZE];
+  int success = nfc.mifareultralight_ReadPage (3, data);
+  if (success)
+  {
+    // See AN1303 - different rules for Mifare Family byte2 = (additional data + 48)/8
+    tagCapacity = otp[2] * 8;
+    Serial.print("Tag capacity ");Serial.println(tagCapacity);Serial.println(" bytes");
+
+    // TODO future versions should get lock information
+  }
+}
+
+// read enough of the message to find the ndef message length
+void MifareUltralight::findNdefMessageSize()
+{
+  byte header[12]; // 3 pages
+
+  // the nxp read command reads 4 pages, unfortunately adafruit give me one page at a time
+  boolean success = true;
+  for (page = 4; page < 6)
+  {
+    success = success && nfc.mifareultralight_ReadPage (page, data);
+  }
+
+  if (success)
+  {
+    if (data[0] == 0x03) 
+    {
+      messageLength = data[1];
+      ndefStartIndex = 2;
+    }
+    else if (data[5] == 0x3) // page 5 byte 1
+    {
+      // TODO should really read the lock control TLV to ensure byte[5] is correct
+      messageLength = data[6];
+      ndefStartIndex = 7;
+    } 
+  }
+}
+
+// buffer is larger than the message, need to handle some data before and after
+// message and need to ensure we read full pages
+void MifareUltralight::calculateBufferSize()
+{
+  // TLV terminator 0xFE is 1 byte
+  bufferSize = messageLength + ndefStartIndex + 1;
+
+  if (bufferSize % ULTRALIGHT_READ_SIZE != 0)
+  {
+      bufferSize = ((messageLength / ULTRALIGHT_READ_SIZE) + 1) * ULTRALIGHT_READ_SIZE;    
+  }
+}
+
+
+NdefMessage MifareUltralight::read()
+{
+  
+  if (isUnformatted())
+  {
+    // TODO message needs to return a tag
+    return;
+  }
+
+  readCapabilityContainer(); // meta info for tag
+  findNdefMessageSize();
+  calculateBufferSize();
+
+  if (messageLength == 0) { // data is 0x44 0x03 0x00 0xFE
+    NdefMessage message = NdefMessage();
+    message.addEmptyRecord();
+    return message;
+  }
+
+  int page;
+  byte buffer[bufferSize];
+
+  for (page = ULTRALIGHT_DATA_START_PAGE; page < ULTRALIGHT_MAX_PAGE; page++)     
+    {
+
+      // read the data
+      success = nfc.mifareultralight_ReadPage(page, &buffer[index]);
+      if (success) 
+      {
+        Serial.print("Page ");Serial.print(page);Serial.print(" ");
+        nfc.PrintHexChar(&buffer[index], ULTRALIGHT_PAGE_SIZE);
+      } 
+      else 
+      {
+        Serial.print("Read failed");Serial.println(page);
+        // TODO error handling
+        break;
+      }
+      
+      if (index > messageLength)
+      {
+        break;
+      }
+
+      index += ULTRALIGHT_PAGE_SIZE;               
+
+    }
+
+    NdefMessage ndefMessage = NdefMessage(&buffer[ndefStartIndex], messageLength);
+    return ndefMessage;
+
+}
+
 NdefMessage readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
 {
     int page = ULTRALIGHT_DATA_START_PAGE;
@@ -238,4 +358,6 @@ NdefMessage readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
     NdefMessage ndefMessage = NdefMessage(&buffer[ULTRALIGHT_DATA_START_INDEX], messageLength);
     return ndefMessage;
 }
+
+
 
