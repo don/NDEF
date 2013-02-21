@@ -59,7 +59,8 @@ NdefMessage readMifareUltralight(Adafruit_NFCShield_I2C& nfc)
       success = nfc.mifareultralight_ReadPage(currentPage, &buffer[index]);
       if (success) 
       {
-        Serial.print("Read page ");Serial.println(currentPage);
+        Serial.print("Page ");Serial.print(currentPage);Serial.print(" ");
+        nfc.PrintHexChar(&buffer[index], ULTRALIGHT_PAGE_SIZE);
       } 
       else 
       {
