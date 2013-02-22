@@ -147,7 +147,7 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
       Serial.print(F("Adjusted buffer_size to "));Serial.println(buffer_size);
     }
 
-    uint8_t buffer[sizeof(encoded) + 5];
+    uint8_t buffer[buffer_size];
     buffer[0] = 0x0;        
     buffer[1] = 0x0;        
     buffer[2] = 0x3;        
