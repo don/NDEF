@@ -143,6 +143,14 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
     memcpy(&buffer[4], encoded, sizeof(encoded));
     buffer[4+sizeof(encoded)] = 0xFE; // terminator
 
+    // zero out data after terminator
+    int i = sizeof(encoded) + 5;
+    while (i < sizeof(buffer))
+    {
+      buffer[i] = 0;
+      i++;
+    }
+
     // Write to tag
     int index = 0;
     int currentBlock = 4;
