@@ -299,7 +299,12 @@ void NdefRecord::setPayload(uint8_t * payload, const int numBytes)
 {
     // TODO free existing value (or error)
     // TODO ensure numBytes > 0
-    _payload = (uint8_t*)malloc(numBytes);    
+    // TODO ensure there's enough memory available to malloc
+    _payload = (uint8_t*)malloc(numBytes);
+    if (!_payload)
+    {
+        Serial.println("MALLOC FAILED");
+    }    
     memcpy(_payload, payload, numBytes);
     _payloadLength = numBytes;
 }
@@ -502,8 +507,8 @@ void NdefMessage::encode(uint8_t* data)
         data_ptr += _records[i].getEncodedSize(); 
     }
 
-    Serial.println("\nEncoded");
-    PrintHex(data, getEncodedSize());
+    //Serial.println("\nEncoded");
+    //PrintHex(data, getEncodedSize());
 }
 
 // TODO Dave: should the be NdefRecord& to avoid a copy when calling?

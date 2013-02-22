@@ -21,12 +21,12 @@ void NfcAdapter::begin()
 
   uint32_t versiondata = shield->getFirmwareVersion();
   if (! versiondata) {
-    Serial.print("Didn't find PN53x board");
+    Serial.print(F("Didn't find PN53x board"));
     while (1); // halt
   }
   // Got ok data, print it out!
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
+  Serial.print(F("Found chip PN5")); Serial.println((versiondata>>24) & 0xFF, HEX); 
+  Serial.print(F("Firmware ver. ")); Serial.print((versiondata>>16) & 0xFF, DEC); 
   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
   
   // configure board to read RFID tags
@@ -60,7 +60,7 @@ NdefMessage NfcAdapter::read()
 
 	if (uidLength == 4)
   {
-    Serial.println("Mifare Classic card (4 byte UID)");
+    Serial.println(F("Mifare Classic card (4 byte UID)"));
 
     // NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
 
@@ -70,7 +70,7 @@ NdefMessage NfcAdapter::read()
   {
     // TODO need a better way to determine which driver to use
     // Since I have Mifare Classic cards with 7 byte UIDs
-    Serial.println("Mifare Ultralight card (7 byte UID)");
+    Serial.println(F("Mifare Ultralight card (7 byte UID)"));
 
     MifareUltralight ultralight = MifareUltralight(*shield);
     ndefMessage = ultralight.read();
@@ -89,7 +89,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
   }
   else
   {
-    Serial.println("Unsupported Tag");    
+    Serial.println(F("Unsupported Tag"));    
     success = false;
   }
   return success;

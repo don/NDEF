@@ -138,13 +138,13 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
     // TLV wrapper 
     // assuming short TLV  3 bytes type +  byte length of data + NDEF_DATA + 1 byte terminator
     int buffer_size = sizeof(encoded) + 5;
-    Serial.print("buffer_size ");Serial.println(buffer_size);
+    Serial.print(F("Buffer_size "));Serial.println(buffer_size);
 
     // buffer_size needs to be a multiple of BLOCK_SIZE
     if (buffer_size % BLOCK_SIZE != 0)
     {
       buffer_size = ((buffer_size / BLOCK_SIZE) + 1) * BLOCK_SIZE;
-      Serial.print("Adjusted buffer_size to ");Serial.println(buffer_size);
+      Serial.print(F("Adjusted buffer_size to "));Serial.println(buffer_size);
     }
 
     uint8_t buffer[sizeof(encoded) + 5];
@@ -176,11 +176,12 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
       int write_success = nfc.mifareclassic_WriteDataBlock (currentBlock, &buffer[index]);
       if (write_success) 
       {
-        Serial.print("wrote block ");Serial.println(currentBlock);
+        Serial.print(F("Wrote block "));Serial.print(currentBlock);Serial.print(" - ");
+        nfc.PrintHexChar(&buffer[index], BLOCK_SIZE);
       } 
       else 
       {
-        Serial.print("write failed ");Serial.println(currentBlock);
+        Serial.print(F("Write failed "));Serial.println(currentBlock);
         while (1); // halt
       }
       index += BLOCK_SIZE;                   
@@ -189,7 +190,7 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
       if (nfc.mifareclassic_IsTrailerBlock(currentBlock))
       {
         // can't write to trailer block
-        Serial.print("skipping block ");Serial.println(currentBlock);
+        Serial.print(F("Skipping block "));Serial.println(currentBlock);
         currentBlock++;    
       }
 
