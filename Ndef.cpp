@@ -59,7 +59,7 @@ void DumpHex(const byte * data, const uint32_t numBytes, const uint8_t blockSize
 
 NdefRecord::NdefRecord()
 {   
-    Serial.println("NdefRecord Constructor 1");
+    //Serial.println("NdefRecord Constructor 1");
     _tnf = 0;
     _typeLength = 0;
     _payloadLength = 0;    
@@ -68,7 +68,7 @@ NdefRecord::NdefRecord()
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
 {
-    Serial.println("NdefRecord Constructor 2 (copy)");
+    //Serial.println("NdefRecord Constructor 2 (copy)");
 
     _tnf = rhs._tnf;
     _typeLength = rhs._typeLength;
@@ -100,7 +100,7 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
 
 NdefRecord::~NdefRecord()
 {
-    Serial.println("NdefRecord Destructor");
+    //Serial.println("NdefRecord Destructor");
     if (_typeLength) 
     {
         free(_type);
@@ -119,7 +119,7 @@ NdefRecord::~NdefRecord()
 
 NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 {
-    Serial.println("NdefRecord ASSIGN");
+    //Serial.println("NdefRecord ASSIGN");
 
     if (this != &rhs)
     {
@@ -341,50 +341,50 @@ void NdefRecord::print()
 
 void NdefRecord::print()
 {
-    Serial.println("  NDEF Record");    
-    Serial.print("    TNF 0x");Serial.print(_tnf, HEX);Serial.print(" ");
+    Serial.println(F("  NDEF Record"));    
+    Serial.print(F("    TNF 0x"));Serial.print(_tnf, HEX);Serial.print(" ");
     switch (_tnf) {
     case TNF_EMPTY:
-        Serial.println("Empty");
+        Serial.println(F("Empty"));
         break; 
     case TNF_WELL_KNOWN:
-        Serial.println("Well Known");
+        Serial.println(F("Well Known"));
         break;     
     case TNF_MIME_MEDIA:
-        Serial.println("Mime Media");
+        Serial.println(F("Mime Media"));
         break;     
     case TNF_ABSOLUTE_URI:
-        Serial.println("Absolute URI");
+        Serial.println(F("Absolute URI"));
         break;     
     case TNF_EXTERNAL_TYPE:
-        Serial.println("External");
+        Serial.println(F("External"));
         break;     
     case TNF_UNKNOWN:
-        Serial.println("Unknown");
+        Serial.println(F("Unknown"));
         break;     
     case TNF_UNCHANGED:
-        Serial.println("Unchanged");
+        Serial.println(F("Unchanged"));
         break;     
     case TNF_RESERVED:
-        Serial.println("Reserved");
+        Serial.println(F("Reserved"));
         break;
     default:
         Serial.println();     
     }
-    Serial.print("    Type Length 0x");Serial.print(_typeLength, HEX);Serial.print(" ");Serial.println(_typeLength);
-    Serial.print("    Payload Length 0x");Serial.print(_payloadLength, HEX);;Serial.print(" ");Serial.println(_payloadLength);    
+    Serial.print(F("    Type Length 0x"));Serial.print(_typeLength, HEX);Serial.print(" ");Serial.println(_typeLength);
+    Serial.print(F("    Payload Length 0x"));Serial.print(_payloadLength, HEX);;Serial.print(" ");Serial.println(_payloadLength);    
     if (_idLength)
     {
-        Serial.print("    Id Length 0x");Serial.println(_idLength, HEX);  
+        Serial.print(F("    Id Length 0x"));Serial.println(_idLength, HEX);  
     }
-    Serial.print("    Type ");PrintHexChar(_type, _typeLength);  
+    Serial.print(F("    Type "));PrintHexChar(_type, _typeLength);  
     // TODO chunk large payloads so this is readable
-    Serial.print("    Payload ");PrintHexChar(_payload, _payloadLength);
+    Serial.print(F("    Payload "));PrintHexChar(_payload, _payloadLength);
     if (_idLength)
     {
-        Serial.print("    Id ");PrintHexChar(_id, _idLength);  
+        Serial.print(F("    Id "));PrintHexChar(_id, _idLength);  
     }
-    Serial.print("    Record is ");Serial.print(getEncodedSize());Serial.println(" bytes");
+    Serial.print(F("    Record is "));Serial.print(getEncodedSize());Serial.println(" bytes");
 
 }
 
@@ -398,7 +398,7 @@ NdefMessage::NdefMessage(byte * data, const int numBytes)
 {
     Serial.print("Decoding ");Serial.print(numBytes);Serial.println(" bytes");    
     //PrintHex(data, numBytes);
-    DumpHex(data, numBytes, 16);
+    //DumpHex(data, numBytes, 16);
 
     _recordCount = 0;
     

@@ -72,7 +72,8 @@ NdefMessage NfcAdapter::read()
     // Since I have Mifare Classic cards with 7 byte UIDs
     Serial.println("Mifare Ultralight card (7 byte UID)");
 
-    ndefMessage = readMifareUltralight(*shield);
+    MifareUltralight ultralight = MifareUltralight(*shield);
+    ndefMessage = ultralight.read();
   }
   return ndefMessage;
 }
