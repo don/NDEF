@@ -32,13 +32,13 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
 
     // this should be nested in the message length loop
     int index = 0;
-    int buffer_size = getBufferSize(messageLength);
-    uint8_t buffer[buffer_size];
+    int bufferSize = getBufferSize(messageLength);
+    uint8_t buffer[bufferSize];
 
     Serial.print("Message Length ");Serial.println(messageLength);
-    Serial.print("Buffer Size ");Serial.println(buffer_size);
+    Serial.print("Buffer Size ");Serial.println(bufferSize);
 
-    while (index < buffer_size)
+    while (index < bufferSize)
     {
       // authenticate on every sector
       if (nfc.mifareclassic_IsFirstBlock(currentBlock))
@@ -79,7 +79,7 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
     Serial.println("\nRaw NDEF data");
     uint8_t* buffer_ptr = &buffer[0];    
     int j = 0;
-    for (j = 0; j < (buffer_size / BLOCK_SIZE); j++)    
+    for (j = 0; j < (bufferSize / BLOCK_SIZE); j++)    
     {
         nfc.PrintHexChar(buffer_ptr, BLOCK_SIZE);
         buffer_ptr += BLOCK_SIZE;
@@ -96,15 +96,15 @@ int getBufferSize(int messageLength)
 { 
 
   // TLV header is 4 bytes. TLV terminator is 1 byte.
-  int buffer_size = messageLength + 5;
+  int bufferSize = messageLength + 5;
 
-  // buffer_size needs to be a multiple of BLOCK_SIZE
-  if (buffer_size % BLOCK_SIZE != 0)
+  // bufferSize needs to be a multiple of BLOCK_SIZE
+  if (bufferSize % BLOCK_SIZE != 0)
   {
-      buffer_size = ((messageLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;    
+      bufferSize = ((messageLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;    
   }
 
-  return buffer_size;
+  return bufferSize;
 }
 
 // get the ndef data length from the mifare TLV
@@ -135,19 +135,7 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
     uint8_t encoded[m.getEncodedSize()];
     m.encode(encoded);
         
-    // TLV wrapper 
-    // assuming short TLV  3 bytes type +  byte length of data + NDEF_DATA + 1 byte terminator
-    int buffer_size = sizeof(encoded) + 5;
-    Serial.print(F("Buffer_size "));Serial.println(buffer_size);
-
-    // buffer_size needs to be a multiple of BLOCK_SIZE
-    if (buffer_size % BLOCK_SIZE != 0)
-    {
-      buffer_size = ((buffer_size / BLOCK_SIZE) + 1) * BLOCK_SIZE;
-      Serial.print(F("Adjusted buffer_size to "));Serial.println(buffer_size);
-    }
-
-    uint8_t buffer[buffer_size];
+    uint8_t buffer[getBufferSize(sizeof(encoded))];
     buffer[0] = 0x0;        
     buffer[1] = 0x0;        
     buffer[2] = 0x3;        
