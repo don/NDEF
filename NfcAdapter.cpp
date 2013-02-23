@@ -1,9 +1,4 @@
 #include <NfcAdapter.h>
-// Drivers
-#include <MifareClassic.h>
-#include <MifareUltralight.h>
-
-#include <NfcTag.h>
 
 NfcAdapter::NfcAdapter(void)
 {
