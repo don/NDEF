@@ -2,7 +2,12 @@
 #define NfcAdapter_h
 
 #include <Adafruit_NFCShield_I2C.h>
+// FUTURE #include <NfcTag.h>
 #include <Ndef.h>
+
+// Drivers
+#include <MifareClassic.h>
+#include <MifareUltralight.h>
 
 #define IRQ   (2)
 #define RESET (3)  // Not connected by default on the NFC Shield
