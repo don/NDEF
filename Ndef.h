@@ -2,7 +2,7 @@
 #define Ndef_h
 
 #include <inttypes.h>
-#include "Arduino.h"
+#include <Arduino.h>
 
 #define MAX_NDEF_RECORDS 2
 
@@ -67,27 +67,26 @@ class NdefRecord
 
 class NdefMessage
 {
-public:
-    NdefMessage(void);
-    NdefMessage(const uint8_t * data, const int numBytes);  
-    ~NdefMessage();     
-    int recordCount(); // TODO getRecordCount() or read only property instead of a function?
-    int getEncodedSize(); // need so we can pass array to encode
-    void encode(uint8_t* data); // TODO is getBytes better?
+    public:
+        NdefMessage(void);
+        NdefMessage(const uint8_t * data, const int numBytes);  
+        ~NdefMessage();     
+        int recordCount(); // TODO getRecordCount() or read only property instead of a function?
+        int getEncodedSize(); // need so we can pass array to encode
+        void encode(uint8_t* data); // TODO is getBytes better?
 
-    void add(NdefRecord& record); // addRecord?
-    void addMimeMediaRecord(String mimeType, String payload);
-    void addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength);
-    void addTextRecord(String text);
-    void addTextRecord(String text, String encoding);
-    void addUriRecord(String uri);
-    void addEmptyRecord();
-    NdefRecord get(int index); // TODO overload [] or use an iterator
-    void print();
-private:
-    //NdefRecord * _records;
-    NdefRecord _records[MAX_NDEF_RECORDS];
-    int _recordCount;
+        void add(NdefRecord& record); // addRecord?
+        void addMimeMediaRecord(String mimeType, String payload);
+        void addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength);
+        void addTextRecord(String text);
+        void addTextRecord(String text, String encoding);
+        void addUriRecord(String uri);
+        void addEmptyRecord();
+        NdefRecord get(int index); // TODO overload [] or use an iterator
+        void print();
+    private:
+        NdefRecord _records[MAX_NDEF_RECORDS];
+        int _recordCount;
 };
 
 

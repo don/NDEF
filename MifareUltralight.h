@@ -1,8 +1,8 @@
 #ifndef MifareUltralight_h
 #define MifareUltralight_h
 
-#include <Adafruit_NFCShield_I2C.h>
 #include <Ndef.h>
+#include <Adafruit_NFCShield_I2C.h>
 
 class MifareUltralight
 {

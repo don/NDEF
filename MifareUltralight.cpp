@@ -1,6 +1,4 @@
 #include <MifareUltralight.h>
-#include <Ndef.h>
-#include <Adafruit_NFCShield_I2C.h>
 
 #define ULTRALIGHT_PAGE_SIZE 4
 #define ULTRALIGHT_READ_SIZE 4 // we should be able to read 16 bytes at a time

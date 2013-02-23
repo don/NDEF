@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #include "Ndef.h"
 
 //void Adafruit_NFCShield_I2C::PrintHex(const byte * data, const uint32_t numBytes)

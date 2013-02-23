@@ -1,6 +1,4 @@
 #include "MifareClassic.h"
-#include "Ndef.h"
-#include <Adafruit_NFCShield_I2C.h>
 
 #define BLOCK_SIZE 16
 
