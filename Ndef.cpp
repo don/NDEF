@@ -59,7 +59,7 @@ void DumpHex(const byte * data, const uint32_t numBytes, const uint8_t blockSize
 
 NdefRecord::NdefRecord()
 {   
-    Serial.println("NdefRecord Constructor 1");
+    //Serial.println("NdefRecord Constructor 1");
     _tnf = 0;
     _typeLength = 0;
     _payloadLength = 0;    
@@ -68,7 +68,7 @@ NdefRecord::NdefRecord()
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
 {
-    Serial.println("NdefRecord Constructor 2 (copy)");
+    //Serial.println("NdefRecord Constructor 2 (copy)");
 
     _tnf = rhs._tnf;
     _typeLength = rhs._typeLength;
@@ -100,7 +100,7 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
 
 NdefRecord::~NdefRecord()
 {
-    Serial.println("NdefRecord Destructor");
+    //Serial.println("NdefRecord Destructor");
     if (_typeLength) 
     {
         free(_type);
@@ -119,7 +119,7 @@ NdefRecord::~NdefRecord()
 
 NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 {
-    Serial.println("NdefRecord ASSIGN");
+    //Serial.println("NdefRecord ASSIGN");
 
     if (this != &rhs)
     {

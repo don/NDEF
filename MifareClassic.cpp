@@ -75,9 +75,8 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
 
     }
 
-    Serial.println("Done Reading Message From Tag.");
-
-    nfc.PrintHex(&buffer[4], messageLength);
+    //Serial.println("Done Reading Message From Tag.");
+    //nfc.PrintHex(&buffer[4], messageLength);
 
     NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
     return ndefMessage;
