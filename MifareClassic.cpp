@@ -9,7 +9,7 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 };
     int currentBlock = 4;
     int messageLength = 0;
-    byte data[16];
+    byte data[BLOCK_SIZE];
 
     // read first block to get message length
     int success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);
@@ -40,6 +40,8 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
 
     while (index < bufferSize)
     {
+      Serial.print("index ");Serial.println(index);      
+
       // authenticate on every sector
       if (nfc.mifareclassic_IsFirstBlock(currentBlock))
       {
@@ -54,9 +56,8 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
       success = nfc.mifareclassic_ReadDataBlock(currentBlock, &buffer[index]);
       if (success) 
       {
-        Serial.print("Read block ");Serial.println(currentBlock);
-        // Serial.print("Block ");Serial.print(currentBlock);Serial.print(" ");
-        // nfc.PrintHexChar(&buffer[index], BLOCK_SIZE);
+        Serial.print("Block ");Serial.print(currentBlock);Serial.print(" ");
+        nfc.PrintHexChar(&buffer[index], BLOCK_SIZE);
       } 
       else 
       {
@@ -75,16 +76,7 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
 
     }
 
-    // print out for debugging (this would be easier block by block)
-    Serial.println("\nRaw NDEF data");
-    uint8_t* buffer_ptr = &buffer[0];    
-    int j = 0;
-    for (j = 0; j < (bufferSize / BLOCK_SIZE); j++)    
-    {
-        nfc.PrintHexChar(buffer_ptr, BLOCK_SIZE);
-        buffer_ptr += BLOCK_SIZE;
-    }
-    Serial.println();
+    Serial.println("Done Reading Message From Tag.");
 
     nfc.PrintHex(&buffer[4], messageLength);
 
