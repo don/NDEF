@@ -101,7 +101,7 @@ int getBufferSize(int messageLength)
   // bufferSize needs to be a multiple of BLOCK_SIZE
   if (bufferSize % BLOCK_SIZE != 0)
   {
-      bufferSize = ((messageLength / BLOCK_SIZE) + 1) * BLOCK_SIZE;    
+    bufferSize = ((bufferSize / BLOCK_SIZE) + 1) * BLOCK_SIZE;    
   }
 
   return bufferSize;
@@ -137,13 +137,17 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
         
     uint8_t buffer[getBufferSize(sizeof(encoded))];
     memset(buffer, 0, sizeof(buffer));
+
+    Serial.print("sizeof(encoded) ");Serial.println(sizeof(encoded));
+    Serial.print("sizeof(buffer) ");Serial.println(sizeof(buffer));
+
     buffer[0] = 0x0;        
     buffer[1] = 0x0;        
     buffer[2] = 0x3;        
     buffer[3] = sizeof(encoded);
     memcpy(&buffer[4], encoded, sizeof(encoded));
     buffer[4+sizeof(encoded)] = 0xFE; // terminator
-
+    
     // Write to tag
     int index = 0;
     int currentBlock = 4;
