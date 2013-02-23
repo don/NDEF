@@ -59,7 +59,7 @@ void DumpHex(const byte * data, const uint32_t numBytes, const uint8_t blockSize
 
 NdefRecord::NdefRecord()
 {   
-    //Serial.println("NdefRecord Constructor 1");
+    Serial.println("NdefRecord Constructor 1");
     _tnf = 0;
     _typeLength = 0;
     _payloadLength = 0;    
@@ -68,7 +68,7 @@ NdefRecord::NdefRecord()
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
 {
-    //Serial.println("NdefRecord Constructor 2 (copy)");
+    Serial.println("NdefRecord Constructor 2 (copy)");
 
     _tnf = rhs._tnf;
     _typeLength = rhs._typeLength;
@@ -100,7 +100,7 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
 
 NdefRecord::~NdefRecord()
 {
-    //Serial.println("NdefRecord Destructor");
+    Serial.println("NdefRecord Destructor");
     if (_typeLength) 
     {
         free(_type);
@@ -119,7 +119,7 @@ NdefRecord::~NdefRecord()
 
 NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 {
-    //Serial.println("NdefRecord ASSIGN");
+    Serial.println("NdefRecord ASSIGN");
 
     if (this != &rhs)
     {
@@ -283,7 +283,7 @@ void NdefRecord::getType(uint8_t* type)
     memcpy(type, _type, sizeof(_type));
 }
 
-void NdefRecord::setType(uint8_t * type, const int numBytes)
+void NdefRecord::setType(const uint8_t * type, const int numBytes)
 {
     _type = (uint8_t*)malloc(numBytes);
     memcpy(_type, type, numBytes);
@@ -295,16 +295,12 @@ void NdefRecord::getPayload(uint8_t * payload)
     memcpy(payload, _payload, sizeof(_payload));
 }
 
-void NdefRecord::setPayload(uint8_t * payload, const int numBytes)
+void NdefRecord::setPayload(const uint8_t * payload, const int numBytes)
 {
     // TODO free existing value (or error)
     // TODO ensure numBytes > 0
     // TODO ensure there's enough memory available to malloc
     _payload = (uint8_t*)malloc(numBytes);
-    if (!_payload)
-    {
-        Serial.println("MALLOC FAILED");
-    }    
     memcpy(_payload, payload, numBytes);
     _payloadLength = numBytes;
 }
@@ -314,7 +310,7 @@ void NdefRecord::getId(uint8_t * id)
     memcpy(id, _id, sizeof(_id));
 }
 
-void NdefRecord::setId(uint8_t * id, const int numBytes)
+void NdefRecord::setId(const uint8_t * id, const int numBytes)
 {
  
     _id = (uint8_t*)malloc(numBytes);    
@@ -399,10 +395,10 @@ NdefMessage::NdefMessage(void)
     _recordCount = 0;       
 }
 
-NdefMessage::NdefMessage(byte * data, const int numBytes)
+NdefMessage::NdefMessage(const byte * data, const int numBytes)
 {
     Serial.print("Decoding ");Serial.print(numBytes);Serial.println(" bytes");    
-    //PrintHex(data, numBytes);
+    PrintHexChar(data, numBytes);
     //DumpHex(data, numBytes, 16);
 
     _recordCount = 0;
@@ -457,7 +453,7 @@ NdefMessage::NdefMessage(byte * data, const int numBytes)
         }
 
         record.setPayload(&data[index], payloadLength);          
-        index += payloadLength;          
+        index += payloadLength;
 
         add(record);
         
@@ -511,7 +507,6 @@ void NdefMessage::encode(uint8_t* data)
     //PrintHex(data, getEncodedSize());
 }
 
-// TODO Dave: should the be NdefRecord& to avoid a copy when calling?
 void NdefMessage::add(NdefRecord& record)
 {
 
@@ -564,6 +559,7 @@ void NdefMessage::addTextRecord(String text, String encoding)
     r.setType(RTD_TEXT, sizeof(RTD_TEXT));
 
     // X is a placeholder for encoding length
+    // TODO is it more efficient to build w/o string concatenation?
     String payloadString = "X" + encoding + text;
 
     byte payload[payloadString.length() + 1];

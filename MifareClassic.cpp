@@ -40,7 +40,6 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
 
     while (index < bufferSize)
     {
-      Serial.print("index ");Serial.println(index);      
 
       // authenticate on every sector
       if (nfc.mifareclassic_IsFirstBlock(currentBlock))
