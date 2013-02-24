@@ -2,7 +2,15 @@
 
 #define BLOCK_SIZE 16
 
-NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
+MifareClassic::MifareClassic()
+{
+}
+
+MifareClassic::~MifareClassic()
+{
+}
+
+NdefMessage MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
 {
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 };
     int currentBlock = 4;
@@ -80,7 +88,7 @@ NdefMessage readMifareClassic(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int ui
     return ndefMessage;
 }
 
-int getBufferSize(int messageLength)
+int MifareClassic::getBufferSize(int messageLength)
 { 
 
   // TLV header is 4 bytes. TLV terminator is 1 byte.
@@ -99,7 +107,7 @@ int getBufferSize(int messageLength)
 // assuming the type and the length are in the first 4 bytes
 // { 0x0, 0x0, 0x3, LENGTH }
 // { 0x3, 0xFF, LENGTH, LENGTH }
-int getNdefLength(byte *data)
+int MifareClassic::getNdefLength(byte *data)
 {
     int ndefLength;
     if (data[0] == 0x03 && data[1] == 0xFF) {
@@ -116,8 +124,7 @@ int getNdefLength(byte *data)
     return ndefLength;
 }
 
-// TODO return success / failure
-void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * uid, int uidLength)
+boolean MifareClassic::write(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * uid, int uidLength)
 {
 
     uint8_t encoded[m.getEncodedSize()];
@@ -150,7 +157,7 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
         if (!success)
         {
           Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
-          while (1); // halt
+          return false;
         }
       }
 
@@ -163,7 +170,7 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
       else 
       {
         Serial.print(F("Write failed "));Serial.println(currentBlock);
-        while (1); // halt
+        return false;
       }
       index += BLOCK_SIZE;                   
       currentBlock++;
@@ -176,4 +183,6 @@ void writeMifareClassic(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * u
       }
 
     }
+
+    return true;
   }
