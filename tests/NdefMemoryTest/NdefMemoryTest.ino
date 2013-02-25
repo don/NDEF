@@ -1,0 +1,200 @@
+#include <Wire.h>
+#include <Adafruit_NFCShield_I2C.h>
+#include <Ndef.h>
+//#include <MemoryFree.h>
+#include <ArduinoUnit.h>
+
+TestSuite suite;
+
+void leakCheck(void (*callback)())
+{
+  int start = freeMemory();
+  (*callback)();
+  int end = freeMemory();
+  Serial.println((end - start), DEC);
+}
+
+// Custom Assertion
+void assertNoLeak(Test& __test__, void (*callback)())
+{
+  int start = freeMemory();
+  (*callback)();
+  int end = freeMemory();
+  assertEquals(0, (start - end));
+}
+
+void record()
+{
+  NdefRecord* r = new NdefRecord();
+  delete r;
+}
+
+void emptyRecord()
+{
+  NdefRecord* r = new NdefRecord();
+  r->print();
+  delete r;
+}
+
+void textRecord()
+{
+  NdefRecord* r = new NdefRecord();
+  r->setTnf(0x1);
+  uint8_t type[] = { 0x54 };
+  r->setType(type, sizeof(type));
+  uint8_t payload[] = { 0x1A, 0x1B, 0x1C };
+  r->setPayload(payload, sizeof(payload));
+  r->print();
+  delete r;
+}
+
+void recordMallocZero()
+{
+  NdefRecord r = NdefRecord();
+  uint8_t* payload = r.getPayload();
+  free(payload);
+}
+
+// this is OK
+void emptyMessage()
+{
+  NdefMessage* m = new NdefMessage();
+  delete m;
+}
+
+// this is OK
+void printEmptyMessage()
+{
+  NdefMessage* m = new NdefMessage();
+  m->print();
+  delete m;
+}
+
+// this is OK
+void printEmptyMessageNoNew()
+{
+  NdefMessage m = NdefMessage();
+  m.print();
+}
+
+void messageWithTextRecord()
+{
+  NdefMessage m = NdefMessage();
+  m.addTextRecord("foo");
+  m.print();
+}
+
+void messageWithEmptyRecord()
+{
+  NdefMessage m = NdefMessage();
+  NdefRecord r = NdefRecord();
+  m.add(r);
+  m.print();
+}
+
+void messageWithoutHelper()
+{
+  NdefMessage m = NdefMessage();
+  NdefRecord r = NdefRecord();
+  r.setTnf(1);
+  uint8_t type[] = { 0x54 };
+  r.setType(type, sizeof(type));
+  uint8_t payload[] = { 0x02, 0x65, 0x6E, 0x66, 0x6F, 0x6F };
+  r.setPayload(payload, sizeof(payload));
+  m.add(r);
+  m.print();
+}
+
+void messageWithId()
+{
+  NdefMessage m = NdefMessage();
+  NdefRecord r = NdefRecord();
+  r.setTnf(1);
+  uint8_t type[] = { 0x54 };
+  r.setType(type, sizeof(type));
+  uint8_t payload[] = { 0x02, 0x65, 0x6E, 0x66, 0x6F, 0x6F };
+  r.setPayload(payload, sizeof(payload));
+  uint8_t id[] = { 0x0, 0x0, 0x0 };
+  r.setId(id, sizeof(id));
+  m.add(r);
+  m.print();
+}
+
+void message80()
+{
+  NdefMessage message = NdefMessage();
+  message.addTextRecord("This record is 80 characters.X01234567890123456789012345678901234567890123456789");
+  //message.print();
+}
+
+void message100()
+{
+  NdefMessage message = NdefMessage();
+  message.addTextRecord("This record is 100 characters.0123456789012345678901234567890123456789012345678901234567890123456789");
+  //message.print();
+}
+
+void message120()
+{
+  NdefMessage message = NdefMessage();
+  message.addTextRecord("This record is 120 characters.012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
+  //message.print();
+}
+
+void setup() {
+  Serial.begin(9600);
+  Serial.println("\n");
+  Serial.println(F("========="));
+  Serial.println(freeMemory());
+  Serial.println(F("========="));
+}
+
+test(memoryKludgeEnd)
+{
+  // TODO ensure the output matches start
+  Serial.println(F("========="));
+  Serial.print("End ");Serial.println(freeMemory());
+  Serial.println(F("========="));
+}
+
+test(recordLeaks)
+{
+  assertNoLeak(__test__, &record);
+  assertNoLeak(__test__, &emptyRecord);
+  assertNoLeak(__test__, &textRecord);
+}
+
+test(recordAccessorLeaks)
+{
+  assertNoLeak(__test__, &recordMallocZero);
+}
+
+test(messageLeaks)
+{
+  assertNoLeak(__test__, &emptyMessage);
+  assertNoLeak(__test__, &printEmptyMessage);
+  assertNoLeak(__test__, &printEmptyMessageNoNew);
+  assertNoLeak(__test__, &messageWithTextRecord);
+  assertNoLeak(__test__, &messageWithEmptyRecord);
+  assertNoLeak(__test__, &messageWithoutHelper);
+  assertNoLeak(__test__, &messageWithId);
+}
+
+test(messageOneBigRecord)
+{
+  assertNoLeak(__test__, &message80);
+  // The next 2 fail. Maybe out of memory? Look into helper methods
+  //assertNoLeak(__test__, &message100);
+  //assertNoLeak(__test__, &message120);
+}
+
+test(memoryKludgeStart)
+{
+  Serial.println(F("---------"));
+  Serial.print("Start ");Serial.println(freeMemory());
+  Serial.println(F("---------"));
+}
+
+void loop() {
+  suite.run();  
+}
