@@ -214,6 +214,22 @@ test(assign4)
   assertEquals(0, (start-end));
 }
 
+// really a record test
+test(doublePayload)
+{
+  int start = freeMemory();
+  
+  NdefRecord* r = new NdefRecord();
+  uint8_t p1[] = { 0x1, 0x2, 0x3, 0x4, 0x5, 0x6 };
+  r->setPayload(p1, sizeof(p1));
+  r->setPayload(p1, sizeof(p1));
+  
+  delete r;
+  
+  int end = freeMemory();
+  assertEquals(0, (start-end));
+}
+
   
 test(memoryKludgeStart)
 {

@@ -296,6 +296,11 @@ void NdefRecord::getType(uint8_t* type)
 
 void NdefRecord::setType(const uint8_t * type, const int numBytes)
 {
+    if(_typeLength)
+    {
+        free(_type);
+    }
+
     _type = (uint8_t*)malloc(numBytes);
     memcpy(_type, type, numBytes);
     _typeLength = numBytes;
@@ -317,9 +322,11 @@ void NdefRecord::getPayload(uint8_t* payload)
 
 void NdefRecord::setPayload(const uint8_t * payload, const int numBytes)
 {
-    // TODO free existing value (or error)
-    // TODO ensure numBytes > 0
-    // TODO ensure there's enough memory available to malloc
+    if (_payloadLength)
+    {
+        free(_payload);
+    }
+
     _payload = (uint8_t*)malloc(numBytes);
     memcpy(_payload, payload, numBytes);
     _payloadLength = numBytes;
@@ -340,6 +347,10 @@ void NdefRecord::getId(uint8_t * id)
 
 void NdefRecord::setId(const uint8_t * id, const int numBytes)
 {
+    if (_idLength)
+    {
+        free(_id);
+    }
  
     _id = (uint8_t*)malloc(numBytes);    
     memcpy(_id, id, numBytes);
@@ -555,8 +566,6 @@ void NdefMessage::encode(uint8_t* data)
         data_ptr += _records[i].getEncodedSize(); 
     }
 
-    //Serial.println("\nEncoded");
-    //PrintHex(data, getEncodedSize());
 }
 
 // TODO rename addRecord
