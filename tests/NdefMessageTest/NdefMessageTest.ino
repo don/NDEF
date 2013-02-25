@@ -16,7 +16,7 @@ void assertNoLeak(Test& __test__, void (*callback)())
 
 void assertBytesEqual(Test& __test__, const uint8_t* expected, const uint8_t* actual, int size) {
   for (int i = 0; i < size; i++) {
-    Serial.print("> ");Serial.print(expected[i]);Serial.print(" ");Serial.println(actual[i]);
+    // Serial.print("> ");Serial.print(expected[i]);Serial.print(" ");Serial.println(actual[i]);
     assertEquals(expected[i], actual[i]);
   }
 }
@@ -56,31 +56,34 @@ test(assign)
 {
   int start = freeMemory();
   
-  NdefMessage* m1 = new NdefMessage();
-  m1->addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
+  if (true) // bogus block so automatic storage duration objects are deleted
+  {
+    NdefMessage* m1 = new NdefMessage();
+    m1->addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
+    
+    NdefMessage* m2 = new NdefMessage();
+    
+    *m2 = *m1;
+    
+    NdefRecord r1 = m1->getRecord(0);
+    NdefRecord r2 = m2->getRecord(0);
+    
+    assertEquals(r1.getTnf(), r2.getTnf());
+    assertEquals(r1.getTypeLength(), r2.getTypeLength());
+    assertEquals(r1.getPayloadLength(), r2.getPayloadLength());
+    assertEquals(r1.getIdLength(), r2.getIdLength());
   
-  NdefMessage* m2 = new NdefMessage();
+    uint8_t* p1 = r1.getPayload();
+    uint8_t* p2 = r2.getPayload();  
+    int size = r1.getPayloadLength();
+    assertBytesEqual(__test__, p1, p2, size);
+    free(p1);
+    free(p2);
   
-  *m2 = *m1;
-  
-  NdefRecord r1 = m1->get(0);
-  NdefRecord r2 = m2->get(0);
-  
-  assertEquals(r1.getTnf(), r2.getTnf());
-  assertEquals(r1.getTypeLength(), r2.getTypeLength());
-  assertEquals(r1.getPayloadLength(), r2.getPayloadLength());
-  assertEquals(r1.getIdLength(), r2.getIdLength());
-
-  uint8_t* p1 = r1.getPayload();
-  uint8_t* p2 = r2.getPayload();  
-  int size = r1.getPayloadLength();
-  assertBytesEqual(__test__, p1, p2, size);
-  free(p1);
-  free(p2);
-
-  delete m2;
-  delete m1;
-  
+    delete m2;
+    delete m1;
+  }
+      
   int end = freeMemory();
   assertEquals(0, (start-end));
 }
@@ -89,66 +92,123 @@ test(assign2)
 {
   int start = freeMemory();
   
-  NdefMessage m1 = NdefMessage();
-  m1.addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
+  if (true) // bogus block so automatic storage duration objects are deleted
+  {
+    NdefMessage m1 = NdefMessage();
+    m1.addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
+    
+    NdefMessage m2 = NdefMessage();
+    
+    m2 = m1;
+    
+    NdefRecord r1 = m1.getRecord(0);
+    NdefRecord r2 = m2.getRecord(0);
+    
+    assertEquals(r1.getTnf(), r2.getTnf());
+    assertEquals(r1.getTypeLength(), r2.getTypeLength());
+    assertEquals(r1.getPayloadLength(), r2.getPayloadLength());
+    assertEquals(r1.getIdLength(), r2.getIdLength());
   
-  NdefMessage m2 = NdefMessage();
+    // TODO check type
   
-  m2 = m1;
-  
-  NdefRecord r1 = m1.get(0);
-  NdefRecord r2 = m2.get(0);
-  
-  assertEquals(r1.getTnf(), r2.getTnf());
-  assertEquals(r1.getTypeLength(), r2.getTypeLength());
-  assertEquals(r1.getPayloadLength(), r2.getPayloadLength());
-  assertEquals(r1.getIdLength(), r2.getIdLength());
-
-  // TODO check type
-
-  uint8_t* p1 = r1.getPayload();
-  uint8_t* p2 = r2.getPayload();  
-  int size = r1.getPayloadLength();
-  assertBytesEqual(__test__, p1, p2, size);
-  free(p1);
-  free(p2);
+    uint8_t* p1 = r1.getPayload();
+    uint8_t* p2 = r2.getPayload();  
+    int size = r1.getPayloadLength();
+    assertBytesEqual(__test__, p1, p2, size);
+    free(p1);
+    free(p2);
+  }
 
   int end = freeMemory();
-  //assertEquals(0, (start-end));
+  assertEquals(0, (start-end));
 }
 
-// TODO fix this
-// NdefMessage copy constructor and assignment
 test(assign3)
 {
   int start = freeMemory();
   
-  NdefMessage* m1 = new NdefMessage();
-  m1->addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
-  
-  NdefMessage* m2 = new NdefMessage();
-  
-  *m2 = *m1;
-  
-  delete m1;
-  
-  NdefRecord r2 = m2->get(0);
-  
-  assertEquals(TNF_WELL_KNOWN, r2.getTnf());
-  assertEquals(1, r2.getTypeLength());
-  assertEquals(79, r2.getPayloadLength());
-  assertEquals(0, r2.getIdLength());
-  
-  String s = "We the People of the United States, in Order to form a more perfect Union...";
-  byte payload[s.length() + 1];
-  s.getBytes(payload, sizeof(payload));
+  if (true) // bogus block so automatic storage duration objects are deleted
+  {
 
-  uint8_t* p2 = r2.getPayload();  
-  int size = r2.getPayloadLength();
-  assertBytesEqual(__test__, payload, p2+3, s.length());
-  free(p2);
+    NdefMessage* m1 = new NdefMessage();
+    m1->addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
+    
+    NdefMessage* m2 = new NdefMessage();
+    
+    *m2 = *m1;
+    
+    delete m1;
+    
+    NdefRecord r = m2->getRecord(0);
+      
+    assertEquals(TNF_WELL_KNOWN, r.getTnf());
+    assertEquals(1, r.getTypeLength());
+    assertEquals(79, r.getPayloadLength());
+    assertEquals(0, r.getIdLength());
+    
+    String s = "We the People of the United States, in Order to form a more perfect Union...";
+    byte payload[s.length() + 1];
+    s.getBytes(payload, sizeof(payload));
+  
+    uint8_t* p = r.getPayload();  
+    int size = r.getPayloadLength();
+    assertBytesEqual(__test__, payload, p+3, s.length());
+    free(p);
+  
+    delete m2;
+  }
+  
+  int end = freeMemory();
+  assertEquals(0, (start-end));
+}
 
-  delete m2;
+test(assign4)
+{
+  int start = freeMemory();
+  
+  if (true) // bogus block so automatic storage duration objects are deleted
+  {
+
+    NdefMessage* m1 = new NdefMessage();
+    m1->addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
+    
+    NdefMessage* m2 = new NdefMessage();
+    m2->addTextRecord("Record 1");
+    m2->addTextRecord("RECORD 2");
+    m2->addTextRecord("Record 3");
+
+    assertEquals(3, m2->recordCount());    
+    *m2 = *m1;
+    assertEquals(1, m2->recordCount());
+    
+//    NdefRecord ghost = m2->getRecord(1);
+//    ghost.print();
+//    
+//    NdefRecord ghost2 = m2->getRecord(3);
+//    ghost2.print();
+
+//    
+//    delete m1;
+//    
+//    NdefRecord r = m2->getRecord(0);
+//      
+//    assertEquals(TNF_WELL_KNOWN, r.getTnf());
+//    assertEquals(1, r.getTypeLength());
+//    assertEquals(79, r.getPayloadLength());
+//    assertEquals(0, r.getIdLength());
+//    
+//    String s = "We the People of the United States, in Order to form a more perfect Union...";
+//    byte payload[s.length() + 1];
+//    s.getBytes(payload, sizeof(payload));
+//  
+//    uint8_t* p = r.getPayload();  
+//    int size = r.getPayloadLength();
+//    assertBytesEqual(__test__, payload, p+3, s.length());
+//    free(p);
+  
+    delete m1;
+    delete m2;
+  }
   
   int end = freeMemory();
   assertEquals(0, (start-end));

@@ -128,7 +128,7 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 
     if (this != &rhs)
     {
-
+        // free existing
         if (_typeLength) 
         {
             free(_type);
@@ -148,8 +148,6 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
         _typeLength = rhs._typeLength;
         _payloadLength = rhs._payloadLength;
         _idLength = rhs._idLength;
-
-        // TODO need to free _type, _payload, and _id if they exist
 
         if (_typeLength)
         {
@@ -492,8 +490,41 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         
 }
 
+NdefMessage::NdefMessage(const NdefMessage& rhs)
+{
+
+    _recordCount = rhs._recordCount;
+    for (int i = 0; i < _recordCount; i++)
+    {
+        _records[i] = rhs._records[i];
+    }
+
+} 
+
 NdefMessage::~NdefMessage()
 {
+}
+
+NdefMessage& NdefMessage::operator=(const NdefMessage& rhs)
+{
+
+    if (this != &rhs)
+    {
+
+        // delete existing records
+        for (int i = 0; i < _recordCount; i++)
+        {
+            // TODO Dave: is this the right way to delete existing records?
+            _records[i] = NdefRecord();
+        }
+
+        _recordCount = rhs._recordCount;
+        for (int i = 0; i < _recordCount; i++)
+        {
+            _records[i] = rhs._records[i];
+        }
+    }
+    return *this;
 }
 
 int NdefMessage::recordCount()
@@ -504,21 +535,20 @@ int NdefMessage::recordCount()
 int NdefMessage::getEncodedSize()
 {
     int size = 0;
-    int i;
-    for (i = 0; i < _recordCount; i++) 
+    for (int i = 0; i < _recordCount; i++) 
     {
         size += _records[i].getEncodedSize();
     }
     return size;
 }
 
+// TODO change this to return uint8_t*
 void NdefMessage::encode(uint8_t* data)
 {
     // assert sizeof(data) >= getEncodedSize()
     uint8_t* data_ptr = &data[0];
 
-    int i;
-    for (i = 0; i < _recordCount; i++) 
+    for (int i = 0; i < _recordCount; i++) 
     {    
         _records[i].encode(data_ptr, i == 0, (i + 1) == _recordCount);
         // TODO can NdefRecord.encode return the record size?        
@@ -529,6 +559,8 @@ void NdefMessage::encode(uint8_t* data)
     //PrintHex(data, getEncodedSize());
 }
 
+// TODO rename addRecord
+// TODO return status
 void NdefMessage::add(NdefRecord& record)
 {
 
@@ -626,12 +658,14 @@ void NdefMessage::addEmptyRecord()
     delete(r);
 }
 
-NdefRecord NdefMessage::get(int index)
+NdefRecord NdefMessage::getRecord(int index)
 {
     if (index > -1 && index < _recordCount)
     {
-        return _records[_recordCount];        
+        return _records[index];        
     }
+    // TODO Dave: what do I return here?
+    // NdefRecord()?
 }
 
 void NdefMessage::print()

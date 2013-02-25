@@ -4,7 +4,7 @@
 #include <inttypes.h>
 #include <Arduino.h>
 
-#define MAX_NDEF_RECORDS 2
+#define MAX_NDEF_RECORDS 4
 
 #define TNF_EMPTY 0x0
 #define TNF_WELL_KNOWN 0x01
@@ -76,7 +76,9 @@ class NdefMessage
     public:
         NdefMessage(void);
         NdefMessage(const uint8_t * data, const int numBytes);  
+        NdefMessage(const NdefMessage& rhs);  
         ~NdefMessage();     
+        NdefMessage& operator=(const NdefMessage& rhs);
         int recordCount(); // TODO getRecordCount() or read only property instead of a function?
         int getEncodedSize(); // need so we can pass array to encode
         void encode(uint8_t* data); // TODO is getBytes better?
@@ -88,7 +90,7 @@ class NdefMessage
         void addTextRecord(String text, String encoding);
         void addUriRecord(String uri);
         void addEmptyRecord();
-        NdefRecord get(int index); // TODO overload [] or use an iterator
+        NdefRecord getRecord(int index); // TODO overload [] 
         void print();
     private:
         NdefRecord _records[MAX_NDEF_RECORDS];
