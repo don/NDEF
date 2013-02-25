@@ -8,18 +8,18 @@
 class NfcTag
 {
 	public:
-		//NfcTag(uint8_t* uid, uint8_t uidLength, String tech);
 		NfcTag(uint8_t* uid, uint8_t uidLength, String tech, NdefMessage& ndefMessage);
 		~NfcTag(void);
 		uint8_t getUidLength();
 		void getUid(uint8_t* uid, uint8_t uidLength);
 		String getUidString();
-		String getTechnology();
+		String getTagType();
 		NdefMessage& getNdefMessage();
+		void print();
 	private:
 		uint8_t* _uid;
 		uint8_t _uidLength;
-		String _technology; // Mifare Classic, Mifare Ultralight, etc
+		String _tagType; // Mifare Classic, NDEF Forum Type {1,2,3,4}, Unknown
 		NdefMessage* _ndefMessage;
 };
 

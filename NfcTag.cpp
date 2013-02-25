@@ -1,24 +1,15 @@
 #include <NfcTag.h>
 
-// NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tech)
-// {
-// 	_uid = uid;
-// 	_uidLength = uidLength;
-// 	_technology = tech;
-// }
-
-NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tech, NdefMessage& ndefMessage)
+NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage& ndefMessage)
 {
 	_uid = uid;
 	_uidLength = uidLength;
-	_technology = tech;
+	_tagType = tagType;
 	_ndefMessage = &ndefMessage;	
 }
 
-// TODO Dave: should this class be deleting _ndefMessage?
 NfcTag::~NfcTag()
 {
-	delete _ndefMessage;
 }
 
 uint8_t NfcTag::getUidLength()
@@ -41,12 +32,21 @@ String NfcTag::getUidString()
 	}
 }
 
-String NfcTag::getTechnology()
+String NfcTag::getTagType()
 {
-	return _technology;
+	return _tagType;
 }
 
 NdefMessage& NfcTag::getNdefMessage()
 {
 	return *_ndefMessage;
+}
+
+void NfcTag::print()
+{
+	Serial.println("********");
+	Serial.print("NFC Tag (");Serial.print(_tagType);Serial.println(")");
+	Serial.print("uid ");Serial.println(getUidString());
+	// TODO ensure message exists
+	_ndefMessage->print();
 }
