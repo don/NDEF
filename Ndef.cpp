@@ -63,6 +63,9 @@ NdefRecord::NdefRecord()
     _typeLength = 0;
     _payloadLength = 0;    
     _idLength = 0;
+    _type = (uint8_t *)NULL;
+    _payload = (uint8_t *)NULL;
+    _id = (uint8_t *)NULL;
 }
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
@@ -73,6 +76,9 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
     _typeLength = rhs._typeLength;
     _payloadLength = rhs._payloadLength;
     _idLength = rhs._idLength;
+    _type = (uint8_t *)NULL;
+    _payload = (uint8_t *)NULL;
+    _id = (uint8_t *)NULL;
 
     if (_typeLength)
     {
@@ -276,10 +282,18 @@ uint8_t NdefRecord::getIdLength()
     return _idLength;
 }
 
+// caller is responsible for deleting array
+uint8_t* NdefRecord::getType()
+{
+    uint8_t* type = (uint8_t*)malloc(_typeLength);
+    memcpy(type, _type, _typeLength);
+    return type;
+}
+
+// this assumes the caller created type correctly
 void NdefRecord::getType(uint8_t* type)
 {
-    // assert sizeof(type) >= sizeof(_type)
-    memcpy(type, _type, sizeof(_type));
+    memcpy(type, _type, _typeLength);
 }
 
 void NdefRecord::setType(const uint8_t * type, const int numBytes)
@@ -289,9 +303,18 @@ void NdefRecord::setType(const uint8_t * type, const int numBytes)
     _typeLength = numBytes;
 }
 
-void NdefRecord::getPayload(uint8_t * payload)
+// caller is responsible for deleting array
+uint8_t* NdefRecord::getPayload()
 {
-    memcpy(payload, _payload, sizeof(_payload));
+    uint8_t* payload = (uint8_t*)malloc(_payloadLength);
+    memcpy(payload, _payload, _payloadLength);
+    return payload;
+}
+
+// assumes the caller sized payload properly
+void NdefRecord::getPayload(uint8_t* payload)
+{
+    memcpy(payload, _payload, _payloadLength);
 }
 
 void NdefRecord::setPayload(const uint8_t * payload, const int numBytes)
@@ -304,9 +327,17 @@ void NdefRecord::setPayload(const uint8_t * payload, const int numBytes)
     _payloadLength = numBytes;
 }
 
+// caller is responsible for deleting array
+uint8_t* NdefRecord::getId()
+{
+    uint8_t* id = (uint8_t*)malloc(_idLength);
+    memcpy(id, _id, _idLength);
+    return id;
+}
+
 void NdefRecord::getId(uint8_t * id)
 {
-    memcpy(id, _id, sizeof(_id));
+    memcpy(id, _id, _idLength);
 }
 
 void NdefRecord::setId(const uint8_t * id, const int numBytes)
@@ -463,14 +494,6 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
 
 NdefMessage::~NdefMessage()
 {
-    //free(_records);
-    /*
-    int i;
-    for (i = 0; i < MAX_NDEF_RECORDS; i++)
-    {
-        delete &_records[i];
-    }
-    */
 }
 
 int NdefMessage::recordCount()

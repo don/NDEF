@@ -15,6 +15,8 @@
 #define TNF_UNCHANGED 0x06
 #define TNF_RESERVED 0x07
 
+#define NULL (void *)0
+
 // RTD_TEXT: [0x54], // "T"
 // RTD_URI: [0x55], // "U" 
 // RTD_SMART_POSTER: [0x53, 0x70], // "Sp"
@@ -43,6 +45,10 @@ class NdefRecord
         uint8_t getTypeLength();
         int getPayloadLength();
         uint8_t getIdLength();
+
+        uint8_t* getType(); 
+        uint8_t* getPayload();
+        uint8_t* getId();
         
         void getType(uint8_t* type); 
         void getPayload(uint8_t* payload);
