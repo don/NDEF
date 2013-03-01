@@ -14,8 +14,8 @@ void loop(void) {
   Serial.println("\nScan a NFC tag");
   if (nfc.tagPresent())
   {
-    NdefMessage message = nfc.read();
-    message.print();
+    NfcTag tag = nfc.read();
+    tag.print();
   }
   delay(5000);
 }
