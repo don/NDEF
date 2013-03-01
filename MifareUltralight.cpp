@@ -8,7 +8,7 @@
 #define ULTRALIGHT_DATA_START_INDEX 2
 #define ULTRALIGHT_MAX_PAGE 63
 
-// MIFARE ULTRALIGHT C - NFC FORUM TYPE 2
+#define NFC_FORUM_TAG_TYPE_2 ("NFC Forum Type 2")
 
 MifareUltralight::MifareUltralight(Adafruit_NFCShield_I2C& nfcShield)
 {
@@ -19,15 +19,15 @@ MifareUltralight::MifareUltralight(Adafruit_NFCShield_I2C& nfcShield)
 
 MifareUltralight::~MifareUltralight()
 {
-  //delete nfc;
 }
 
-NdefMessage MifareUltralight::read()
+NfcTag MifareUltralight::read(uint8_t * uid, int uidLength)
 {  
   if (isUnformatted())
   {
     // TODO message needs to return a tag
     Serial.println("WARNING: Tag is not formatted.");
+    return NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2);
   }
 
   readCapabilityContainer(); // meta info for tag
@@ -37,7 +37,7 @@ NdefMessage MifareUltralight::read()
   if (messageLength == 0) { // data is 0x44 0x03 0x00 0xFE
     NdefMessage message = NdefMessage();
     message.addEmptyRecord();
-    return message;
+    return NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2, message);
   }
 
   boolean success;
@@ -70,10 +70,9 @@ NdefMessage MifareUltralight::read()
 
   }
 
-    //nfc->PrintHexChar(buffer, sizeof(buffer));
-
   NdefMessage ndefMessage = NdefMessage(&buffer[ndefStartIndex], messageLength);
-  return ndefMessage;
+  NfcTag tag = NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2, ndefMessage);
+  return tag;
 }
 
 boolean MifareUltralight::isUnformatted() 

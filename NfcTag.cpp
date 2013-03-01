@@ -4,7 +4,23 @@ NfcTag::NfcTag()
 {
 	_uid = 0;
 	_uidLength = 0;
-	_tagType = "";
+	_tagType = "Unknown";
+	_ndefMessage = (NdefMessage*)NULL;	
+}
+
+NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength)
+{
+	_uid = uid;
+	_uidLength = uidLength;
+	_tagType = "Unknown";
+	_ndefMessage = (NdefMessage*)NULL;	
+}
+
+NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType)
+{
+	_uid = uid;
+	_uidLength = uidLength;
+	_tagType = tagType;
 	_ndefMessage = (NdefMessage*)NULL;	
 }
 
@@ -13,18 +29,10 @@ NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage& nde
 	_uid = uid;
 	_uidLength = uidLength;
 	_tagType = tagType;
-	_ndefMessage = &ndefMessage;	
+	_ndefMessage = new NdefMessage(ndefMessage);	
 }
 
-NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage* ndefMessage)
-{
-	_uid = uid;
-	_uidLength = uidLength;
-	_tagType = tagType;
-	_ndefMessage = ndefMessage;	
-}
-
-// I don't like this version, but trying as a stop gap
+// I don't like this version, but it will use less memory
 NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, const uint8_t * ndefData, const int ndefDataLength)
 {
 	_uid = uid;
@@ -81,9 +89,8 @@ NdefMessage NfcTag::getNdefMessage()
 
 void NfcTag::print()
 {
-	Serial.println("********");
-	Serial.print("NFC Tag (");Serial.print(_tagType);Serial.println(")");
-	Serial.print("uid ");Serial.println(getUidString());
+	Serial.print("NFC Tag - ");Serial.print(_tagType);
+	Serial.print("UID ");Serial.println(getUidString());
 	// TODO ensure message exists
 	_ndefMessage->print();
 }

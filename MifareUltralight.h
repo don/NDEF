@@ -1,15 +1,16 @@
 #ifndef MifareUltralight_h
 #define MifareUltralight_h
 
-#include <Ndef.h>
 #include <Adafruit_NFCShield_I2C.h>
+#include <NfcTag.h>
+#include <Ndef.h>
 
 class MifareUltralight
 {
 	public:
 		MifareUltralight(Adafruit_NFCShield_I2C& nfcShield);
 		~MifareUltralight();
-		NdefMessage read(); // TODO return NfcTag
+		NfcTag read(uint8_t * uid, int uidLength);
 	private:
 		Adafruit_NFCShield_I2C* nfc;
 		uint8_t tagCapacity;

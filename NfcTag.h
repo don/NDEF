@@ -9,8 +9,9 @@ class NfcTag
 {
 	public:
 		NfcTag();
-		NfcTag(uint8_t* uid, uint8_t uidLength, String tech, NdefMessage& ndefMessage);
-		NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage* ndefMessage);
+		NfcTag(uint8_t* uid, uint8_t uidLength);
+		NfcTag(uint8_t* uid, uint8_t uidLength, String tagType);
+		NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage& ndefMessage);
 		NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, const uint8_t * ndefData, const int ndefDataLength);  
 		~NfcTag(void);
 		uint8_t getUidLength();
@@ -22,8 +23,10 @@ class NfcTag
 	private:
 		uint8_t* _uid;
 		uint8_t _uidLength;
-		String _tagType; // Mifare Classic, NDEF Forum Type {1,2,3,4}, Unknown
+		String _tagType; // Mifare Classic, NFC Forum Type {1,2,3,4}, Unknown
 		NdefMessage* _ndefMessage;
+		// TODO capacity
+		// TODO isFormatted
 };
 
 #endif

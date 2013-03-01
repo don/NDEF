@@ -84,7 +84,7 @@ NfcTag MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLe
     // NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
     // NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
 
-    NdefMessage* ndefMessage = new NdefMessage(&buffer[4], messageLength);
+    NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
     NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
     
     // WORKS!! NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", &buffer[4], messageLength);
