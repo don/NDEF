@@ -16,6 +16,14 @@ NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage& nde
 	_ndefMessage = &ndefMessage;	
 }
 
+NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage* ndefMessage)
+{
+	_uid = uid;
+	_uidLength = uidLength;
+	_tagType = tagType;
+	_ndefMessage = ndefMessage;	
+}
+
 // I don't like this version, but trying as a stop gap
 NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, const uint8_t * ndefData, const int ndefDataLength)
 {
@@ -66,7 +74,7 @@ String NfcTag::getTagType()
 	return _tagType;
 }
 
-NdefMessage& NfcTag::getNdefMessage()
+NdefMessage NfcTag::getNdefMessage()
 {
 	return *_ndefMessage;
 }
