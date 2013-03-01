@@ -55,8 +55,8 @@ NfcTag NfcAdapter::read()
   {
     Serial.println(F("Mifare Classic card (4 byte UID)"));
 
-    MifareClassic mifareClassic = MifareClassic();
-    return mifareClassic.read(*shield, uid, uidLength);
+    MifareClassic mifareClassic = MifareClassic(*shield);
+    return mifareClassic.read(uid, uidLength);
   }    
   else
   {
@@ -77,8 +77,8 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
 
   if (uidLength == 4)
   {
-    MifareClassic mifareClassic = MifareClassic();
-    success = mifareClassic.write(*shield, ndefMessage, uid, uidLength);
+    MifareClassic mifareClassic = MifareClassic(*shield);
+    success = mifareClassic.write(ndefMessage, uid, uidLength);
   }
   else
   {

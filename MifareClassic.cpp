@@ -2,15 +2,16 @@
 
 #define BLOCK_SIZE 16
 
-MifareClassic::MifareClassic()
+MifareClassic::MifareClassic(Adafruit_NFCShield_I2C& nfcShield)
 {
+  _nfcShield = &nfcShield;
 }
 
 MifareClassic::~MifareClassic()
 {
 }
 
-NfcTag MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
+NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
 {
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 };
     int currentBlock = 4;
@@ -18,10 +19,10 @@ NfcTag MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLe
     byte data[BLOCK_SIZE];
 
     // read first block to get message length
-    int success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);
+    int success = _nfcShield->mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);
     if (success)
     {
-      success = nfc.mifareclassic_ReadDataBlock(currentBlock, data);
+      success = _nfcShield->mifareclassic_ReadDataBlock(currentBlock, data);
       if (success)
       {
         messageLength = getNdefLength(data);        
@@ -48,9 +49,9 @@ NfcTag MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLe
     {
 
       // authenticate on every sector
-      if (nfc.mifareclassic_IsFirstBlock(currentBlock))
+      if (_nfcShield->mifareclassic_IsFirstBlock(currentBlock))
       {
-        success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
+        success = _nfcShield->mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
         if (!success)
         {
           Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
@@ -58,11 +59,11 @@ NfcTag MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLe
       }
 
       // read the data
-      success = nfc.mifareclassic_ReadDataBlock(currentBlock, &buffer[index]);
+      success = _nfcShield->mifareclassic_ReadDataBlock(currentBlock, &buffer[index]);
       if (success) 
       {
         Serial.print("Block ");Serial.print(currentBlock);Serial.print(" ");
-        nfc.PrintHexChar(&buffer[index], BLOCK_SIZE);
+        _nfcShield->PrintHexChar(&buffer[index], BLOCK_SIZE);
       } 
       else 
       {
@@ -73,7 +74,7 @@ NfcTag MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLe
       currentBlock++;
 
       // skip the trailer block
-      if (nfc.mifareclassic_IsTrailerBlock(currentBlock))
+      if (_nfcShield->mifareclassic_IsTrailerBlock(currentBlock))
       {
         Serial.print("Skipping block ");Serial.println(currentBlock);
         currentBlock++;    
@@ -127,7 +128,7 @@ int MifareClassic::getNdefLength(byte *data)
     return ndefLength;
 }
 
-boolean MifareClassic::write(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_t * uid, int uidLength)
+boolean MifareClassic::write(NdefMessage& m, uint8_t * uid, int uidLength)
 {
 
     uint8_t encoded[m.getEncodedSize()];
@@ -154,9 +155,9 @@ boolean MifareClassic::write(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_
     while (index < sizeof(buffer))
     {  
 
-      if (nfc.mifareclassic_IsFirstBlock(currentBlock))
+      if (_nfcShield->mifareclassic_IsFirstBlock(currentBlock))
       {
-        int success = nfc.mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
+        int success = _nfcShield->mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
         if (!success)
         {
           Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
@@ -164,11 +165,11 @@ boolean MifareClassic::write(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_
         }
       }
 
-      int write_success = nfc.mifareclassic_WriteDataBlock (currentBlock, &buffer[index]);
+      int write_success = _nfcShield->mifareclassic_WriteDataBlock (currentBlock, &buffer[index]);
       if (write_success) 
       {
         Serial.print(F("Wrote block "));Serial.print(currentBlock);Serial.print(" - ");
-        nfc.PrintHexChar(&buffer[index], BLOCK_SIZE);
+        _nfcShield->PrintHexChar(&buffer[index], BLOCK_SIZE);
       } 
       else 
       {
@@ -178,7 +179,7 @@ boolean MifareClassic::write(Adafruit_NFCShield_I2C& nfc, NdefMessage& m, uint8_
       index += BLOCK_SIZE;                   
       currentBlock++;
 
-      if (nfc.mifareclassic_IsTrailerBlock(currentBlock))
+      if (_nfcShield->mifareclassic_IsTrailerBlock(currentBlock))
       {
         // can't write to trailer block
         Serial.print(F("Skipping block "));Serial.println(currentBlock);
