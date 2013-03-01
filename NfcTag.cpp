@@ -1,5 +1,13 @@
 #include <NfcTag.h>
 
+NfcTag::NfcTag()
+{
+	_uid = 0;
+	_uidLength = 0;
+	_tagType = "";
+	_ndefMessage = (NdefMessage*)NULL;	
+}
+
 NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage& ndefMessage)
 {
 	_uid = uid;
@@ -8,8 +16,18 @@ NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage& nde
 	_ndefMessage = &ndefMessage;	
 }
 
+// I don't like this version, but trying as a stop gap
+NfcTag::NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, const uint8_t * ndefData, const int ndefDataLength)
+{
+	_uid = uid;
+	_uidLength = uidLength;
+	_tagType = tagType;
+	_ndefMessage = new NdefMessage(ndefData, ndefDataLength);	
+}
+
 NfcTag::~NfcTag()
 {
+	delete _ndefMessage;
 }
 
 uint8_t NfcTag::getUidLength()
@@ -25,11 +43,22 @@ void NfcTag::getUid(uint8_t* uid, uint8_t uidLength)
 String NfcTag::getUidString()
 {
 	String uidString = "";
-	int i;
-	for (i = 0; i < _uidLength; i++)
+	for (int i = 0; i < _uidLength; i++)
 	{
+		if (i > 0) 
+		{ 
+			uidString += " "; 
+		}
+
+		if (_uid[i] < 0xF) 
+		{
+			uidString += "0"; 
+		}
+
 		uidString += String(_uid[i], HEX);
 	}
+	uidString.toUpperCase();
+	return uidString;
 }
 
 String NfcTag::getTagType()

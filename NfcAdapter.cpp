@@ -48,28 +48,32 @@ boolean NfcAdapter::tagPresent()
 }
 
 // TODO return a NfcTag
-NdefMessage NfcAdapter::read() 
+NfcTag NfcAdapter::read() 
 {
 
-  NdefMessage ndefMessage;
+  // TODO create this with the uid
+  // TODO pass the tag to read?
+  //NfcTag tag = NfcTag(); // TODO DAVE can I remove NfcTag()?
 
 	if (uidLength == 4)
   {
     Serial.println(F("Mifare Classic card (4 byte UID)"));
 
     MifareClassic mifareClassic = MifareClassic();
-    ndefMessage = mifareClassic.read(*shield, uid, uidLength);
+    return mifareClassic.read(*shield, uid, uidLength);
   }    
   else
   {
     // TODO need a better way to determine which driver to use
     // Since I have Mifare Classic cards with 7 byte UIDs
-    Serial.println(F("Mifare Ultralight card (7 byte UID)"));
+    // Serial.println(F("Mifare Ultralight card (7 byte UID)"));
 
-    MifareUltralight ultralight = MifareUltralight(*shield);
-    ndefMessage = ultralight.read();
+    // MifareUltralight ultralight = MifareUltralight(*shield);
+    // ndefMessage = ultralight.read();
+    Serial.println("MifareUltralight DISABLED!");
+    return NfcTag();
   }
-  return ndefMessage;
+  //return tag;
 }
 
 boolean NfcAdapter::write(NdefMessage& ndefMessage)

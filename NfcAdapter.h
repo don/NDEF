@@ -2,7 +2,7 @@
 #define NfcAdapter_h
 
 #include <Adafruit_NFCShield_I2C.h>
-// FUTURE #include <NfcTag.h>
+#include <NfcTag.h>
 #include <Ndef.h>
 
 // Drivers
@@ -30,7 +30,7 @@
     ~NfcAdapter(void); 
     void begin(void);
     boolean tagPresent(); // tagAvailable
-    NdefMessage read();
+    NfcTag read();
   	boolean write(NdefMessage& ndefMessage);
   private:
     Adafruit_NFCShield_I2C* shield;

@@ -10,7 +10,7 @@ MifareClassic::~MifareClassic()
 {
 }
 
-NdefMessage MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
+NfcTag MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int uidLength)
 {
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 };
     int currentBlock = 4;
@@ -84,8 +84,11 @@ NdefMessage MifareClassic::read(Adafruit_NFCShield_I2C& nfc, uint8_t * uid, int 
     //Serial.println("Done Reading Message From Tag.");
     //nfc.PrintHex(&buffer[4], messageLength);
 
-    NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
-    return ndefMessage;
+    // NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
+    // NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
+    
+    NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", &buffer[4], messageLength);
+    return tag;
 }
 
 int MifareClassic::getBufferSize(int messageLength)
