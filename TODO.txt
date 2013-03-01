@@ -1,0 +1,38 @@
+Add XYZ_DEBUG to quiet down output
+
+Better Card Identification using ATQA and SAK
+
+ERROR HANDLING IN DRIVERS
+	- Should NfcTag have an Error Flag / Field?
+
+Add Tag Metadata
+	- isFormatted
+	- capacity
+	- isLocked FUTURE
+	- isWritable FUTURE
+
+Write Mifare Ultralight
+
+Mifare Ultralight frees too much memory
+
+Write better examples of how to get data from a tag
+
+NdefRecord 
+	- Pretty Print 
+	- HEX Print (useful for debugging?)
+
+Helper methods to decode payload
+	- getText (when TEXT record)
+	- getUrl (when URI record)
+	- getPayloadAsString (straight conversion)
+	- getSmartPoster / getNdefMessage (when SMART POSTER)
+
+Treat ndef message type as text
+
+Tune code for better memory effiency
+
+Better tests
+
+NfcDriver interface?
+
+More consistent variable names
