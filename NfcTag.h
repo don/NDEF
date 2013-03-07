@@ -14,6 +14,7 @@ class NfcTag
 		NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, NdefMessage& ndefMessage);
 		NfcTag(uint8_t* uid, uint8_t uidLength, String tagType, const uint8_t * ndefData, const int ndefDataLength);  
 		~NfcTag(void);
+		NfcTag& operator=(const NfcTag& rhs);
 		uint8_t getUidLength();
 		void getUid(uint8_t* uid, uint8_t uidLength);
 		String getUidString();

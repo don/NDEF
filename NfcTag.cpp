@@ -46,6 +46,20 @@ NfcTag::~NfcTag()
 	delete _ndefMessage;
 }
 
+NfcTag& NfcTag::operator=(const NfcTag& rhs)
+{
+	if (this != &rhs)
+    {
+    	delete _ndefMessage;
+    	_uid = rhs._uid;
+		_uidLength = rhs._uidLength;
+		_tagType = rhs._tagType;
+		// TODO do I need a copy here?
+		_ndefMessage = rhs._ndefMessage;	
+    }
+    return *this;
+}
+
 uint8_t NfcTag::getUidLength()
 {
 	return _uidLength;

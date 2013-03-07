@@ -49,26 +49,36 @@ boolean NfcAdapter::tagPresent()
 
 NfcTag NfcAdapter::read() 
 {
-  // TODO should I create NfcTag here and pass to the driver?
 
-	if (uidLength == 4)
+  uint8_t type = guessTagType();
+
+  // TODO need and abstraction of Driver
+  if (type == TAG_TYPE_MIFARE_CLASSIC)
   {
-    Serial.println(F("Mifare Classic card (4 byte UID)"));
-
+    Serial.println(F("Mifare Classic"));
     MifareClassic mifareClassic = MifareClassic(*shield);
     return mifareClassic.read(uid, uidLength);
-  }    
-  else
+  }
+  else if (type == TAG_TYPE_2)
   {
-    // TODO need a better way to determine which driver to use
-    // Since I have Mifare Classic cards with 7 byte UIDs
-    // Serial.println(F("Mifare Ultralight card (7 byte UID)"));
-
+    Serial.println(F("Mifare Ultralight"));
     MifareUltralight ultralight = MifareUltralight(*shield);
     return ultralight.read(uid, uidLength);
   }
+  else if (type = TAG_TYPE_UNKNOWN)
+  {
+    Serial.print(F("Can not determine tag type"));
+    //Serial.print(F("Can not determine tag type for ATQA 0x"));
+    //Serial.print(atqa, HEX);Serial.print(" SAK 0x");Serial.println(sak, HEX);
+    return NfcTag(uid, uidLength);
+  }
+  else
+  {
+    Serial.print(F("No driver for card type "));Serial.println(type);
+    // TODO should set type here    
+    return NfcTag(uid, uidLength);
+  }
 
-  // return new NfcTag(uid, uidLength);
 }
 
 boolean NfcAdapter::write(NdefMessage& ndefMessage)
@@ -86,4 +96,27 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     success = false;
   }
   return success;
+}
+
+// TODO this should return a Driver MifareClassic, MifareUltralight, Type 4, Unknown
+// Guess Tag Type by looking at the ATQA and SAK values
+// Need to follow spec for Card Identification. Maybe AN1303, AN1305 and ???
+uint8_t NfcAdapter::guessTagType()
+{
+
+  // 4 byte id - Mifare Classic
+  //  - ATQA 0x4 && SAK 0x8
+  // 7 byte id
+  //  - ATQA 0x44 && SAK 0x8 - Mifare Classic
+  //  - ATQA 0x44 && SAK 0x0 - Mifare Ultralight NFC Forum Type 2
+  //  - ATQA 0x344 && SAK 0x20 - NFC Forum Type 4
+
+  if (uidLength == 4)
+  {
+    return TAG_TYPE_MIFARE_CLASSIC;
+  }
+  else
+  {
+    return TAG_TYPE_2;
+  }
 }
