@@ -46,6 +46,17 @@ A NdefRecord carrys a payload and info about the payload within a NdefMessage.
 
 This code is based on the "NFC Data Exchange Format (NDEF) Technical Specification" and the "Record Type Definition Technical Specifications" that can be downloaded from the [NFC Forum](http://www.nfc-forum.org/specs/spec_license).
 
+### Tests
+
+To run the tests, you'll need [ArduinoUnit](https://github.com/mmurdoch/arduinounit). To "install", I clone the repo to my home directory and symlink the source into ~/Documents/Arduino/libraries/ArduinoUnit.
+
+    $ cd ~
+    $ git clone git@github.com:mmurdoch/arduinounit.git
+    $ cd ~/Documents/Arduino/libraries/
+    $ ln -s ~/arduinounit/src ArduinoUnit
+    
+Tests can be run on an Uno without a NFC shield, since the NDEF logic is what is being tested.
+    
 ## Warning
 
 This software is in active development. It works for the happy path. Error handling is bad. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages.
