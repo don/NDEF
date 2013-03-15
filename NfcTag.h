@@ -3,7 +3,7 @@
 
 #include <inttypes.h>
 #include <Arduino.h>
-#include <Ndef.h>
+#include <NdefMessage.h>
 
 class NfcTag
 {
