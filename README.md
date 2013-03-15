@@ -11,7 +11,7 @@ Supports
 
 [Adafruit NFC Shield](https://www.adafruit.com/products/364)
 
-[Adafruit NFC Shield I2C library](https://github.com/don/Adafruit_NFCShield_I2C) you'll need the "guard" branch)
+[Adafruit NFC Shield I2C library](https://github.com/don/Adafruit_NFCShield_I2C) you'll need the "guard" branch
 	
 	$ cd ~/Documents/Ardiuino/library
 	$ git clone https://github.com/don/Adafruit_NFCShield_I2C
@@ -23,6 +23,21 @@ Supports
 
 The user interacts with the NfcAdapter to read and write NFC tags using the NFC shield.
 
+Read a message from a tag
+
+    if (nfc.tagPresent()) {
+        NfcTag tag = nfc.read();
+        tag.print();
+    }
+
+Write a message to a tag
+
+    if (nfc.tagPresent()) {
+        NdefMessage message = NdefMessage();
+        message.addTextRecord("Hello, Arduino!");
+        nfc.write(message);
+    }
+
 ### NfcTag 
 
 Reading a tag with the sheild, returns a NfcTag object. The NfcTag object contains meta data about the tag UID, technology, size.  When an NDEF tag is read, the NfcTag object contains a NdefMessage.
@@ -31,12 +46,12 @@ Reading a tag with the sheild, returns a NfcTag object. The NfcTag object contai
 
 A NdefMessage consist of one or more NdefRecords.
 
-The NdefMessage object is responsible for encoding NdefMessage into bytes so it can be written to a tag. The NdefMessage also decodes bytes read from a tag back into a NdefMessage object.
-
 The NdefMessage object has helper methods for adding records.
 
     ndefMessage.addTextRecord("hello, world");
     ndefMessage.addUriRecord("http://arduino.cc");
+
+The NdefMessage object is responsible for encoding NdefMessage into bytes so it can be written to a tag. The NdefMessage also decodes bytes read from a tag back into a NdefMessage object.
 
 ### NdefRecord
 
