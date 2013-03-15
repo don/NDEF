@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_NFCShield_I2C.h>
-#include <Ndef.h>
+#include <NdefMessage.h>
+#include <NdefRecord.h>
 #include <ArduinoUnit.h>
 
 TestSuite suite;
@@ -177,9 +178,9 @@ test(assign4)
     m2->addTextRecord("RECORD 2");
     m2->addTextRecord("Record 3");
 
-    assertEquals(3, m2->recordCount());    
+    assertEquals(3, m2->getRecordCount());    
     *m2 = *m1;
-    assertEquals(1, m2->recordCount());
+    assertEquals(1, m2->getRecordCount());
     
 //    NdefRecord ghost = m2->getRecord(1);
 //    ghost.print();
