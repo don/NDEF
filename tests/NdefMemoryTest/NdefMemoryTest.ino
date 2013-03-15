@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <Adafruit_NFCShield_I2C.h>
-#include <Ndef.h>
+#include <NdefMessage.h>
+#include <NdefRecord.h>
 //#include <MemoryFree.h>
 #include <ArduinoUnit.h>
 
@@ -88,7 +89,7 @@ void messageWithEmptyRecord()
 {
   NdefMessage m = NdefMessage();
   NdefRecord r = NdefRecord();
-  m.add(r);
+  m.addRecord(r);
   m.print();
 }
 
@@ -101,7 +102,7 @@ void messageWithoutHelper()
   r.setType(type, sizeof(type));
   uint8_t payload[] = { 0x02, 0x65, 0x6E, 0x66, 0x6F, 0x6F };
   r.setPayload(payload, sizeof(payload));
-  m.add(r);
+  m.addRecord(r);
   m.print();
 }
 
@@ -116,7 +117,7 @@ void messageWithId()
   r.setPayload(payload, sizeof(payload));
   uint8_t id[] = { 0x0, 0x0, 0x0 };
   r.setId(id, sizeof(id));
-  m.add(r);
+  m.addRecord(r);
   m.print();
 }
 
