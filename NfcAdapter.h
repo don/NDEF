@@ -19,18 +19,6 @@
 #define IRQ   (2)
 #define RESET (3)  // Not connected by default on the NFC Shield
 
-/*
-  • nfc.tagAvailable() -- returns tag UID when a tag is present
-  • nfc.mimeTypeAvailable(char[] mimeType) --
-  • nfc.ndefAvailable() -- returns the tag abstraction (presumably an NDEF or NDEFRecord) when an NDEF formatted tag is found
-  • nfc.addNdefFormatableAvailable() -- returns tag UID when a tag is present
-  • nfc.write()  -- based on Stream.write()
-  * nfc.read() -- based on Stream.read()
-  • nfc.share()
-  • nfc.unshare()
-  • nfc.erase()
-*/
-
   class NfcAdapter {
   public:
     NfcAdapter(void);
@@ -39,6 +27,10 @@
     boolean tagPresent(); // tagAvailable
     NfcTag read();
     boolean write(NdefMessage& ndefMessage);
+    // FUTURE boolean share(NdefMessage& ndefMessage);
+    // FUTURE boolean unshare();
+    // FUTURE boolean erase();
+    // FUTURE boolean format();
   private:
     Adafruit_NFCShield_I2C* shield;
     uint8_t uid[7];    // Buffer to store the returned UID
