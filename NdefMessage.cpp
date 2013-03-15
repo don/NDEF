@@ -65,7 +65,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         record.setPayload(&data[index], payloadLength);          
         index += payloadLength;
 
-        add(record);
+        addRecord(record);
         
         if (me) break; // last message
     }
@@ -139,20 +139,19 @@ void NdefMessage::encode(uint8_t* data)
 
 }
 
-// TODO rename addRecord
-// TODO return status
-void NdefMessage::add(NdefRecord& record)
+boolean NdefMessage::addRecord(NdefRecord& record)
 {
 
     if (_recordCount < MAX_NDEF_RECORDS)
     {
         _records[_recordCount] = record;
-        _recordCount++;                
+        _recordCount++;
+        return true;                
     }
     else
     {
-        // TODO consider returning status
         Serial.println("WARNING: Too many records. Increase MAX_NDEF_RECORDS.");
+        return false;
     }
 }
 
@@ -176,7 +175,7 @@ void NdefMessage::addMimeMediaRecord(String mimeType, uint8_t* payload, int payl
 
     r.setPayload(payload, payloadLength);
 
-    add(r);
+    addRecord(r);
 }
 
 void NdefMessage::addTextRecord(String text)
@@ -204,7 +203,7 @@ void NdefMessage::addTextRecord(String text, String encoding)
 
     r.setPayload(payload, payloadString.length());
 
-    add(r);
+    addRecord(r);
 }
 
 void NdefMessage::addUriRecord(String uri)
@@ -226,7 +225,7 @@ void NdefMessage::addUriRecord(String uri)
 
     r->setPayload(payload, payloadString.length());
 
-    add(*r);
+    addRecord(*r);
     delete(r);
 }
 
@@ -234,19 +233,27 @@ void NdefMessage::addEmptyRecord()
 {
     NdefRecord* r = new NdefRecord();
     r->setTnf(TNF_EMPTY);
-    add(*r);
+    addRecord(*r);
     delete(r);
 }
 
-NdefRecord NdefMessage::getRecord(int index)
+NdefRecord NdefMessage::getRecord(uint8_t index)
 {
     if (index > -1 && index < _recordCount)
     {
         return _records[index];        
     }
-    // TODO Dave: what do I return here?
-    // NdefRecord()?
+    else
+    {
+        return NdefRecord(); // would rather return NULL
+    }
 }
+
+NdefRecord NdefMessage::operator[](uint8_t index)
+{
+    return getRecord(index);
+}
+
 
 void NdefMessage::print()
 {

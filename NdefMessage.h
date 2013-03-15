@@ -14,18 +14,23 @@ class NdefMessage
         NdefMessage(const NdefMessage& rhs);  
         ~NdefMessage();     
         NdefMessage& operator=(const NdefMessage& rhs);
-        uint8_t getRecordCount();
+        
         int getEncodedSize(); // need so we can pass array to encode
-        void encode(uint8_t* data); // TODO is getBytes better?
+        void encode(uint8_t* data);
+        // TODO encode(uint8_t* data, int numberBytes); ???
 
-        void add(NdefRecord& record); // addRecord?
+        boolean addRecord(NdefRecord& record);
         void addMimeMediaRecord(String mimeType, String payload);
         void addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength);
         void addTextRecord(String text);
         void addTextRecord(String text, String encoding);
         void addUriRecord(String uri);
         void addEmptyRecord();
-        NdefRecord getRecord(int index); // TODO overload [] 
+
+        uint8_t getRecordCount();
+        NdefRecord getRecord(uint8_t index);
+        NdefRecord operator[](uint8_t index);
+
         void print();
     private:
         NdefRecord _records[MAX_NDEF_RECORDS];
