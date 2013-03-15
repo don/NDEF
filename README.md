@@ -11,7 +11,7 @@ Supports
 
 [Adafruit NFC Shield](https://www.adafruit.com/products/364)
 
-[Adafruit NFC Shield I2C library](https://github.com/don/Adafruit_NFCShield_I2C) you'll need the "guard" branch)
+[Adafruit NFC Shield I2C library](https://github.com/don/Adafruit_NFCShield_I2C) you'll need the "guard" branch
 	
 	$ cd ~/Documents/Ardiuino/library
 	$ git clone https://github.com/don/Adafruit_NFCShield_I2C
