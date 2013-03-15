@@ -19,6 +19,33 @@ Supports
 	$ git branch --track guard origin/guard
 	$ git checkout guard
 
+### NfcAdapter
+
+The user interacts with the NfcAdapter to read and write NFC tags using the NFC shield.
+
+### NfcTag 
+
+Reading a tag with the sheild, returns a NfcTag object. The NfcTag object contains meta data about the tag UID, technology, size.  When an NDEF tag is read, the NfcTag object contains a NdefMessage.
+
+### NdefMessage
+
+A NdefMessage consist of one or more NdefRecords.
+
+The NdefMessage object is responsible for encoding NdefMessage into bytes so it can be written to a tag. The NdefMessage also decodes bytes read from a tag back into a NdefMessage object.
+
+The NdefMessage object has helper methods for adding records.
+
+    ndefMessage.addTextRecord("hello, world");
+    ndefMessage.addUriRecord("http://arduino.cc");
+
+### NdefRecord
+
+A NdefRecord carrys a payload and info about the payload within a NdefMessage.
+
+### Specifcations
+
+This code is based on the "NFC Data Exchange Format (NDEF) Technical Specification" and the "Record Type Definition Technical Specifications" that can be downloaded from the [NFC Forum](http://www.nfc-forum.org/specs/spec_license).
+
 ## Warning
 
 This software is in active development. It works for the happy path. Error handling is bad. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages.
