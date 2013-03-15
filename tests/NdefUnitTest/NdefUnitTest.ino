@@ -1,5 +1,7 @@
+#include <Wire.h>
+#include <Adafruit_NFCShield_I2C.h>
+#include <NdefRecord.h>
 #include <ArduinoUnit.h>
-#include <Ndef.h>
 
 TestSuite suite;
 
