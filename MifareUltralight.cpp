@@ -71,8 +71,8 @@ NfcTag MifareUltralight::read(uint8_t * uid, int uidLength)
   }
 
   NdefMessage ndefMessage = NdefMessage(&buffer[ndefStartIndex], messageLength);
-  NfcTag tag = NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2, ndefMessage);
-  return tag;
+  return NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2, ndefMessage);
+  
 }
 
 boolean MifareUltralight::isUnformatted() 
