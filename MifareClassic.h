@@ -1,6 +1,7 @@
 #ifndef MifareClassic_h
 #define MifareClassic_h
 
+#include <Due.h>
 #include <Adafruit_NFCShield_I2C.h>
 #include <Ndef.h>
 #include <NfcTag.h>
