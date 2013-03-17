@@ -84,12 +84,9 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
 
     // NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
     // NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
-
-    NdefMessage ndefMessage = NdefMessage(&buffer[4], messageLength);
-    NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
+    // return tag;
     
-    // WORKS!! NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", &buffer[4], messageLength);
-    return tag;
+    return NfcTag(uid, uidLength, "Mifare Classic", &buffer[4], messageLength);
 }
 
 int MifareClassic::getBufferSize(int messageLength)
