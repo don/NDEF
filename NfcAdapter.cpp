@@ -54,13 +54,17 @@ NfcTag NfcAdapter::read()
   // TODO need an abstraction of Driver
   if (type == TAG_TYPE_MIFARE_CLASSIC)
   {
-    Serial.println(F("Mifare Classic"));
+    #ifdef NDEF_DEBUG    
+    Serial.println(F("Reading Mifare Classic"));
+    #endif
     MifareClassic mifareClassic = MifareClassic(*shield);
     return mifareClassic.read(uid, uidLength);
   }
   else if (type == TAG_TYPE_2)
   {
-    Serial.println(F("Mifare Ultralight"));
+    #ifdef NDEF_DEBUG        
+    Serial.println(F("Reading Mifare Ultralight"));
+    #endif
     MifareUltralight ultralight = MifareUltralight(*shield);
     return ultralight.read(uid, uidLength);
   }

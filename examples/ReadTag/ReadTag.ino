@@ -11,7 +11,7 @@ void setup(void) {
 }
 
 void loop(void) {
-  Serial.println("\nScan a NFC tag");
+  Serial.println("\nScan a NFC tag\n");
   if (nfc.tagPresent())
   {
     NfcTag tag = nfc.read();

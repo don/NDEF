@@ -2,6 +2,8 @@
 
 #define BLOCK_SIZE 16
 
+#define MIFARE_CLASSIC ("Mifare Ultralight")
+
 MifareClassic::MifareClassic(Adafruit_NFCShield_I2C& nfcShield)
 {
   _nfcShield = &nfcShield;
@@ -29,12 +31,17 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       }
       else
       {
+        // TODO why is an unformatted tag ending up here? Authentication should have failed.
         Serial.print(F("Error. Failed read block "));Serial.println(currentBlock); 
+        return NfcTag(uid, uidLength, MIFARE_CLASSIC);        
       }
     }
     else
     {
       Serial.print(F("Error. Block Authentication failed for "));Serial.println(currentBlock);
+      // TODO unformatted tags should be ending up here
+      // TODO set tag.isFormatted = false
+      return NfcTag(uid, uidLength, MIFARE_CLASSIC);      
     }
 
     // this should be nested in the message length loop
@@ -73,6 +80,7 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       else 
       {
         Serial.print(F("Read failed "));Serial.println(currentBlock);
+        // TODO handle errors here
       }
 
       index += BLOCK_SIZE;                   
