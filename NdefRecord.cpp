@@ -238,7 +238,7 @@ void NdefRecord::getType(uint8_t* type)
     memcpy(type, _type, _typeLength);
 }
 
-void NdefRecord::setType(const uint8_t * type, const int numBytes)
+void NdefRecord::setType(const uint8_t * type, const uint8_t numBytes)
 {
     if(_typeLength)
     {
@@ -289,7 +289,7 @@ void NdefRecord::getId(uint8_t * id)
     memcpy(id, _id, _idLength);
 }
 
-void NdefRecord::setId(const uint8_t * id, const int numBytes)
+void NdefRecord::setId(const uint8_t * id, const uint8_t numBytes)
 {
     if (_idLength)
     {

@@ -39,17 +39,17 @@ class NdefRecord
         void getId(uint8_t* id); 
         
         void setTnf(uint8_t tnf);
-        void setType(const uint8_t * type, const int numBytes);
+        void setType(const uint8_t * type, const uint8_t numBytes);
         void setPayload(const uint8_t * payload, const int numBytes);
-        void setId(const uint8_t * id, const int numBytes);
+        void setId(const uint8_t * id, const uint8_t numBytes);
         
         void print();
     private:
         uint8_t getTnfByte(bool firstRecord, bool lastRecord);
-        uint8_t _tnf;
-        int _typeLength; // uint8_t
+        uint8_t _tnf; // 3 bit
+        uint8_t _typeLength; 
         int _payloadLength;        
-        int _idLength;    
+        uint8_t _idLength;    
         uint8_t * _type;        
         uint8_t * _payload;        
         uint8_t * _id;
