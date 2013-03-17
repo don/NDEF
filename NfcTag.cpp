@@ -103,8 +103,8 @@ NdefMessage NfcTag::getNdefMessage()
 
 void NfcTag::print()
 {
-	Serial.print("NFC Tag - ");Serial.println(_tagType);
-	Serial.print("UID ");Serial.println(getUidString());
+	Serial.print(F("NFC Tag - "));Serial.println(_tagType);
+	Serial.print(F("UID "));Serial.println(getUidString());
 	// TODO ensure message exists
 	_ndefMessage->print();
 }

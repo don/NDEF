@@ -7,7 +7,7 @@ NdefMessage::NdefMessage(void)
 
 NdefMessage::NdefMessage(const byte * data, const int numBytes)
 {
-    Serial.print("Decoding ");Serial.print(numBytes);Serial.println(" bytes");    
+    Serial.print(F("Decoding "));Serial.print(numBytes);Serial.println(F(" bytes"));    
     PrintHexChar(data, numBytes);
     //DumpHex(data, numBytes, 16);
 
@@ -150,7 +150,7 @@ boolean NdefMessage::addRecord(NdefRecord& record)
     }
     else
     {
-        Serial.println("WARNING: Too many records. Increase MAX_NDEF_RECORDS.");
+        Serial.println(F("WARNING: Too many records. Increase MAX_NDEF_RECORDS."));
         return false;
     }
 }
@@ -257,9 +257,9 @@ NdefRecord NdefMessage::operator[](uint8_t index)
 
 void NdefMessage::print()
 {
-    Serial.print("\nNDEF Message ");Serial.print(_recordCount);Serial.print(" record");
+    Serial.print(F("\nNDEF Message "));Serial.print(_recordCount);Serial.print(F(" record"));
     _recordCount == 1 ? Serial.print(", ") : Serial.print("s, ");
-    Serial.print(getEncodedSize());Serial.println(" bytes");
+    Serial.print(getEncodedSize());Serial.println(F(" bytes"));
 
     int i;
     for (i = 0; i < _recordCount; i++) 
