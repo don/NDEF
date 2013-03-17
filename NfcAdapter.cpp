@@ -12,14 +12,13 @@ NfcAdapter::~NfcAdapter(void)
 
 void NfcAdapter::begin()
 {
-	shield->begin();
+  shield->begin();
 
   uint32_t versiondata = shield->getFirmwareVersion();
   if (! versiondata) {
     Serial.print(F("Didn't find PN53x board"));
     while (1); // halt
   }
-  // Got ok data, print it out!
   Serial.print(F("Found chip PN5")); Serial.println((versiondata>>24) & 0xFF, HEX); 
   Serial.print(F("Firmware ver. ")); Serial.print((versiondata>>16) & 0xFF, DEC); 
   Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
@@ -30,10 +29,10 @@ void NfcAdapter::begin()
 
 boolean NfcAdapter::tagPresent()
 {
-	uint8_t success;
+  uint8_t success;
   uidLength = 0; 
 
-	success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+  success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
 
   // if (success)
   // {
@@ -52,7 +51,7 @@ NfcTag NfcAdapter::read()
 
   uint8_t type = guessTagType();
 
-  // TODO need and abstraction of Driver
+  // TODO need an abstraction of Driver
   if (type == TAG_TYPE_MIFARE_CLASSIC)
   {
     Serial.println(F("Mifare Classic"));
