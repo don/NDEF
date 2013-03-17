@@ -29,12 +29,12 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       }
       else
       {
-        Serial.print("Error. Failed read block ");Serial.println(currentBlock); 
+        Serial.print(F("Error. Failed read block "));Serial.println(currentBlock); 
       }
     }
     else
     {
-      Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
+      Serial.print(F("Error. Block Authentication failed for "));Serial.println(currentBlock);
     }
 
     // this should be nested in the message length loop
@@ -42,8 +42,8 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
     int bufferSize = getBufferSize(messageLength);
     uint8_t buffer[bufferSize];
 
-    Serial.print("Message Length ");Serial.println(messageLength);
-    Serial.print("Buffer Size ");Serial.println(bufferSize);
+    Serial.print(F("Message Length "));Serial.println(messageLength);
+    Serial.print(F("Buffer Size "));Serial.println(bufferSize);
 
     while (index < bufferSize)
     {
@@ -54,7 +54,8 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
         success = _nfcShield->mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
         if (!success)
         {
-          Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
+          Serial.print(F("Error. Block Authentication failed for "));Serial.println(currentBlock);
+          // TODO error handling
         }
       }
 
@@ -62,12 +63,12 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       success = _nfcShield->mifareclassic_ReadDataBlock(currentBlock, &buffer[index]);
       if (success) 
       {
-        Serial.print("Block ");Serial.print(currentBlock);Serial.print(" ");
+        Serial.print(F("Block "));Serial.print(currentBlock);Serial.print(" ");
         _nfcShield->PrintHexChar(&buffer[index], BLOCK_SIZE);
       } 
       else 
       {
-        Serial.print("Read failed ");Serial.println(currentBlock);
+        Serial.print(F("Read failed "));Serial.println(currentBlock);
       }
 
       index += BLOCK_SIZE;                   
@@ -76,7 +77,7 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       // skip the trailer block
       if (_nfcShield->mifareclassic_IsTrailerBlock(currentBlock))
       {
-        Serial.print("Skipping block ");Serial.println(currentBlock);
+        Serial.print(F("Skipping block "));Serial.println(currentBlock);
         currentBlock++;    
       }
 
@@ -118,7 +119,7 @@ int MifareClassic::getNdefLength(byte *data)
     } else if (data[2] == 0x03) { // 1 byte
         ndefLength = data[3];
     } else {
-        Serial.println("ERROR: Do not know how to decode length.");
+        Serial.println(F("ERROR: Do not know how to decode length."));
         ndefLength = -1;
     }
     
@@ -134,8 +135,8 @@ boolean MifareClassic::write(NdefMessage& m, uint8_t * uid, int uidLength)
     uint8_t buffer[getBufferSize(sizeof(encoded))];
     memset(buffer, 0, sizeof(buffer));
 
-    Serial.print("sizeof(encoded) ");Serial.println(sizeof(encoded));
-    Serial.print("sizeof(buffer) ");Serial.println(sizeof(buffer));
+    Serial.print(F("sizeof(encoded) "));Serial.println(sizeof(encoded));
+    Serial.print(F("sizeof(buffer) "));Serial.println(sizeof(buffer));
 
     buffer[0] = 0x0;        
     buffer[1] = 0x0;        
@@ -157,7 +158,7 @@ boolean MifareClassic::write(NdefMessage& m, uint8_t * uid, int uidLength)
         int success = _nfcShield->mifareclassic_AuthenticateBlock(uid, uidLength, currentBlock, 0, key);        
         if (!success)
         {
-          Serial.print("Error. Block Authentication failed for ");Serial.println(currentBlock);
+          Serial.print(F("Error. Block Authentication failed for "));Serial.println(currentBlock);
           return false;
         }
       }
