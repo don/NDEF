@@ -42,9 +42,11 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
     int bufferSize = getBufferSize(messageLength);
     uint8_t buffer[bufferSize];
 
+    #ifdef MIFARE_CLASSIC_DEBUG
     Serial.print(F("Message Length "));Serial.println(messageLength);
     Serial.print(F("Buffer Size "));Serial.println(bufferSize);
-
+    #endif
+    
     while (index < bufferSize)
     {
 
@@ -63,8 +65,10 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       success = _nfcShield->mifareclassic_ReadDataBlock(currentBlock, &buffer[index]);
       if (success) 
       {
+        #ifdef MIFARE_CLASSIC_DEBUG          
         Serial.print(F("Block "));Serial.print(currentBlock);Serial.print(" ");
         _nfcShield->PrintHexChar(&buffer[index], BLOCK_SIZE);
+        #endif
       } 
       else 
       {
@@ -77,7 +81,9 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       // skip the trailer block
       if (_nfcShield->mifareclassic_IsTrailerBlock(currentBlock))
       {
+        #ifdef MIFARE_CLASSIC_DEBUG          
         Serial.print(F("Skipping block "));Serial.println(currentBlock);
+        #endif
         currentBlock++;    
       }
 
@@ -135,8 +141,10 @@ boolean MifareClassic::write(NdefMessage& m, uint8_t * uid, int uidLength)
     uint8_t buffer[getBufferSize(sizeof(encoded))];
     memset(buffer, 0, sizeof(buffer));
 
+    #ifdef MIFARE_CLASSIC_DEBUG    
     Serial.print(F("sizeof(encoded) "));Serial.println(sizeof(encoded));
     Serial.print(F("sizeof(buffer) "));Serial.println(sizeof(buffer));
+    #endif
 
     buffer[0] = 0x0;        
     buffer[1] = 0x0;        
@@ -166,8 +174,10 @@ boolean MifareClassic::write(NdefMessage& m, uint8_t * uid, int uidLength)
       int write_success = _nfcShield->mifareclassic_WriteDataBlock (currentBlock, &buffer[index]);
       if (write_success) 
       {
+        #ifdef MIFARE_CLASSIC_DEBUG          
         Serial.print(F("Wrote block "));Serial.print(currentBlock);Serial.print(" - ");
         _nfcShield->PrintHexChar(&buffer[index], BLOCK_SIZE);
+        #endif        
       } 
       else 
       {
@@ -180,7 +190,9 @@ boolean MifareClassic::write(NdefMessage& m, uint8_t * uid, int uidLength)
       if (_nfcShield->mifareclassic_IsTrailerBlock(currentBlock))
       {
         // can't write to trailer block
+        #ifdef MIFARE_CLASSIC_DEBUG        
         Serial.print(F("Skipping block "));Serial.println(currentBlock);
+        #endif
         currentBlock++;    
       }
 

@@ -49,8 +49,10 @@ NfcTag MifareUltralight::read(uint8_t * uid, int uidLength)
     success = nfc->mifareultralight_ReadPage(page, &buffer[index]);
     if (success) 
     {
+      #ifdef MIFARE_ULTRALIGHT_DEBUG    
       Serial.print(F("Page "));Serial.print(page);Serial.print(" ");
       nfc->PrintHexChar(&buffer[index], ULTRALIGHT_PAGE_SIZE);
+      #endif
     } 
     else 
     {
@@ -99,8 +101,10 @@ void MifareUltralight::readCapabilityContainer()
   {
     // See AN1303 - different rules for Mifare Family byte2 = (additional data + 48)/8
     tagCapacity = data[2] * 8;
+    #ifdef MIFARE_ULTRALIGHT_DEBUG        
     Serial.print(F("Tag capacity "));Serial.print(tagCapacity);Serial.println(F(" bytes"));
-
+    #endif
+    
     // TODO future versions should get lock information
   }
 }
@@ -117,8 +121,10 @@ void MifareUltralight::findNdefMessage()
   for (page = 4; page < 6; page++)
   {
     success = success && nfc->mifareultralight_ReadPage(page, data_ptr);
+    #ifdef MIFARE_ULTRALIGHT_DEBUG        
     Serial.print(F("Page "));Serial.print(page);Serial.print(F(" - "));
     nfc->PrintHexChar(data_ptr, 4);
+    #endif
     data_ptr += ULTRALIGHT_PAGE_SIZE;
   }
 
@@ -137,8 +143,10 @@ void MifareUltralight::findNdefMessage()
     } 
   }
 
+  #ifdef MIFARE_ULTRALIGHT_DEBUG    
   Serial.print(F("messageLength "));Serial.println(messageLength);
   Serial.print(F("ndefStartIndex "));Serial.println(ndefStartIndex);
+  #endif
 
 }
 
