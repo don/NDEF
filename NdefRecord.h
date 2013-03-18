@@ -30,14 +30,14 @@ class NdefRecord
         int getPayloadLength();
         uint8_t getIdLength();
 
-        uint8_t* getType(); 
+        String getType(); 
         uint8_t* getPayload();
-        uint8_t* getId();
+        String getId();        
         
         void getType(uint8_t* type); 
         void getPayload(uint8_t* payload);
         void getId(uint8_t* id); 
-        
+                
         void setTnf(uint8_t tnf);
         void setType(const uint8_t * type, const uint8_t numBytes);
         void setPayload(const uint8_t * payload, const int numBytes);

@@ -44,7 +44,6 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
 
 }
 
-
 // TODO NdefRecord::NdefRecord(tnf, type, payload, id)
 
 NdefRecord::~NdefRecord()
@@ -224,12 +223,15 @@ uint8_t NdefRecord::getIdLength()
     return _idLength;
 }
 
-// caller is responsible for deleting array
-uint8_t* NdefRecord::getType()
+String NdefRecord::getType()
 {
-    uint8_t* type = (uint8_t*)malloc(_typeLength);
+    // TODO is there a simpler way to do this?
+    char* type = (char*)malloc(_typeLength);
+    memset(type, 0, sizeof(type));    
     memcpy(type, _type, _typeLength);
-    return type;
+    String typeString = String(type);
+    free(type);
+    return typeString;
 }
 
 // this assumes the caller created type correctly
@@ -276,12 +278,15 @@ void NdefRecord::setPayload(const uint8_t * payload, const int numBytes)
     _payloadLength = numBytes;
 }
 
-// caller is responsible for deleting array
-uint8_t* NdefRecord::getId()
+String NdefRecord::getId()
 {
-    uint8_t* id = (uint8_t*)malloc(_idLength);
+    // TODO is there a simpler way to do this?
+    char* id = (char*)malloc(_idLength);
+    memset(id, 0, sizeof(id));    
     memcpy(id, _id, _idLength);
-    return id;
+    String idString = String(id);
+    free(id);
+    return idString;
 }
 
 void NdefRecord::getId(uint8_t * id)
