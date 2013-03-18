@@ -19,6 +19,7 @@ class NfcTag
 		void getUid(uint8_t* uid, uint8_t uidLength);
 		String getUidString();
 		String getTagType();
+        boolean hasNdefMessage();
 		NdefMessage getNdefMessage();
 		void print();
 	private:
