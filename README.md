@@ -40,7 +40,7 @@ Write a message to a tag
 
 ### NfcTag 
 
-Reading a tag with the sheild, returns a NfcTag object. The NfcTag object contains meta data about the tag UID, technology, size.  When an NDEF tag is read, the NfcTag object contains a NdefMessage.
+Reading a tag with the shield, returns a NfcTag object. The NfcTag object contains meta data about the tag UID, technology, size.  When an NDEF tag is read, the NfcTag object contains a NdefMessage.
 
 ### NdefMessage
 
