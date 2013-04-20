@@ -2,7 +2,7 @@
 
 #define BLOCK_SIZE 16
 
-#define MIFARE_CLASSIC ("Mifare Ultralight")
+#define MIFARE_CLASSIC ("Mifare Classic")
 
 MifareClassic::MifareClassic(Adafruit_NFCShield_I2C& nfcShield)
 {
@@ -27,7 +27,10 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
       success = _nfcShield->mifareclassic_ReadDataBlock(currentBlock, data);
       if (success)
       {
-        messageLength = getNdefLength(data);        
+        messageLength = getNdefLength(data); 
+        if (messageLength < 1) {
+          return NfcTag(uid, uidLength, "ERROR"); // TODO should the error message go in NfcTag?
+        }       
       }
       else
       {
@@ -101,7 +104,7 @@ NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
     // NfcTag tag = NfcTag(uid, uidLength, "Mifare Classic", ndefMessage);
     // return tag;
     
-    return NfcTag(uid, uidLength, "Mifare Classic", &buffer[4], messageLength);
+    return NfcTag(uid, uidLength, MIFARE_CLASSIC, &buffer[4], messageLength);
 }
 
 int MifareClassic::getBufferSize(int messageLength)
@@ -133,7 +136,7 @@ int MifareClassic::getNdefLength(byte *data)
     } else if (data[2] == 0x03) { // 1 byte
         ndefLength = data[3];
     } else {
-        Serial.println(F("ERROR: Do not know how to decode length."));
+        Serial.println(F("Error. Can't decode message length."));
         ndefLength = -1;
     }
     
