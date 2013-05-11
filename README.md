@@ -51,7 +51,7 @@ The NdefMessage object is responsible for encoding NdefMessage into bytes so it 
 
 A NdefRecord carrys a payload and info about the payload within a NdefMessage.
 
-### Specifcations
+### Specifications
 
 This code is based on the "NFC Data Exchange Format (NDEF) Technical Specification" and the "Record Type Definition Technical Specifications" that can be downloaded from the [NFC Forum](http://www.nfc-forum.org/specs/spec_license).
 
