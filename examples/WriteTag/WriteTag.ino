@@ -5,7 +5,7 @@
 NfcAdapter nfc = NfcAdapter();
 
 void setup() {
-      Serial.begin(115200);
+      Serial.begin(9600);
       Serial.println("NDEF Writer");
       nfc.begin();
 }
@@ -15,8 +15,13 @@ void loop() {
     if (nfc.tagPresent()) {
         NdefMessage message = NdefMessage();
         message.addUriRecord("http://arduino.cc");
-        nfc.write(message);
-        Serial.println("Try reading this tag with your phone.");
+
+        bool success = nfc.write(message);
+        if (success) {
+          Serial.println("Success. Try reading this tag with your phone.");        
+        } else {
+          Serial.println("Write failed.");
+        }
     }
     delay(5000);
 }
