@@ -6,8 +6,15 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-NdefMessage	KEYWORD1
-NdefRecord	KEYWORD1
+Due KEYWORD1
+MifareClassic KEYWORD1
+MifareUltralight KEYWORD1
+Ndef KEYWORD1
+NdefMessage KEYWORD1
+NdefRecord KEYWORD1
+NfcAdapter KEYWORD1
+NfcDriver KEYWORD1
+NfcTag KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
