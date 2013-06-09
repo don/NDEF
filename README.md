@@ -13,6 +13,14 @@ Supports
 
 [Adafruit NFC Shield I2C library](https://github.com/adafruit/Adafruit_NFCShield_I2C) 
 
+## Getting Started
+
+To use the Ndef library in your code, include the following in your sketch
+
+    #include <Wire.h>
+    #include <Adafruit_NFCShield_I2C.h>
+    #include <NfcAdapter.h>
+
 ### NfcAdapter
 
 The user interacts with the NfcAdapter to read and write NFC tags using the NFC shield.
