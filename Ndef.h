@@ -14,8 +14,8 @@
 
 #define NULL (void *)0
 
-void PrintHex(const byte * data, const uint32_t numBytes);
-void PrintHexChar(const byte * data, const uint32_t numBytes);
-void DumpHex(const byte * data, const uint32_t numBytes, const uint8_t blockSize);
+void PrintHex(const byte *data, const long numBytes);
+void PrintHexChar(const byte *data, const long numBytes);
+void DumpHex(const byte *data, const long numBytes, const int blockSize);
 
 #endif

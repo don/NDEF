@@ -1,7 +1,7 @@
 #include "Ndef.h"
 
 // Borrowed from Adafruit_NFCShield_I2C
-void PrintHex(const byte * data, const uint32_t numBytes)
+void PrintHex(const byte * data, const long numBytes)
 {
   uint32_t szPos;
   for (szPos=0; szPos < numBytes; szPos++) 
@@ -20,7 +20,7 @@ void PrintHex(const byte * data, const uint32_t numBytes)
 }
 
 // Borrowed from Adafruit_NFCShield_I2C
-void PrintHexChar(const byte * data, const uint32_t numBytes)
+void PrintHexChar(const byte * data, const long numBytes)
 {
   uint32_t szPos;
   for (szPos=0; szPos < numBytes; szPos++) 
@@ -46,7 +46,7 @@ void PrintHexChar(const byte * data, const uint32_t numBytes)
 }
 
 // Note if buffer % blockSize != 0, last block will not be written
-void DumpHex(const byte * data, const uint32_t numBytes, const uint8_t blockSize)
+void DumpHex(const byte * data, const long numBytes, const unsigned int blockSize)
 {
     int i;
     for (i = 0; i < (numBytes / blockSize); i++)    

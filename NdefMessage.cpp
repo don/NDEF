@@ -111,7 +111,7 @@ NdefMessage& NdefMessage::operator=(const NdefMessage& rhs)
     return *this;
 }
 
-uint8_t NdefMessage::getRecordCount()
+unsigned int NdefMessage::getRecordCount()
 {
     return _recordCount;
 }
@@ -239,7 +239,7 @@ void NdefMessage::addEmptyRecord()
     delete(r);
 }
 
-NdefRecord NdefMessage::getRecord(uint8_t index)
+NdefRecord NdefMessage::getRecord(int index)
 {
     if (index > -1 && index < _recordCount)
     {
@@ -251,11 +251,10 @@ NdefRecord NdefMessage::getRecord(uint8_t index)
     }
 }
 
-NdefRecord NdefMessage::operator[](uint8_t index)
+NdefRecord NdefMessage::operator[](int index)
 {
     return getRecord(index);
 }
-
 
 void NdefMessage::print()
 {

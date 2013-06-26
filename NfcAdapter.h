@@ -33,9 +33,9 @@ class NfcAdapter {
     // FUTURE boolean format();
   private:
     Adafruit_NFCShield_I2C* shield;
-    uint8_t uid[7];    // Buffer to store the returned UID
-    uint8_t uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
-    uint8_t guessTagType();
+    byte uid[7];    // Buffer to store the returned UID
+    unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+    unsigned int guessTagType();
   };
 
 #endif

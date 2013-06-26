@@ -13,7 +13,7 @@ MifareClassic::~MifareClassic()
 {
 }
 
-NfcTag MifareClassic::read(uint8_t * uid, int uidLength)
+NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
 {
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 };
     int currentBlock = 4;
@@ -143,7 +143,7 @@ int MifareClassic::getNdefLength(byte *data)
     return ndefLength;
 }
 
-boolean MifareClassic::write(NdefMessage& m, uint8_t * uid, int uidLength)
+boolean MifareClassic::write(NdefMessage& m, byte * uid, unsigned int uidLength)
 {
 
     uint8_t encoded[m.getEncodedSize()];
