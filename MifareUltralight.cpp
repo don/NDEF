@@ -62,7 +62,7 @@ NfcTag MifareUltralight::read(uint8_t * uid, int uidLength)
       break;
     }
     
-    if (index > messageLength)
+    if (index >= (messageLength + ndefStartIndex))
     {
       break;
     }
@@ -159,6 +159,7 @@ void MifareUltralight::calculateBufferSize()
 
   if (bufferSize % ULTRALIGHT_READ_SIZE != 0)
   {
-      bufferSize = ((messageLength / ULTRALIGHT_READ_SIZE) + 1) * ULTRALIGHT_READ_SIZE;    
-  }
+    // buffer must be an increment of page size    
+    bufferSize = ((bufferSize / ULTRALIGHT_READ_SIZE) + 1) * ULTRALIGHT_READ_SIZE;
+  }  
 }
