@@ -111,7 +111,7 @@ NdefMessage& NdefMessage::operator=(const NdefMessage& rhs)
     return *this;
 }
 
-uint8_t NdefMessage::getRecordCount()
+unsigned int NdefMessage::getRecordCount()
 {
     return _recordCount;
 }

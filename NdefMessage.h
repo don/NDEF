@@ -27,14 +27,14 @@ class NdefMessage
         void addUriRecord(String uri);
         void addEmptyRecord();
 
-        uint8_t getRecordCount();
+        unsigned int getRecordCount();
         NdefRecord getRecord(int index);
         NdefRecord operator[](int index);
 
         void print();
     private:
         NdefRecord _records[MAX_NDEF_RECORDS];
-        uint8_t _recordCount;
+        unsigned int _recordCount;
 };
 
 #endif
