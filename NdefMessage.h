@@ -17,7 +17,6 @@ class NdefMessage
         
         int getEncodedSize(); // need so we can pass array to encode
         void encode(byte *data);
-        // TODO encode(uint8_t* data, int numberBytes); ???
 
         boolean addRecord(NdefRecord& record);
         void addMimeMediaRecord(String mimeType, String payload);
