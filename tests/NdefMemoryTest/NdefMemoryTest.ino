@@ -5,8 +5,6 @@
 //#include <MemoryFree.h>
 #include <ArduinoUnit.h>
 
-TestSuite suite;
-
 void leakCheck(void (*callback)())
 {
   int start = freeMemory();
@@ -16,12 +14,12 @@ void leakCheck(void (*callback)())
 }
 
 // Custom Assertion
-void assertNoLeak(Test& __test__, void (*callback)())
+void assertNoLeak(void (*callback)())
 {
   int start = freeMemory();
   (*callback)();
   int end = freeMemory();
-  assertEquals(0, (start - end));
+  assertEqual(0, (start - end));
 }
 
 void record()
@@ -160,33 +158,33 @@ test(memoryKludgeEnd)
 
 test(recordLeaks)
 {
-  assertNoLeak(__test__, &record);
-  assertNoLeak(__test__, &emptyRecord);
-  assertNoLeak(__test__, &textRecord);
+  assertNoLeak(&record);
+  assertNoLeak(&emptyRecord);
+  assertNoLeak(&textRecord);
 }
 
 test(recordAccessorLeaks)
 {
-  assertNoLeak(__test__, &recordMallocZero);
+  assertNoLeak(&recordMallocZero);
 }
 
 test(messageLeaks)
 {
-  assertNoLeak(__test__, &emptyMessage);
-  assertNoLeak(__test__, &printEmptyMessage);
-  assertNoLeak(__test__, &printEmptyMessageNoNew);
-  assertNoLeak(__test__, &messageWithTextRecord);
-  assertNoLeak(__test__, &messageWithEmptyRecord);
-  assertNoLeak(__test__, &messageWithoutHelper);
-  assertNoLeak(__test__, &messageWithId);
+  assertNoLeak(&emptyMessage);
+  assertNoLeak(&printEmptyMessage);
+  assertNoLeak(&printEmptyMessageNoNew);
+  assertNoLeak(&messageWithTextRecord);
+  assertNoLeak(&messageWithEmptyRecord);
+  assertNoLeak(&messageWithoutHelper);
+  assertNoLeak(&messageWithId);
 }
 
 test(messageOneBigRecord)
 {
-  assertNoLeak(__test__, &message80);
+  assertNoLeak(&message80);
   // The next 2 fail. Maybe out of memory? Look into helper methods
-  //assertNoLeak(__test__, &message100);
-  //assertNoLeak(__test__, &message120);
+  //assertNoLeak(&message100);
+  //assertNoLeak(&message120);
 }
 
 test(memoryKludgeStart)
@@ -197,5 +195,5 @@ test(memoryKludgeStart)
 }
 
 void loop() {
-  suite.run();  
+  Test::run();  
 }

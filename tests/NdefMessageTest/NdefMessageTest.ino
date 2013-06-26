@@ -4,21 +4,19 @@
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>
 
-TestSuite suite;
-
 // Custom Assertion
-void assertNoLeak(Test& __test__, void (*callback)())
+void assertNoLeak(void (*callback)())
 {
   int start = freeMemory();
   (*callback)();
   int end = freeMemory();
-  assertEquals(0, (start - end));
+  assertEqual(0, (start - end));
 }
 
-void assertBytesEqual(Test& __test__, const uint8_t* expected, const uint8_t* actual, int size) {
+void assertBytesEqual(const uint8_t* expected, const uint8_t* actual, int size) {
   for (int i = 0; i < size; i++) {
     // Serial.print("> ");Serial.print(expected[i]);Serial.print(" ");Serial.println(actual[i]);
-    assertEquals(expected[i], actual[i]);
+    assertEqual(expected[i], actual[i]);
   }
 }
 
@@ -49,7 +47,7 @@ test(messageDelete)
   int end = freeMemory();
 //  Serial.print("Start ");Serial.println(start);
 //  Serial.print("End ");Serial.println(end);
-  assertEquals(0, (start-end));
+  assertEqual(0, (start-end));
 }
 
 
@@ -69,15 +67,15 @@ test(assign)
     NdefRecord r1 = m1->getRecord(0);
     NdefRecord r2 = m2->getRecord(0);
     
-    assertEquals(r1.getTnf(), r2.getTnf());
-    assertEquals(r1.getTypeLength(), r2.getTypeLength());
-    assertEquals(r1.getPayloadLength(), r2.getPayloadLength());
-    assertEquals(r1.getIdLength(), r2.getIdLength());
+    assertEqual(r1.getTnf(), r2.getTnf());
+    assertEqual(r1.getTypeLength(), r2.getTypeLength());
+    assertEqual(r1.getPayloadLength(), r2.getPayloadLength());
+    assertEqual(r1.getIdLength(), r2.getIdLength());
   
     uint8_t* p1 = r1.getPayload();
     uint8_t* p2 = r2.getPayload();  
     int size = r1.getPayloadLength();
-    assertBytesEqual(__test__, p1, p2, size);
+    assertBytesEqual(p1, p2, size);
     free(p1);
     free(p2);
   
@@ -86,7 +84,7 @@ test(assign)
   }
       
   int end = freeMemory();
-  assertEquals(0, (start-end));
+  assertEqual(0, (start-end));
 }
 
 test(assign2)
@@ -105,23 +103,23 @@ test(assign2)
     NdefRecord r1 = m1.getRecord(0);
     NdefRecord r2 = m2.getRecord(0);
     
-    assertEquals(r1.getTnf(), r2.getTnf());
-    assertEquals(r1.getTypeLength(), r2.getTypeLength());
-    assertEquals(r1.getPayloadLength(), r2.getPayloadLength());
-    assertEquals(r1.getIdLength(), r2.getIdLength());
+    assertEqual(r1.getTnf(), r2.getTnf());
+    assertEqual(r1.getTypeLength(), r2.getTypeLength());
+    assertEqual(r1.getPayloadLength(), r2.getPayloadLength());
+    assertEqual(r1.getIdLength(), r2.getIdLength());
   
     // TODO check type
   
     uint8_t* p1 = r1.getPayload();
     uint8_t* p2 = r2.getPayload();  
     int size = r1.getPayloadLength();
-    assertBytesEqual(__test__, p1, p2, size);
+    assertBytesEqual(p1, p2, size);
     free(p1);
     free(p2);
   }
 
   int end = freeMemory();
-  assertEquals(0, (start-end));
+  assertEqual(0, (start-end));
 }
 
 test(assign3)
@@ -142,25 +140,23 @@ test(assign3)
     
     NdefRecord r = m2->getRecord(0);
       
-    assertEquals(TNF_WELL_KNOWN, r.getTnf());
-    assertEquals(1, r.getTypeLength());
-    assertEquals(79, r.getPayloadLength());
-    assertEquals(0, r.getIdLength());
+    assertEqual(TNF_WELL_KNOWN, r.getTnf());
+    assertEqual(1, r.getTypeLength());
+    assertEqual(79, r.getPayloadLength());
+    assertEqual(0, r.getIdLength());
     
-    String s = "We the People of the United States, in Order to form a more perfect Union...";
-    byte payload[s.length() + 1];
-    s.getBytes(payload, sizeof(payload));
+    char payload[] = "We the People of the United States, in Order to form a more perfect Union...";
   
     uint8_t* p = r.getPayload();  
     int size = r.getPayloadLength();
-    assertBytesEqual(__test__, payload, p+3, s.length());
+    assertBytesEqual((const uint8_t*)payload, p+3, sizeof(payload));
     free(p);
   
     delete m2;
   }
   
   int end = freeMemory();
-  assertEquals(0, (start-end));
+  assertEqual(0, (start-end));
 }
 
 test(assign4)
@@ -178,9 +174,9 @@ test(assign4)
     m2->addTextRecord("RECORD 2");
     m2->addTextRecord("Record 3");
 
-    assertEquals(3, m2->getRecordCount());    
+    assertEqual(3, m2->getRecordCount());    
     *m2 = *m1;
-    assertEquals(1, m2->getRecordCount());
+    assertEqual(1, m2->getRecordCount());
     
 //    NdefRecord ghost = m2->getRecord(1);
 //    ghost.print();
@@ -193,10 +189,10 @@ test(assign4)
 //    
 //    NdefRecord r = m2->getRecord(0);
 //      
-//    assertEquals(TNF_WELL_KNOWN, r.getTnf());
-//    assertEquals(1, r.getTypeLength());
-//    assertEquals(79, r.getPayloadLength());
-//    assertEquals(0, r.getIdLength());
+//    assertEqual(TNF_WELL_KNOWN, r.getTnf());
+//    assertEqual(1, r.getTypeLength());
+//    assertEqual(79, r.getPayloadLength());
+//    assertEqual(0, r.getIdLength());
 //    
 //    String s = "We the People of the United States, in Order to form a more perfect Union...";
 //    byte payload[s.length() + 1];
@@ -204,7 +200,7 @@ test(assign4)
 //  
 //    uint8_t* p = r.getPayload();  
 //    int size = r.getPayloadLength();
-//    assertBytesEqual(__test__, payload, p+3, s.length());
+//    assertBytesEqual(payload, p+3, s.length());
 //    free(p);
   
     delete m1;
@@ -212,7 +208,7 @@ test(assign4)
   }
   
   int end = freeMemory();
-  assertEquals(0, (start-end));
+  assertEqual(0, (start-end));
 }
 
 // really a record test
@@ -228,7 +224,7 @@ test(doublePayload)
   delete r;
   
   int end = freeMemory();
-  assertEquals(0, (start-end));
+  assertEqual(0, (start-end));
 }
 
   
@@ -240,5 +236,5 @@ test(memoryKludgeStart)
 }
 
 void loop() {
-  suite.run();  
+  Test::run();
 }
