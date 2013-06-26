@@ -50,8 +50,10 @@ void textRecord()
 void recordMallocZero()
 {
   NdefRecord r = NdefRecord();
-  uint8_t* payload = r.getPayload();
-  free(payload);
+  String type = r.getType();
+  String id = r.getId();
+  byte payload[r.getPayloadLength()];
+  r.getPayload(payload);
 }
 
 // this is OK

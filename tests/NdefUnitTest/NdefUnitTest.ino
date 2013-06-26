@@ -60,13 +60,12 @@ test(newaccessors) {
   assertEqual(sizeof(payload), record.getPayloadLength());
   assertEqual(12, record.getPayloadLength());
     
-  //String typeCheck = record.getType();
-  //assertTrue(typeCheck.equals("T"));
-  assertTrue(record.getType().equals("T"));
+  ::String typeCheck = record.getType();
+  assertTrue(typeCheck.equals("T"));
   
-  uint8_t* payloadCheck = record.getPayload();
+  byte payloadCheck[record.getPayloadLength()];
+  record.getPayload(payloadCheck);
   assertBytesEqual(payload, payloadCheck, sizeof(payload));  
-  free(payloadCheck);
 }
 
 test(assignment)
@@ -87,13 +86,12 @@ test(assignment)
   assertEqual(sizeof(recordType), record2.getTypeLength());
   assertEqual(sizeof(payload), record2.getPayloadLength());
 
-  // String typeCheck = record.getType();
-  // assertTrue(typeCheck.equals("T"));
-  assertTrue(record.getType().equals("T"));
+  ::String typeCheck = record.getType();
+  assertTrue(typeCheck.equals("T"));
   
-  uint8_t* payload2 = record2.getPayload();  
+  byte payload2[record2.getPayloadLength()];
+  record2.getPayload(payload2); 
   assertBytesEqual(payload, payload2, sizeof(payload));  
-  free(payload2);  
 }
 
 test(getEmptyPayload)
@@ -101,10 +99,12 @@ test(getEmptyPayload)
   NdefRecord r = NdefRecord();
   assertEqual(TNF_EMPTY, r.getTnf());
   assertEqual(0, r.getPayloadLength());
-  uint8_t* payload = r.getPayload();
-  // assume we can free something malloc'd with 0 
-  free(payload);
-  // TODO need an assertion here
+  
+  byte payload[r.getPayloadLength()];
+  r.getPayload(payload);
+  
+  byte empty[0];
+  assertBytesEqual(empty, payload, sizeof(payload));
 }
 
 void loop() {

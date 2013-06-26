@@ -21,22 +21,22 @@ class NdefRecord
         NdefRecord(const NdefRecord& rhs);
         ~NdefRecord(); 
         NdefRecord& operator=(const NdefRecord& rhs);       
+        
         int getEncodedSize();
         void encode(byte *data, bool firstRecord, bool lastRecord);
-        
-        byte getTnf();
-        
+                
         unsigned int getTypeLength();
         int getPayloadLength();
         unsigned int getIdLength();
 
-        String getType(); 
-        byte* getPayload();
-        String getId();        
-        
+        byte getTnf();        
         void getType(byte *type); 
         void getPayload(byte *payload);
         void getId(byte *id); 
+
+        // convenience methods
+        String getType(); 
+        String getId();        
                 
         void setTnf(byte tnf);
         void setType(const byte *type, const unsigned int numBytes);

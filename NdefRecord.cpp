@@ -252,14 +252,6 @@ void NdefRecord::setType(const byte * type, const unsigned int numBytes)
     _typeLength = numBytes;
 }
 
-// caller is responsible for deleting array
-byte* NdefRecord::getPayload()
-{
-    byte *payload = (byte*)malloc(_payloadLength);
-    memcpy(payload, _payload, _payloadLength);
-    return payload;
-}
-
 // assumes the caller sized payload properly
 void NdefRecord::getPayload(byte *payload)
 {

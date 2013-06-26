@@ -71,13 +71,14 @@ test(assign)
     assertEqual(r1.getTypeLength(), r2.getTypeLength());
     assertEqual(r1.getPayloadLength(), r2.getPayloadLength());
     assertEqual(r1.getIdLength(), r2.getIdLength());
-  
-    uint8_t* p1 = r1.getPayload();
-    uint8_t* p2 = r2.getPayload();  
+      
+    byte p1[r1.getPayloadLength()];
+    byte p2[r2.getPayloadLength()];
+    r1.getPayload(p1);
+    r2.getPayload(p2);
+      
     int size = r1.getPayloadLength();
     assertBytesEqual(p1, p2, size);
-    free(p1);
-    free(p2);
   
     delete m2;
     delete m1;
@@ -110,12 +111,13 @@ test(assign2)
   
     // TODO check type
   
-    uint8_t* p1 = r1.getPayload();
-    uint8_t* p2 = r2.getPayload();  
+    byte p1[r1.getPayloadLength()];
+    byte p2[r2.getPayloadLength()];
+    r1.getPayload(p1);
+    r2.getPayload(p2);
+ 
     int size = r1.getPayloadLength();
     assertBytesEqual(p1, p2, size);
-    free(p1);
-    free(p2);
   }
 
   int end = freeMemory();
@@ -149,10 +151,9 @@ test(assign3)
     byte payload[s.length() + 1];
     s.getBytes(payload, sizeof(payload));
   
-    uint8_t* p = r.getPayload();  
-    int size = r.getPayloadLength();
+    byte p[r.getPayloadLength()];
+    r.getPayload(p);
     assertBytesEqual(payload, p+3, s.length());
-    free(p);
   
     delete m2;
   }
