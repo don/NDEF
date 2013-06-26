@@ -7,9 +7,9 @@ NdefRecord::NdefRecord()
     _typeLength = 0;
     _payloadLength = 0;    
     _idLength = 0;
-    _type = (uint8_t *)NULL;
-    _payload = (uint8_t *)NULL;
-    _id = (uint8_t *)NULL;
+    _type = (byte *)NULL;
+    _payload = (byte *)NULL;
+    _id = (byte *)NULL;
 }
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
@@ -20,25 +20,25 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
     _typeLength = rhs._typeLength;
     _payloadLength = rhs._payloadLength;
     _idLength = rhs._idLength;
-    _type = (uint8_t *)NULL;
-    _payload = (uint8_t *)NULL;
-    _id = (uint8_t *)NULL;
+    _type = (byte *)NULL;
+    _payload = (byte *)NULL;
+    _id = (byte *)NULL;
 
     if (_typeLength)
     {
-        _type = (uint8_t*)malloc(_typeLength);
+        _type = (byte*)malloc(_typeLength);
         memcpy(_type, rhs._type, _typeLength);
     }
 
     if (_payloadLength)
     {
-        _payload = (uint8_t*)malloc(_payloadLength);
+        _payload = (byte*)malloc(_payloadLength);
         memcpy(_payload, rhs._payload, _payloadLength);
     }
 
     if (_idLength)
     {
-        _id = (uint8_t*)malloc(_idLength);
+        _id = (byte*)malloc(_idLength);
         memcpy(_id, rhs._id, _idLength);    
     }  
 
@@ -94,19 +94,19 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 
         if (_typeLength)
         {
-            _type = (uint8_t*)malloc(_typeLength);
+            _type = (byte*)malloc(_typeLength);
             memcpy(_type, rhs._type, _typeLength);
         }
 
         if (_payloadLength)
         {
-            _payload = (uint8_t*)malloc(_payloadLength);
+            _payload = (byte*)malloc(_payloadLength);
             memcpy(_payload, rhs._payload, _payloadLength);
         }
 
         if (_idLength)
         {
-            _id = (uint8_t*)malloc(_idLength);
+            _id = (byte*)malloc(_idLength);
             memcpy(_id, rhs._id, _idLength);    
         }
     }
@@ -136,7 +136,7 @@ int NdefRecord::getEncodedSize()
     return size;
 }
 
-void NdefRecord::encode(uint8_t* data, bool firstRecord, bool lastRecord)
+void NdefRecord::encode(byte *data, bool firstRecord, bool lastRecord)
 {
     // assert data > getEncodedSize()
 
@@ -203,7 +203,7 @@ byte NdefRecord::getTnf()
     return _tnf;
 }
 
-void NdefRecord::setTnf(uint8_t tnf)
+void NdefRecord::setTnf(byte tnf)
 {
     _tnf = tnf;
 }

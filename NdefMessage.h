@@ -28,8 +28,8 @@ class NdefMessage
         void addEmptyRecord();
 
         uint8_t getRecordCount();
-        NdefRecord getRecord(unsigned int index);
-        NdefRecord operator[](unsigned int index);
+        NdefRecord getRecord(int index);
+        NdefRecord operator[](int index);
 
         void print();
     private:

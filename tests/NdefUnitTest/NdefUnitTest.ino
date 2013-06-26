@@ -62,9 +62,8 @@ test(newaccessors) {
   assertEquals(sizeof(payload), record.getPayloadLength());
   assertEquals(12, record.getPayloadLength());
     
-  uint8_t* typeCheck = record.getType();
-  assertBytesEqual(__test__, recordType, typeCheck, sizeof(recordType));
-  free(typeCheck);
+  String typeCheck = record.getType();
+  assertTrue(typeCheck.equals("T"));
   
   uint8_t* payloadCheck = record.getPayload();
   assertBytesEqual(__test__, payload, payloadCheck, sizeof(payload));  
@@ -89,9 +88,8 @@ test(assignment)
   assertEquals(sizeof(recordType), record2.getTypeLength());
   assertEquals(sizeof(payload), record2.getPayloadLength());
 
-  uint8_t* type2 = record2.getType();    
-  assertBytesEqual(__test__, recordType, type2, sizeof(recordType));  
-  free(type2);
+  String typeCheck = record.getType();
+  assertTrue(typeCheck.equals("T"));
   
   uint8_t* payload2 = record2.getPayload();  
   assertBytesEqual(__test__, payload, payload2, sizeof(payload));  
