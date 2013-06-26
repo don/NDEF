@@ -19,7 +19,7 @@
 #define IRQ   (2)
 #define RESET (3)  // Not connected by default on the NFC Shield
 
-  class NfcAdapter {
+class NfcAdapter {
   public:
     NfcAdapter(void);
     ~NfcAdapter(void); 
