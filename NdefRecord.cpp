@@ -170,7 +170,7 @@ void NdefRecord::encode(uint8_t* data, bool firstRecord, bool lastRecord)
     }
 }
 
-uint8_t NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
+byte NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
 {
     int value = _tnf;
 
@@ -253,15 +253,15 @@ void NdefRecord::setType(const byte * type, const unsigned int numBytes)
 }
 
 // caller is responsible for deleting array
-uint8_t* NdefRecord::getPayload()
+byte* NdefRecord::getPayload()
 {
-    uint8_t* payload = (uint8_t*)malloc(_payloadLength);
+    byte *payload = (byte*)malloc(_payloadLength);
     memcpy(payload, _payload, _payloadLength);
     return payload;
 }
 
 // assumes the caller sized payload properly
-void NdefRecord::getPayload(uint8_t* payload)
+void NdefRecord::getPayload(byte *payload)
 {
     memcpy(payload, _payload, _payloadLength);
 }
@@ -273,7 +273,7 @@ void NdefRecord::setPayload(const byte * payload, const int numBytes)
         free(_payload);
     }
 
-    _payload = (uint8_t*)malloc(numBytes);
+    _payload = (byte*)malloc(numBytes);
     memcpy(_payload, payload, numBytes);
     _payloadLength = numBytes;
 }
@@ -289,7 +289,7 @@ String NdefRecord::getId()
     return idString;
 }
 
-void NdefRecord::getId(uint8_t * id)
+void NdefRecord::getId(byte *id)
 {
     memcpy(id, _id, _idLength);
 }
@@ -301,7 +301,7 @@ void NdefRecord::setId(const byte * id, const unsigned int numBytes)
         free(_id);
     }
  
-    _id = (uint8_t*)malloc(numBytes);    
+    _id = (byte*)malloc(numBytes);    
     memcpy(_id, id, numBytes);
     _idLength = numBytes;
 }

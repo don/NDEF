@@ -256,7 +256,6 @@ NdefRecord NdefMessage::operator[](unsigned int index)
     return getRecord(index);
 }
 
-
 void NdefMessage::print()
 {
     Serial.print(F("\nNDEF Message "));Serial.print(_recordCount);Serial.print(F(" record"));
