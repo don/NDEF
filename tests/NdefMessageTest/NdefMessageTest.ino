@@ -145,11 +145,13 @@ test(assign3)
     assertEqual(79, r.getPayloadLength());
     assertEqual(0, r.getIdLength());
     
-    char payload[] = "We the People of the United States, in Order to form a more perfect Union...";
+    ::String s = "We the People of the United States, in Order to form a more perfect Union...";
+    byte payload[s.length() + 1];
+    s.getBytes(payload, sizeof(payload));
   
     uint8_t* p = r.getPayload();  
     int size = r.getPayloadLength();
-    assertBytesEqual((const uint8_t*)payload, p+3, sizeof(payload));
+    assertBytesEqual(payload, p+3, s.length());
     free(p);
   
     delete m2;
