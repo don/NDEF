@@ -22,37 +22,37 @@ class NdefRecord
         ~NdefRecord(); 
         NdefRecord& operator=(const NdefRecord& rhs);       
         int getEncodedSize();
-        void encode(uint8_t* data, bool firstRecord, bool lastRecord);
+        void encode(byte *data, bool firstRecord, bool lastRecord);
         
-        uint8_t getTnf();
+        byte getTnf();
         
-        uint8_t getTypeLength();
+        unsigned int getTypeLength();
         int getPayloadLength();
-        uint8_t getIdLength();
+        unsigned int getIdLength();
 
         String getType(); 
-        uint8_t* getPayload();
+        byte* getPayload();
         String getId();        
         
-        void getType(uint8_t* type); 
-        void getPayload(uint8_t* payload);
-        void getId(uint8_t* id); 
+        void getType(byte *type); 
+        void getPayload(byte *payload);
+        void getId(byte *id); 
                 
-        void setTnf(uint8_t tnf);
-        void setType(const uint8_t * type, const uint8_t numBytes);
-        void setPayload(const uint8_t * payload, const int numBytes);
-        void setId(const uint8_t * id, const uint8_t numBytes);
+        void setTnf(byte tnf);
+        void setType(const byte *type, const unsigned int numBytes);
+        void setPayload(const byte *payload, const int numBytes);
+        void setId(const byte *id, const unsigned int numBytes);
         
         void print();
     private:
-        uint8_t getTnfByte(bool firstRecord, bool lastRecord);
-        uint8_t _tnf; // 3 bit
-        uint8_t _typeLength; 
+        byte getTnfByte(bool firstRecord, bool lastRecord);
+        byte _tnf; // 3 bit
+        unsigned int _typeLength; 
         int _payloadLength;        
-        uint8_t _idLength;    
-        uint8_t * _type;        
-        uint8_t * _payload;        
-        uint8_t * _id;
+        unsigned int _idLength;    
+        byte *_type;        
+        byte *_payload;        
+        byte *_id;
 };
 
 #endif

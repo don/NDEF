@@ -32,7 +32,8 @@ boolean NfcAdapter::tagPresent()
   uint8_t success;
   uidLength = 0; 
 
-  success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);
+  // TODO is cast of uidLength OK?
+  success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, (uint8_t*)&uidLength);
 
   // if (success)
   // {
@@ -104,7 +105,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
 // TODO this should return a Driver MifareClassic, MifareUltralight, Type 4, Unknown
 // Guess Tag Type by looking at the ATQA and SAK values
 // Need to follow spec for Card Identification. Maybe AN1303, AN1305 and ???
-uint8_t NfcAdapter::guessTagType()
+unsigned int NfcAdapter::guessTagType()
 {
 
   // 4 byte id - Mifare Classic

@@ -11,8 +11,8 @@ class MifareClassic
 	public:
 		MifareClassic(Adafruit_NFCShield_I2C& nfcShield);
 		~MifareClassic();
-		NfcTag read(uint8_t * uid, int uidLength); 
-		boolean write(NdefMessage& ndefMessage, uint8_t * uid, int uidLength); 
+		NfcTag read(byte *uid, unsigned int uidLength); 
+		boolean write(NdefMessage& ndefMessage, byte *uid, unsigned int uidLength); 
 	private:
 		Adafruit_NFCShield_I2C* _nfcShield;
 		int getBufferSize(int messageLength);

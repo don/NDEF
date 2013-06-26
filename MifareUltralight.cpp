@@ -21,7 +21,7 @@ MifareUltralight::~MifareUltralight()
 {
 }
 
-NfcTag MifareUltralight::read(uint8_t * uid, int uidLength)
+NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
 {  
   if (isUnformatted())
   {

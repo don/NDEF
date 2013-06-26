@@ -198,7 +198,7 @@ uint8_t NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
     return value;
 }
 
-uint8_t NdefRecord::getTnf()
+byte NdefRecord::getTnf()
 {
     return _tnf;
 }
@@ -208,7 +208,7 @@ void NdefRecord::setTnf(uint8_t tnf)
     _tnf = tnf;
 }
 
-uint8_t NdefRecord::getTypeLength()
+unsigned int NdefRecord::getTypeLength()
 {
     return _typeLength;
 }
@@ -218,7 +218,7 @@ int NdefRecord::getPayloadLength()
     return _payloadLength;
 }
 
-uint8_t NdefRecord::getIdLength()
+unsigned int NdefRecord::getIdLength()
 {
     return _idLength;
 }
@@ -240,7 +240,7 @@ void NdefRecord::getType(uint8_t* type)
     memcpy(type, _type, _typeLength);
 }
 
-void NdefRecord::setType(const uint8_t * type, const uint8_t numBytes)
+void NdefRecord::setType(const byte * type, const unsigned int numBytes)
 {
     if(_typeLength)
     {
@@ -266,7 +266,7 @@ void NdefRecord::getPayload(uint8_t* payload)
     memcpy(payload, _payload, _payloadLength);
 }
 
-void NdefRecord::setPayload(const uint8_t * payload, const int numBytes)
+void NdefRecord::setPayload(const byte * payload, const int numBytes)
 {
     if (_payloadLength)
     {
@@ -294,7 +294,7 @@ void NdefRecord::getId(uint8_t * id)
     memcpy(id, _id, _idLength);
 }
 
-void NdefRecord::setId(const uint8_t * id, const uint8_t numBytes)
+void NdefRecord::setId(const byte * id, const unsigned int numBytes)
 {
     if (_idLength)
     {

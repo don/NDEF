@@ -10,13 +10,13 @@ class MifareUltralight
 	public:
 		MifareUltralight(Adafruit_NFCShield_I2C& nfcShield);
 		~MifareUltralight();
-		NfcTag read(uint8_t * uid, int uidLength);
+		NfcTag read(byte *uid, unsigned int uidLength);
 	private:
 		Adafruit_NFCShield_I2C* nfc;
-		uint8_t tagCapacity;
-		uint8_t messageLength;
-		uint8_t bufferSize;
-		uint8_t ndefStartIndex;
+		unsigned int tagCapacity;
+		unsigned int messageLength;
+		unsigned int bufferSize;
+		unsigned int ndefStartIndex;
 		boolean isUnformatted();
 		void readCapabilityContainer();
 		void findNdefMessage();

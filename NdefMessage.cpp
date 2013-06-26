@@ -239,7 +239,7 @@ void NdefMessage::addEmptyRecord()
     delete(r);
 }
 
-NdefRecord NdefMessage::getRecord(uint8_t index)
+NdefRecord NdefMessage::getRecord(unsigned int index)
 {
     if (index > -1 && index < _recordCount)
     {
@@ -251,7 +251,7 @@ NdefRecord NdefMessage::getRecord(uint8_t index)
     }
 }
 
-NdefRecord NdefMessage::operator[](uint8_t index)
+NdefRecord NdefMessage::operator[](unsigned int index)
 {
     return getRecord(index);
 }
