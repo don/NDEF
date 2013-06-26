@@ -15,8 +15,6 @@ void loop(void) {
     if (nfc.tagPresent()) 
     {
         NfcTag tag = nfc.read();
-        tag.print();
-
         if (tag.hasNdefMessage()) // every tag won't have a message        
         {
             NdefMessage message = tag.getNdefMessage();
@@ -26,22 +24,34 @@ void loop(void) {
             int recordCount = message.getRecordCount();
             for (int i = 0; i < recordCount; i++) 
             {
-                NdefRecord record = message.getRecord(i);  
-                // NdefRecord record = message[i]; // alternate syntax
-                
+                //NdefRecord record = message.getRecord(i);  
+                 NdefRecord record = message[i]; // alternate syntax
+                Serial.print("TNF: ");
                 Serial.println(record.getTnf()); 
+                Serial.print("Type: ");
                 Serial.println(record.getType()); // will be "" for TNF_EMPTY
                 
                 // we can't generically get the payload, since the tnf and type determine how the payload is decoded
                 int payloadLength = record.getPayloadLength();
-                uint8_t payload[payloadLength];
+                Serial.print("Payload Length: ");
+                Serial.println(payloadLength);
+                byte payload[payloadLength];
                 record.getPayload(payload);
-                PrintHexChar(payload, payloadLength);
-                
+             
+               // this block would make a nice helper function, to return the payload as a String:
+                String result = "";
+                for (int c=0; c< payloadLength; c++) {
+                 result += (char)payload[c]; 
+                }
+             
+                Serial.print("Payload: ");
+                Serial.println(result);
+               
                 // id is probably blank and will return ""
+                Serial.print("ID: ");
                 Serial.println(record.getId());                
             }        
         }    
     }
-    delay(5000);
+    delay(3000);
 }
