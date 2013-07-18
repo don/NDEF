@@ -4,7 +4,7 @@
 
 #define MIFARE_CLASSIC ("Mifare Classic")
 
-MifareClassic::MifareClassic(Adafruit_NFCShield_I2C& nfcShield)
+MifareClassic::MifareClassic(PN532& nfcShield)
 {
   _nfcShield = &nfcShield;
 }

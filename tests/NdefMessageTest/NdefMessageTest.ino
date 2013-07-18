@@ -1,5 +1,5 @@
 #include <Wire.h>
-#include <Adafruit_NFCShield_I2C.h>
+#include <PN532.h>
 #include <NdefMessage.h>
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>

@@ -2,7 +2,12 @@
 
 NfcAdapter::NfcAdapter(void)
 {
-	shield = new Adafruit_NFCShield_I2C(IRQ, RESET);
+	shield = new PN532();
+}
+
+NfcAdapter::NfcAdapter(SPIClass &spi, uint8_t ss)
+{
+    shield = new PN532(spi, ss);
 }
 
 NfcAdapter::~NfcAdapter(void)
