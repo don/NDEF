@@ -8,16 +8,16 @@
 
 class MifareClassic
 {
-	public:
-		MifareClassic(Adafruit_NFCShield_I2C& nfcShield);
-		~MifareClassic();
-		NfcTag read(byte *uid, unsigned int uidLength); 
-		boolean write(NdefMessage& ndefMessage, byte *uid, unsigned int uidLength); 
-	private:
-		Adafruit_NFCShield_I2C* _nfcShield;
-		int getBufferSize(int messageLength);
-		int getNdefStartIndex(byte *data);
-        bool decodeTlv(byte *data, int &messageLength, int &messageStartIndex);       
+    public:
+        MifareClassic(Adafruit_NFCShield_I2C& nfcShield);
+        ~MifareClassic();
+        NfcTag read(byte *uid, unsigned int uidLength);
+        boolean write(NdefMessage& ndefMessage, byte *uid, unsigned int uidLength);
+    private:
+        Adafruit_NFCShield_I2C* _nfcShield;
+        int getBufferSize(int messageLength);
+        int getNdefStartIndex(byte *data);
+        bool decodeTlv(byte *data, int &messageLength, int &messageStartIndex);
 };
 
 #endif
