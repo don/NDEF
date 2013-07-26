@@ -16,7 +16,8 @@ class MifareClassic
 	private:
 		Adafruit_NFCShield_I2C* _nfcShield;
 		int getBufferSize(int messageLength);
-		int getNdefLength(byte *data);
+		int getNdefStartIndex(byte *data);
+        bool decodeTlv(byte *data, int &messageLength, int &messageStartIndex);       
 };
 
 #endif
