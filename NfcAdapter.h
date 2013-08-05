@@ -1,6 +1,7 @@
 #ifndef NfcAdapter_h
 #define NfcAdapter_h
 
+#include <PN532Interface.h>
 #include <PN532.h>
 #include <NfcTag.h>
 #include <Ndef.h>
@@ -21,8 +22,7 @@
 
 class NfcAdapter {
   public:
-    NfcAdapter(void);
-    NfcAdapter(SPIClass &spi, uint8_t ss);
+    NfcAdapter(PN532Interface &interface);
 
     ~NfcAdapter(void); 
     void begin(void);

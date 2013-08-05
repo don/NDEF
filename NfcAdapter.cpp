@@ -1,13 +1,8 @@
 #include <NfcAdapter.h>
 
-NfcAdapter::NfcAdapter(void)
+NfcAdapter::NfcAdapter(PN532Interface &interface)
 {
-	shield = new PN532();
-}
-
-NfcAdapter::NfcAdapter(SPIClass &spi, uint8_t ss)
-{
-    shield = new PN532(spi, ss);
+    shield = new PN532(interface);
 }
 
 NfcAdapter::~NfcAdapter(void)
