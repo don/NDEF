@@ -9,17 +9,33 @@ Supports
 
 ## Requires
 
-[Adafruit NFC Shield](https://www.adafruit.com/products/364)
+[Adafruit NFC Shield](https://www.adafruit.com/products/364) or [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html)
 
-[Adafruit NFC Shield I2C library](https://github.com/adafruit/PN532) 
+[Yihui Xiong's PN532 Library](https://github.com/xiongyihui/PN532)
 
 ## Getting Started
 
 To use the Ndef library in your code, include the following in your sketch
 
+For the Adafruit Shield using I2C 
+
     #include <Wire.h>
+    #include <PN532_I2C.h>
     #include <PN532.h>
     #include <NfcAdapter.h>
+    
+    PN532_I2C pn532_i2c(Wire);
+    NfcAdapter nfc = NfcAdapter(pn532_i2c);
+
+For the Seeed Shield using SPI
+
+    #include <SPI.h>
+    #include <PN532SPI.h>
+    #include <PN532.h>
+    #include <NfcAdapter.h>
+    
+    PN532SPI pn532spi(SPI, 10);
+    NfcAdapter nfc = NfcAdapter(pn532spi);
 
 ### NfcAdapter
 
@@ -57,7 +73,7 @@ The NdefMessage object is responsible for encoding NdefMessage into bytes so it 
 
 ### NdefRecord
 
-A NdefRecord carrys a payload and info about the payload within a NdefMessage.
+A NdefRecord carries a payload and info about the payload within a NdefMessage.
 
 ### Specifications
 
@@ -65,7 +81,7 @@ This code is based on the "NFC Data Exchange Format (NDEF) Technical Specificati
 
 ### Tests
 
-To run the tests, you'll need [ArduinoUnit](https://github.com/mmurdoch/arduinounit). To "install", I clone the repo to my home directory and symlink the source into ~/Documents/Arduino/libraries/ArduinoUnit.
+To run the tests, you'll need [ArduinoUnit](https://github.com/mmurdoch/arduinounit). To "install", I clone the repo to my home directory and symlink the source into ~/Documents/Arduino/libraries/ArduinoUnit. Note that I'm using an [old version of Arduino Unit](https://github.com/mmurdoch/arduinounit/tree/43a74e716ad18412f147cebe621038ed1b1d085d).
 
     $ cd ~
     $ git clone git@github.com:mmurdoch/arduinounit.git
@@ -76,4 +92,4 @@ Tests can be run on an Uno without a NFC shield, since the NDEF logic is what is
     
 ## Warning
 
-This software is in active development. It works for the happy path. Error handling is bad. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages.
+This software is in active development. It works for the happy path. Error handling could use improvement. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages.
