@@ -16,7 +16,7 @@ class MifareClassic
     private:
         PN532* _nfcShield;
         int getBufferSize(int messageLength);
-        int getNdefLength(byte *data);
+        int getNdefStartIndex(byte *data);
         bool decodeTlv(byte *data, int &messageLength, int &messageStartIndex);
 };
 
