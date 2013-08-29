@@ -2,12 +2,7 @@
 #define Ndef_h
 
 /* NOTE: To use the Ndef library in your code, don't include Ndef.h
-   Add the following includes into your sketch
-
-    #include <Wire.h>
-    #include <PN532.h>
-    #include <NfcAdapter.h>
-
+   See README.md for details on which files to include in your sketch.
 */
 
 #include <Arduino.h>

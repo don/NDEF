@@ -1,6 +1,6 @@
 #include "Ndef.h"
 
-// Borrowed from PN532
+// Borrowed from Adafruit_NFCShield_I2C
 void PrintHex(const byte * data, const long numBytes)
 {
   uint32_t szPos;
@@ -19,7 +19,7 @@ void PrintHex(const byte * data, const long numBytes)
   Serial.println("");
 }
 
-// Borrowed from PN532
+// Borrowed from Adafruit_NFCShield_I2C
 void PrintHexChar(const byte * data, const long numBytes)
 {
   uint32_t szPos;
