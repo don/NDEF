@@ -148,8 +148,18 @@ void NdefRecord::encode(byte *data, bool firstRecord, bool lastRecord)
     *data_ptr = _typeLength;
     data_ptr += 1;
 
-    *data_ptr = _payloadLength; // TODO handle sr == false
-    data_ptr += 1;
+    if (_payloadLength <= 0xFF) {  // short record
+        *data_ptr = _payloadLength;
+        data_ptr += 1;
+    } else { // long format
+        // 4 bytes but we store length as an int
+        data_ptr[0] = 0x0; // (_payloadLength >> 24) & 0xFF;
+        data_ptr[1] = 0x0; // (_payloadLength >> 16) & 0xFF;
+        data_ptr[2] = (_payloadLength >> 8) & 0xFF;
+        data_ptr[3] = _payloadLength & 0xFF;
+        data_ptr += 4;
+    }
+
     if (_idLength)
     {
         *data_ptr = _idLength;
@@ -187,7 +197,7 @@ byte NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
     //     value = value | 0x20;
     // }
 
-    if (_typeLength <= 0xFF) { // TODO test 0xFF on tag
+    if (_payloadLength <= 0xFF) { // TODO test 0xFF on tag
         value = value | 0x10;
     }
 

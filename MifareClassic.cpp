@@ -1,6 +1,8 @@
 #include "MifareClassic.h"
 
 #define BLOCK_SIZE 16
+#define LONG_TLV_SIZE 4
+#define SHORT_TLV_SIZE 2
 
 #define MIFARE_CLASSIC ("Mifare Classic")
 
@@ -105,8 +107,14 @@ NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
 int MifareClassic::getBufferSize(int messageLength)
 {
 
-  // TLV header is 2 bytes. TLV terminator is 1 byte.
-  int bufferSize = messageLength + 3;
+  int bufferSize = messageLength;
+
+  // TLV header is 2 or 4 bytes, TLV terminator is 1 byte.
+  if (messageLength < 0xFF) {
+      bufferSize += SHORT_TLV_SIZE + 1;
+  } else {
+      bufferSize += LONG_TLV_SIZE + 1;
+  }
 
   // bufferSize needs to be a multiple of BLOCK_SIZE
   if (bufferSize % BLOCK_SIZE != 0)
@@ -146,8 +154,6 @@ int MifareClassic::getNdefStartIndex(byte *data) {
 // { 0x3, 0xFF, LENGTH, LENGTH }
 bool MifareClassic::decodeTlv(byte *data, int &messageLength, int &messageStartIndex) {
     int i = getNdefStartIndex(data);
-    int shortTlvSize = 2;
-    int longTlvSize = 4;
 
     if (i < 0 || data[i] != 0x3) {
         Serial.println(F("Error. Can't decode message length."));
@@ -155,10 +161,10 @@ bool MifareClassic::decodeTlv(byte *data, int &messageLength, int &messageStartI
     } else {
         if (data[i+1] == 0xFF) {
             messageLength = ((0xFF & data[i+2]) << 8) | (0xFF & data[i+3]);
-            messageStartIndex = i + longTlvSize;
+            messageStartIndex = i + LONG_TLV_SIZE;
         } else {
             messageLength = data[i+1];
-            messageStartIndex = i + shortTlvSize;
+            messageStartIndex = i + SHORT_TLV_SIZE;
         }
     }
 
@@ -179,10 +185,19 @@ boolean MifareClassic::write(NdefMessage& m, byte * uid, unsigned int uidLength)
     Serial.print(F("sizeof(buffer) "));Serial.println(sizeof(buffer));
     #endif
 
-    buffer[0] = 0x3;
-    buffer[1] = sizeof(encoded);
-    memcpy(&buffer[2], encoded, sizeof(encoded));
-    buffer[2+sizeof(encoded)] = 0xFE; // terminator
+    if (sizeof(encoded) < 0xFF) {
+        buffer[0] = 0x3;
+        buffer[1] = sizeof(encoded);
+        memcpy(&buffer[2], encoded, sizeof(encoded));
+        buffer[2+sizeof(encoded)] = 0xFE; // terminator
+    } else {
+        buffer[0] = 0x3;
+        buffer[1] = 0xFF;
+        buffer[2] = ((sizeof(encoded) >> 8) & 0xFF);
+        buffer[3] = (sizeof(encoded) & 0xFF);
+        memcpy(&buffer[4], encoded, sizeof(encoded));
+        buffer[4+sizeof(encoded)] = 0xFE; // terminator
+    }
 
     // Write to tag
     int index = 0;
