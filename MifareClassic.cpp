@@ -102,12 +102,11 @@ NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
     return NfcTag(uid, uidLength, MIFARE_CLASSIC, &buffer[messageStartIndex], messageLength);
 }
 
-// TODO this needs to take into account the tlvStartIndex
 int MifareClassic::getBufferSize(int messageLength)
 {
 
-  // TLV header is 4 bytes. TLV terminator is 1 byte.
-  int bufferSize = messageLength + 5;
+  // TLV header is 2 bytes. TLV terminator is 1 byte.
+  int bufferSize = messageLength + 3;
 
   // bufferSize needs to be a multiple of BLOCK_SIZE
   if (bufferSize % BLOCK_SIZE != 0)
@@ -180,9 +179,9 @@ boolean MifareClassic::write(NdefMessage& m, byte * uid, unsigned int uidLength)
     Serial.print(F("sizeof(buffer) "));Serial.println(sizeof(buffer));
     #endif
 
-    buffer[1] = 0x3;
-    buffer[2] = sizeof(encoded);
-    memcpy(&buffer[3], encoded, sizeof(encoded));
+    buffer[0] = 0x3;
+    buffer[1] = sizeof(encoded);
+    memcpy(&buffer[2], encoded, sizeof(encoded));
     buffer[2+sizeof(encoded)] = 0xFE; // terminator
 
     // Write to tag
