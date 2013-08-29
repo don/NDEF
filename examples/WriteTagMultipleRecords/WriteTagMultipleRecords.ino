@@ -18,7 +18,7 @@ NfcAdapter nfc = NfcAdapter(pn532_i2c);
 #endif
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(9600);
     Serial.println("NDEF Writer");
     nfc.begin();
 }
