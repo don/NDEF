@@ -1,8 +1,8 @@
 #include <NfcAdapter.h>
 
-NfcAdapter::NfcAdapter(void)
+NfcAdapter::NfcAdapter(PN532Interface &interface)
 {
-	shield = new Adafruit_NFCShield_I2C(IRQ, RESET);
+    shield = new PN532(interface);
 }
 
 NfcAdapter::~NfcAdapter(void)

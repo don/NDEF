@@ -10,7 +10,7 @@
 
 #define NFC_FORUM_TAG_TYPE_2 ("NFC Forum Type 2")
 
-MifareUltralight::MifareUltralight(Adafruit_NFCShield_I2C& nfcShield)
+MifareUltralight::MifareUltralight(PN532& nfcShield)
 {
   nfc = &nfcShield;
   ndefStartIndex = 0;

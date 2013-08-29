@@ -1,7 +1,8 @@
 #ifndef NfcAdapter_h
 #define NfcAdapter_h
 
-#include <Adafruit_NFCShield_I2C.h>
+#include <PN532Interface.h>
+#include <PN532.h>
 #include <NfcTag.h>
 #include <Ndef.h>
 
@@ -21,7 +22,8 @@
 
 class NfcAdapter {
   public:
-    NfcAdapter(void);
+    NfcAdapter(PN532Interface &interface);
+
     ~NfcAdapter(void); 
     void begin(void);
     boolean tagPresent(); // tagAvailable
@@ -32,7 +34,7 @@ class NfcAdapter {
     // FUTURE boolean erase();
     // FUTURE boolean format();
   private:
-    Adafruit_NFCShield_I2C* shield;
+    PN532* shield;
     byte uid[7];    // Buffer to store the returned UID
     unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
     unsigned int guessTagType();
