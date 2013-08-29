@@ -1,10 +1,10 @@
 #if 0
 #include <SPI.h>
-#include <PN532SPI.h>
+#include <PN532_SPI.h>
 #include <PN532.h>
 #include <NfcAdapter.h>
 
-PN532SPI pn532spi(SPI, 10);
+PN532_SPI pn532spi(SPI, 10);
 NfcAdapter nfc = NfcAdapter(pn532spi);
 #else
 

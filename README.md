@@ -11,7 +11,8 @@ Supports
 
 [Adafruit NFC Shield](https://www.adafruit.com/products/364) or [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html)
 
-[Yihui Xiong's PN532 Library](https://github.com/xiongyihui/PN532)
+[Yihui Xiong's PN532 Library](https://github.com/don/PN532)
+(Use [my fork](https://github.com/don/PN532) until [Pull Request #2](https://github.com/xiongyihui/PN532/pull/2) is merged)
 
 ## Getting Started
 
@@ -30,11 +31,11 @@ For the Adafruit Shield using I2C
 For the Seeed Shield using SPI
 
     #include <SPI.h>
-    #include <PN532SPI.h>
+    #include <PN532_SPI.h>
     #include <PN532.h>
     #include <NfcAdapter.h>
     
-    PN532SPI pn532spi(SPI, 10);
+    PN532_SPI pn532spi(SPI, 10);
     NfcAdapter nfc = NfcAdapter(pn532spi);
 
 ### NfcAdapter
