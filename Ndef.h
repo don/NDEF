@@ -5,7 +5,7 @@
    Add the following includes into your sketch
 
     #include <Wire.h>
-    #include <Adafruit_NFCShield_I2C.h>
+    #include <PN532.h>
     #include <NfcAdapter.h>
 
 */

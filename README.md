@@ -11,14 +11,14 @@ Supports
 
 [Adafruit NFC Shield](https://www.adafruit.com/products/364)
 
-[Adafruit NFC Shield I2C library](https://github.com/adafruit/Adafruit_NFCShield_I2C) 
+[Adafruit NFC Shield I2C library](https://github.com/adafruit/PN532) 
 
 ## Getting Started
 
 To use the Ndef library in your code, include the following in your sketch
 
     #include <Wire.h>
-    #include <Adafruit_NFCShield_I2C.h>
+    #include <PN532.h>
     #include <NfcAdapter.h>
 
 ### NfcAdapter
