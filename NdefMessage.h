@@ -10,11 +10,11 @@ class NdefMessage
 {
     public:
         NdefMessage(void);
-        NdefMessage(const byte *data, const int numBytes);  
-        NdefMessage(const NdefMessage& rhs);  
-        ~NdefMessage();     
+        NdefMessage(const byte *data, const int numBytes);
+        NdefMessage(const NdefMessage& rhs);
+        ~NdefMessage();
         NdefMessage& operator=(const NdefMessage& rhs);
-        
+
         int getEncodedSize(); // need so we can pass array to encode
         void encode(byte *data);
 

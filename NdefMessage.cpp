@@ -2,23 +2,24 @@
 
 NdefMessage::NdefMessage(void)
 {
-    _recordCount = 0;       
+    _recordCount = 0;
 }
 
 NdefMessage::NdefMessage(const byte * data, const int numBytes)
 {
     #ifdef NDEF_DEBUG
-    Serial.print(F("Decoding "));Serial.print(numBytes);Serial.println(F(" bytes"));    
+    Serial.print(F("Decoding "));Serial.print(numBytes);Serial.println(F(" bytes"));
     PrintHexChar(data, numBytes);
     //DumpHex(data, numBytes, 16);
     #endif
 
     _recordCount = 0;
-    
+
     int index = 0;
-    
-    while (index <= numBytes) {
-        
+
+    while (index <= numBytes)
+    {
+
         // decode tnf - first byte is tnf with bit flags
         // see the NFDEF spec for more info
         byte tnf_byte = data[index];
@@ -29,7 +30,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         bool il = (tnf_byte & 0x8) != 0;
         byte tnf = (tnf_byte & 0x7);
 
-        NdefRecord record = NdefRecord();  
+        NdefRecord record = NdefRecord();
         record.setTnf(tnf);
 
         index++;
@@ -42,8 +43,8 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
             payloadLength = data[index];
         }
         else
-        {        
-            payloadLength = ((0xFF & data[++index]) << 24) | ((0xFF & data[++index]) << 26) | 
+        {
+            payloadLength = ((0xFF & data[++index]) << 24) | ((0xFF & data[++index]) << 26) |
             ((0xFF & data[++index]) << 8) | (0xFF & data[++index]);
         }
 
@@ -54,24 +55,24 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
             idLength = data[index];
         }
 
-        index++; 
-        record.setType(&data[index], typeLength);            
+        index++;
+        record.setType(&data[index], typeLength);
         index += typeLength;
 
         if (il)
         {
-            record.setId(&data[index], idLength);  
+            record.setId(&data[index], idLength);
             index += idLength;
         }
 
-        record.setPayload(&data[index], payloadLength);          
+        record.setPayload(&data[index], payloadLength);
         index += payloadLength;
 
         addRecord(record);
-        
+
         if (me) break; // last message
     }
-        
+
 }
 
 NdefMessage::NdefMessage(const NdefMessage& rhs)
@@ -83,7 +84,7 @@ NdefMessage::NdefMessage(const NdefMessage& rhs)
         _records[i] = rhs._records[i];
     }
 
-} 
+}
 
 NdefMessage::~NdefMessage()
 {
@@ -119,7 +120,7 @@ unsigned int NdefMessage::getRecordCount()
 int NdefMessage::getEncodedSize()
 {
     int size = 0;
-    for (int i = 0; i < _recordCount; i++) 
+    for (int i = 0; i < _recordCount; i++)
     {
         size += _records[i].getEncodedSize();
     }
@@ -132,11 +133,11 @@ void NdefMessage::encode(uint8_t* data)
     // assert sizeof(data) >= getEncodedSize()
     uint8_t* data_ptr = &data[0];
 
-    for (int i = 0; i < _recordCount; i++) 
-    {    
+    for (int i = 0; i < _recordCount; i++)
+    {
         _records[i].encode(data_ptr, i == 0, (i + 1) == _recordCount);
-        // TODO can NdefRecord.encode return the record size?        
-        data_ptr += _records[i].getEncodedSize(); 
+        // TODO can NdefRecord.encode return the record size?
+        data_ptr += _records[i].getEncodedSize();
     }
 
 }
@@ -148,7 +149,7 @@ boolean NdefMessage::addRecord(NdefRecord& record)
     {
         _records[_recordCount] = record;
         _recordCount++;
-        return true;                
+        return true;
     }
     else
     {
@@ -162,7 +163,7 @@ void NdefMessage::addMimeMediaRecord(String mimeType, String payload)
 
     byte payloadBytes[payload.length() + 1];
     payload.getBytes(payloadBytes, sizeof(payloadBytes));
-    
+
     addMimeMediaRecord(mimeType, payloadBytes, payload.length());
 }
 
@@ -243,7 +244,7 @@ NdefRecord NdefMessage::getRecord(int index)
 {
     if (index > -1 && index < _recordCount)
     {
-        return _records[index];        
+        return _records[index];
     }
     else
     {
@@ -263,7 +264,7 @@ void NdefMessage::print()
     Serial.print(getEncodedSize());Serial.println(F(" bytes"));
 
     int i;
-    for (i = 0; i < _recordCount; i++) 
+    for (i = 0; i < _recordCount; i++)
     {
          _records[i].print();
     }

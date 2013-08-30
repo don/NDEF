@@ -4,7 +4,7 @@
 void PrintHex(const byte * data, const long numBytes)
 {
   uint32_t szPos;
-  for (szPos=0; szPos < numBytes; szPos++) 
+  for (szPos=0; szPos < numBytes; szPos++)
   {
     Serial.print("0x");
     // Append leading 0 for small values
@@ -23,7 +23,7 @@ void PrintHex(const byte * data, const long numBytes)
 void PrintHexChar(const byte * data, const long numBytes)
 {
   uint32_t szPos;
-  for (szPos=0; szPos < numBytes; szPos++) 
+  for (szPos=0; szPos < numBytes; szPos++)
   {
     // Append leading 0 for small values
     if (data[szPos] <= 0xF)
@@ -35,7 +35,7 @@ void PrintHexChar(const byte * data, const long numBytes)
     }
   }
   Serial.print("  ");
-  for (szPos=0; szPos < numBytes; szPos++) 
+  for (szPos=0; szPos < numBytes; szPos++)
   {
     if (data[szPos] <= 0x1F)
       Serial.print(".");
@@ -49,7 +49,7 @@ void PrintHexChar(const byte * data, const long numBytes)
 void DumpHex(const byte * data, const long numBytes, const unsigned int blockSize)
 {
     int i;
-    for (i = 0; i < (numBytes / blockSize); i++)    
+    for (i = 0; i < (numBytes / blockSize); i++)
     {
         PrintHexChar(data, blockSize);
         data += blockSize;

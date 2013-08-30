@@ -12,7 +12,7 @@ class NfcTag
         NfcTag(byte *uid, unsigned int uidLength);
         NfcTag(byte *uid, unsigned int uidLength, String tagType);
         NfcTag(byte *uid, unsigned int uidLength, String tagType, NdefMessage& ndefMessage);
-        NfcTag(byte *uid, unsigned int uidLength, String tagType, const byte *ndefData, const int ndefDataLength);  
+        NfcTag(byte *uid, unsigned int uidLength, String tagType, const byte *ndefData, const int ndefDataLength);
         ~NfcTag(void);
         NfcTag& operator=(const NfcTag& rhs);
         uint8_t getUidLength();

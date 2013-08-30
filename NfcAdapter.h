@@ -21,23 +21,23 @@
 #define RESET (3)  // Not connected by default on the NFC Shield
 
 class NfcAdapter {
-  public:
-    NfcAdapter(PN532Interface &interface);
+    public:
+        NfcAdapter(PN532Interface &interface);
 
-    ~NfcAdapter(void); 
-    void begin(void);
-    boolean tagPresent(); // tagAvailable
-    NfcTag read();
-    boolean write(NdefMessage& ndefMessage);
-    // FUTURE boolean share(NdefMessage& ndefMessage);
-    // FUTURE boolean unshare();
-    // FUTURE boolean erase();
-    // FUTURE boolean format();
-  private:
-    PN532* shield;
-    byte uid[7];    // Buffer to store the returned UID
-    unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
-    unsigned int guessTagType();
-  };
+        ~NfcAdapter(void);
+        void begin(void);
+        boolean tagPresent(); // tagAvailable
+        NfcTag read();
+        boolean write(NdefMessage& ndefMessage);
+        // FUTURE boolean share(NdefMessage& ndefMessage);
+        // FUTURE boolean unshare();
+        // FUTURE boolean erase();
+        // FUTURE boolean format();
+    private:
+        PN532* shield;
+        byte uid[7];    // Buffer to store the returned UID
+        unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+        unsigned int guessTagType();
+};
 
 #endif
