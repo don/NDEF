@@ -235,12 +235,10 @@ unsigned int NdefRecord::getIdLength()
 
 String NdefRecord::getType()
 {
-    // TODO is there a simpler way to do this?
-    char* type = (char*)malloc(_typeLength);
-    memset(type, 0, sizeof(type));
-    memcpy(type, _type, _typeLength);
-    String typeString = String(type);
-    free(type);
+    String typeString = "";
+    for (int c = 0; c < _typeLength; c++) {
+        typeString += (char)_type[c]; 
+    }
     return typeString;
 }
 
@@ -282,12 +280,10 @@ void NdefRecord::setPayload(const byte * payload, const int numBytes)
 
 String NdefRecord::getId()
 {
-    // TODO is there a simpler way to do this?
-    char* id = (char*)malloc(_idLength);
-    memset(id, 0, sizeof(id));
-    memcpy(id, _id, _idLength);
-    String idString = String(id);
-    free(id);
+    String idString = "";
+    for (int c = 0; c < _idLength; c++) {
+        idString += (char)_id[c]; 
+    }
     return idString;
 }
 
