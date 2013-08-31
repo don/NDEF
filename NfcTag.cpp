@@ -85,7 +85,7 @@ String NfcTag::getUidString()
             uidString += "0";
         }
 
-        uidString += String(_uid[i], HEX);
+        uidString += String((unsigned int)_uid[i], (unsigned char)HEX);
     }
     uidString.toUpperCase();
     return uidString;
