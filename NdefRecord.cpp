@@ -235,11 +235,10 @@ unsigned int NdefRecord::getIdLength()
 
 String NdefRecord::getType()
 {
-    String typeString = "";
-    for (int c = 0; c < _typeLength; c++) {
-        typeString += (char)_type[c]; 
-    }
-    return typeString;
+    char type[_typeLength + 1];
+    memcpy(type, _type, _typeLength);
+    type[_typeLength] = '\0'; // null terminate
+    return String(type);
 }
 
 // this assumes the caller created type correctly
@@ -280,11 +279,10 @@ void NdefRecord::setPayload(const byte * payload, const int numBytes)
 
 String NdefRecord::getId()
 {
-    String idString = "";
-    for (int c = 0; c < _idLength; c++) {
-        idString += (char)_id[c]; 
-    }
-    return idString;
+    char id[_idLength + 1];
+    memcpy(id, _id, _idLength);
+    id[_idLength] = '\0'; // null terminate
+    return String(id);
 }
 
 void NdefRecord::getId(byte *id)
