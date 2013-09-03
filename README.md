@@ -11,8 +11,7 @@ Supports
 
 [Adafruit NFC Shield](https://www.adafruit.com/products/364) or [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html)
 
-[Yihui Xiong's PN532 Library](https://github.com/don/PN532)
-(Use [my fork](https://github.com/don/PN532) until [Pull Request #2](https://github.com/xiongyihui/PN532/pull/2) is merged)
+[Yihui Xiong's PN532 Library](https://github.com/xiongyihui/PN532)
 
 ## Getting Started
 
