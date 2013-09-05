@@ -11,7 +11,7 @@ Supports
 
 [Adafruit NFC Shield](https://www.adafruit.com/products/364) or [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html)
 
-[Yihui Xiong's PN532 Library](https://github.com/xiongyihui/PN532)
+[Yihui Xiong's PN532 Library](https://github.com/Seeed-Studio/PN532)
 
 ## Getting Started
 
