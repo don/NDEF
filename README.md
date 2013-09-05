@@ -96,4 +96,4 @@ This software is in development. It works for the happy path. Error handling cou
 
 ## License
 
-[BSD License](https://github.com/don/Ndef/blob/master/LICENSE.txt) 
+[BSD License](https://github.com/don/Ndef/blob/master/LICENSE.txt) (c) 2013, Don Coleman
