@@ -1,15 +1,15 @@
 # NDEF Library for Arduino 
 
-Read and Write NDEF messages on NFC Tags
+Read and Write NFC Data Exchange Format (NDEF) messages on Near Field Communcation (NFC) Tags.
 
-Supports 
+This code works with the [Adafruit NFC Shield](https://www.adafruit.com/products/364) and the [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html).
+
+### Supports 
  - Reading from Mifare Classic Tags with 4 byte UIDs.
  - Writing to Mifare Classic Tags with 4 byte UIDs.
  - Reading from Mifare Ultralight tags.
 
-## Requires
-
-[Adafruit NFC Shield](https://www.adafruit.com/products/364) or [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html)
+### Requires
 
 [Yihui Xiong's PN532 Library](https://github.com/Seeed-Studio/PN532)
 
@@ -92,4 +92,8 @@ Tests can be run on an Uno without a NFC shield, since the NDEF logic is what is
     
 ## Warning
 
-This software is in active development. It works for the happy path. Error handling could use improvement. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages.
+This software is in development. It works for the happy path. Error handling could use improvement. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages. Please submit patches.
+
+## License
+
+[BSD License](https://github.com/don/Ndef/blob/master/LICENSE.txt) 
