@@ -1,6 +1,8 @@
-# NDEF Library for Arduino 
+# NDEF Library for Arduino
 
-Read and Write NFC Data Exchange Format (NDEF) messages on Near Field Communcation (NFC) Tags.
+Read and Write NDEF messages on NFC Tags with Arduino.
+
+NFC Data Exchange Format (NDEF) is a common data format that operates across all NFC devices, regardless of the underlying tag or device technology.
 
 This code works with the [Adafruit NFC Shield](https://www.adafruit.com/products/364) and the [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html).
 
