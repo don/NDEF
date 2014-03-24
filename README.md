@@ -4,12 +4,13 @@ Read and Write NDEF messages on NFC Tags with Arduino.
 
 NFC Data Exchange Format (NDEF) is a common data format that operates across all NFC devices, regardless of the underlying tag or device technology.
 
-This code works with the [Adafruit NFC Shield](https://www.adafruit.com/products/789), [Seeed Studio NFC Shield v2.0](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html) and the [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-p-916.html?cPath=73). The library supports I2C for the Adafruit shield and SPI with the Seeed shields. The Adafruit Shield can also be modified to use SPI. It should also work with the [Adafruit NFC Breakout Board]([Adafruit NFC Shield](https://www.adafruit.com/products/364) but hasn't been tested.
+This code works with the [Adafruit NFC Shield](https://www.adafruit.com/products/789), [Seeed Studio NFC Shield v2.0](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html) and the [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-p-916.html?cPath=73). The library supports I2C for the Adafruit shield and SPI with the Seeed shields. The Adafruit Shield can also be modified to use SPI. It should also work with the [Adafruit NFC Breakout Board](https://www.adafruit.com/products/364).
 
 ### Supports 
  - Reading from Mifare Classic Tags with 4 byte UIDs.
  - Writing to Mifare Classic Tags with 4 byte UIDs.
  - Reading from Mifare Ultralight tags.
+ - Peer to Peer with the Seeed Studio shield
 
 ### Requires
 
@@ -76,6 +77,10 @@ The NdefMessage object is responsible for encoding NdefMessage into bytes so it 
 ### NdefRecord
 
 A NdefRecord carries a payload and info about the payload within a NdefMessage.
+
+### Peer to Peer
+
+Peer to Peer is provided by the LLCP and SNEP support in the [Seeed Studio library](https://github.com/Seeed-Studio/PN532).  P2P requires SPI and has only been tested with the Seeed Studio shield.  Peer to Peer was tested between Arduino and Android or BlackBerry 10. (Unfortunately Windows Phone 8 did not work.) See [P2P_Send](blob/master/examples/P2P_Send/P2P_Send.ino) and [P2P_Receive](blob/master/examples/P2P_Receive/P2P_Receive.ino) for more info.
 
 ### Specifications
 
