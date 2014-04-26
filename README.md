@@ -101,6 +101,11 @@ Tests can be run on an Uno without a NFC shield, since the NDEF logic is what is
 
 This software is in development. It works for the happy path. Error handling could use improvement. It runs out of memory, especially on the Uno board. Use small messages with the Uno. The Due board can write larger messages. Please submit patches.
 
+## Book
+Need more info? Check out my book [Beginning NFC: Near Field Communication with Arduino, Android, and PhoneGap](http://shop.oreilly.com/product/0636920021193.do)
+
+![Beginning NFC](http://akamaicovers.oreilly.com/images/0636920021193/cat.gif)
+
 ## License
 
 [BSD License](https://github.com/don/Ndef/blob/master/LICENSE.txt) (c) 2013, Don Coleman
