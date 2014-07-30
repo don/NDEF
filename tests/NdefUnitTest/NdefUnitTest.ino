@@ -13,10 +13,6 @@ void setup() {
     Serial.begin(9600);
 }
 
-test(foo) {
-  assertEqual(3, (1 + 2));
-}
-
 test(accessors) {
   NdefRecord record = NdefRecord();
   record.setTnf(TNF_WELL_KNOWN);

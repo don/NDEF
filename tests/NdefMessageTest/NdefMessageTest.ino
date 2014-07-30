@@ -22,18 +22,6 @@ void assertBytesEqual(const uint8_t* expected, const uint8_t* actual, int size) 
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("\n");
-  Serial.println(F("========="));
-  Serial.println(freeMemory());
-  Serial.println(F("========="));
-}
-
-test(memoryKludgeEnd)
-{
-  // TODO ensure the output matches start
-  Serial.println(F("========="));
-  Serial.print("End ");Serial.println(freeMemory());
-  Serial.println(F("========="));
 }
 
 test(messageDelete)
@@ -230,12 +218,19 @@ test(doublePayload)
   assertEqual(0, (start-end));
 }
 
-  
-test(memoryKludgeStart)
+test(aaa_printFreeMemoryAtStart)  //  warning: relies on fact tests are run in alphabetical order
 {
-  Serial.println(F("---------"));
-  Serial.print("Start ");Serial.println(freeMemory());
-  Serial.println(F("---------"));
+  Serial.println(F("---------------------"));
+  Serial.print("Free Memory Start ");Serial.println(freeMemory());
+  Serial.println(F("---------------------"));
+}
+
+test(zzz_printFreeMemoryAtEnd)   // warning: relies on fact tests are run in alphabetical order
+{
+  // unfortunately the user needs to manually check this matches the start value
+  Serial.println(F("====================="));
+  Serial.print("Free Memory End ");Serial.println(freeMemory());
+  Serial.println(F("====================="));
 }
 
 void loop() {

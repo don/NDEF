@@ -88,7 +88,7 @@ This code is based on the "NFC Data Exchange Format (NDEF) Technical Specificati
 
 ### Tests
 
-To run the tests, you'll need [ArduinoUnit](https://github.com/mmurdoch/arduinounit). To "install", I clone the repo to my home directory and symlink the source into ~/Documents/Arduino/libraries/ArduinoUnit. Note that I'm using an [old version of Arduino Unit](https://github.com/mmurdoch/arduinounit/tree/43a74e716ad18412f147cebe621038ed1b1d085d).
+To run the tests, you'll need [ArduinoUnit](https://github.com/mmurdoch/arduinounit). To "install", I clone the repo to my home directory and symlink the source into ~/Documents/Arduino/libraries/ArduinoUnit.
 
     $ cd ~
     $ git clone git@github.com:mmurdoch/arduinounit.git
