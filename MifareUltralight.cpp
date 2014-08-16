@@ -161,3 +161,68 @@ void MifareUltralight::calculateBufferSize()
         bufferSize = ((bufferSize / ULTRALIGHT_READ_SIZE) + 1) * ULTRALIGHT_READ_SIZE;
     }
 }
+
+boolean MifareUltralight::write(NdefMessage& m, byte * uid, unsigned int uidLength)
+{
+    if (isUnformatted())
+    {
+        Serial.println(F("WARNING: Tag is not formatted."));
+        return false;
+    }
+    readCapabilityContainer(); // meta info for tag
+    
+    messageLength  = m.getEncodedSize();
+    ndefStartIndex = messageLength < 0xFF ? 2 : 4;
+    calculateBufferSize();
+    
+    if(bufferSize>tagCapacity) {
+	    #ifdef MIFARE_ULTRALIGHT_DEBUG
+    	Serial.print(F("Encoded Message length exceeded tag Capacity "));Serial.println(tagCapacity);
+    	#endif
+    	return false;
+    }
+    
+    uint8_t encoded[bufferSize];
+    uint8_t *  src = encoded;
+    unsigned int position = 0;
+    uint8_t page = ULTRALIGHT_DATA_START_PAGE;
+        
+    // Set message size. With ultralight should always be less than 0xFF but who knows?
+    
+    encoded[0] = 0x3;
+    if (messageLength < 0xFF)
+    {
+        encoded[1] = messageLength;
+    }
+    else
+    {
+        encoded[1] = 0xFF;
+        encoded[2] = ((messageLength >> 8) & 0xFF);
+        encoded[3] = (messageLength & 0xFF);
+    }
+    
+    m.encode(encoded+ndefStartIndex);
+    // this is always at least 1 byte copy because of terminator.
+    memset(encoded+ndefStartIndex+messageLength,0,bufferSize-ndefStartIndex-messageLength);    
+    encoded[ndefStartIndex+messageLength] = 0xFE; // terminator
+    
+    #ifdef MIFARE_ULTRALIGHT_DEBUG
+    Serial.print(F("messageLength "));Serial.println(messageLength);
+    Serial.print(F("Tag Capacity "));Serial.println(tagCapacity);
+    nfc->PrintHex(encoded,bufferSize);
+    #endif
+    
+    while (position < bufferSize){ //bufferSize is always times pagesize so no "last chunk" check
+        // write page
+        if (!nfc->mifareultralight_WritePage(page, src))
+            return false;
+		#ifdef MIFARE_ULTRALIGHT_DEBUG
+    	Serial.print(F("Written page "));Serial.print(page);Serial.print(F(" - "));
+    	nfc->PrintHex(src,ULTRALIGHT_PAGE_SIZE);
+    	#endif
+        page++;
+        src+=ULTRALIGHT_PAGE_SIZE;
+        position+=ULTRALIGHT_PAGE_SIZE;
+    }
+    return true;
+}
