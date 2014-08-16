@@ -11,6 +11,7 @@ class MifareUltralight
         MifareUltralight(PN532& nfcShield);
         ~MifareUltralight();
         NfcTag read(byte *uid, unsigned int uidLength);
+        boolean write(NdefMessage& ndefMessage, byte *uid, unsigned int uidLength);
     private:
         PN532* nfc;
         unsigned int tagCapacity;
