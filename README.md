@@ -10,6 +10,7 @@ This code works with the [Adafruit NFC Shield](https://www.adafruit.com/products
  - Reading from Mifare Classic Tags with 4 byte UIDs.
  - Writing to Mifare Classic Tags with 4 byte UIDs.
  - Reading from Mifare Ultralight tags.
+ - Writing to Mifare Ultralight tags.
  - Peer to Peer with the Seeed Studio shield
 
 ### Requires
