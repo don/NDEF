@@ -88,17 +88,24 @@ NfcTag NfcAdapter::read()
 boolean NfcAdapter::write(NdefMessage& ndefMessage)
 {
     boolean success;
+    uint8_t type = guessTagType();
 
-    if (uidLength == 4)
+    if (type == TAG_TYPE_MIFARE_CLASSIC)
     {
         MifareClassic mifareClassic = MifareClassic(*shield);
         success = mifareClassic.write(ndefMessage, uid, uidLength);
+    }
+    else if (type == TAG_TYPE_2)
+    {
+        MifareUltralight mifareUltralight = MifareUltralight(*shield);
+        success = mifareUltralight.write(ndefMessage, uid, uidLength);
     }
     else
     {
         Serial.println(F("Unsupported Tag"));
         success = false;
     }
+
     return success;
 }
 
