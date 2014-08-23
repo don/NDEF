@@ -25,14 +25,14 @@ class NfcAdapter {
         NfcAdapter(PN532Interface &interface);
 
         ~NfcAdapter(void);
-        void begin(void);
-        boolean tagPresent(); // tagAvailable
+        void begin(boolean verbose=true);
+        boolean tagPresent(unsigned long timeout=0); // tagAvailable
         NfcTag read();
         boolean write(NdefMessage& ndefMessage);
         // FUTURE boolean share(NdefMessage& ndefMessage);
         // FUTURE boolean unshare();
-        // FUTURE boolean erase();
-        // FUTURE boolean format();
+        boolean erase(); // brings MifareClassic at original state
+        boolean format();// format MifareClassic to NDEF
     private:
         PN532* shield;
         byte uid[7];    // Buffer to store the returned UID
