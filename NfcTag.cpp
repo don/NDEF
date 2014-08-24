@@ -67,7 +67,7 @@ uint8_t NfcTag::getUidLength()
 
 void NfcTag::getUid(byte *uid, unsigned int uidLength)
 {
-    memcpy(uid, _uid, uidLength);
+    memcpy(uid, _uid, _uidLength < uidLength ? _uidLength : uidLength);
 }
 
 String NfcTag::getUidString()
