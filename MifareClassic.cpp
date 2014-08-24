@@ -202,26 +202,26 @@ boolean MifareClassic::formatNDEF(byte * uid, unsigned int uidLength) {
   {
     Serial.println(F("Unable to format the card for NDEF"));
   } else {
-  	for(int i=4;i<64;i+=4) {
-	  success = _nfcShield->mifareclassic_AuthenticateBlock (uid, uidLength, i, 0, keya);
-	  if(success) {
-	  	if (!(_nfcShield->mifareclassic_WriteDataBlock (i, sectorbuffer0))) {
-	  		Serial.print(F("Unable to write block "));Serial.println(i);
-    	}
-      	if (!(_nfcShield->mifareclassic_WriteDataBlock (i+1, sectorbuffer0))) {
-	  		Serial.print(F("Unable to write block "));Serial.println(i+1);
-    	}
-      	if (!(_nfcShield->mifareclassic_WriteDataBlock (i+2, sectorbuffer0))) {
-	  		Serial.print(F("Unable to write block "));Serial.println(i+2);
-    	}
-      	if (!(_nfcShield->mifareclassic_WriteDataBlock (i+3, sectorbuffer4))) {
-	  		Serial.print(F("Unable to write block "));Serial.println(i+3);
-    	}
+    for(int i=4;i<64;i+=4) {
+      success = _nfcShield->mifareclassic_AuthenticateBlock (uid, uidLength, i, 0, keya);
+      if(success) {
+        if (!(_nfcShield->mifareclassic_WriteDataBlock (i, sectorbuffer0))) {
+            Serial.print(F("Unable to write block "));Serial.println(i);
+        }
+        if (!(_nfcShield->mifareclassic_WriteDataBlock (i+1, sectorbuffer0))) {
+            Serial.print(F("Unable to write block "));Serial.println(i+1);
+        }
+        if (!(_nfcShield->mifareclassic_WriteDataBlock (i+2, sectorbuffer0))) {
+            Serial.print(F("Unable to write block "));Serial.println(i+2);
+        }
+        if (!(_nfcShield->mifareclassic_WriteDataBlock (i+3, sectorbuffer4))) {
+            Serial.print(F("Unable to write block "));Serial.println(i+3);
+        }
       } else {
-      	unsigned int iii=uidLength;
-	  	Serial.print(F("Unable to authenticate block "));Serial.println(i);
-	  	_nfcShield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, (uint8_t*)&iii);
-	  }    
+        unsigned int iii=uidLength;
+        Serial.print(F("Unable to authenticate block "));Serial.println(i);
+        _nfcShield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, (uint8_t*)&iii);
+      }
     }
   }
   return success;
@@ -247,7 +247,7 @@ boolean MifareClassic::formatMifare(byte * uid, unsigned int uidLength) {
   uint8_t idx = 0;
   uint8_t numOfSector = 16;                         // Assume Mifare Classic 1K for now (16 4-block sectors)
   boolean success = false;
-  
+
   for (idx = 0; idx < numOfSector; idx++)
   {
       // Step 1: Authenticate the current sector using key B 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF
@@ -257,7 +257,7 @@ boolean MifareClassic::formatMifare(byte * uid, unsigned int uidLength) {
         Serial.print(F("Authentication failed for sector ")); Serial.println(idx);
         return false;
       }
-      
+
       // Step 2: Write to the other blocks
       if (idx == 0)
       {
@@ -280,14 +280,14 @@ boolean MifareClassic::formatMifare(byte * uid, unsigned int uidLength) {
           Serial.print(F("Unable to write to sector ")); Serial.println(idx);
         }
       }
-      
+
       memset(blockBuffer, 0, sizeof(blockBuffer));
-      
+
       if (!(_nfcShield->mifareclassic_WriteDataBlock((BLOCK_NUMBER_OF_SECTOR_TRAILER(idx)) - 1, blockBuffer)))
       {
         Serial.print(F("Unable to write to sector ")); Serial.println(idx);
       }
-      
+
       // Step 3: Reset both keys to 0xFF 0xFF 0xFF 0xFF 0xFF 0xFF
       memcpy(blockBuffer, KEY_DEFAULT_KEYAB, sizeof(KEY_DEFAULT_KEYAB));
       memcpy(blockBuffer + 6, blankAccessBits, sizeof(blankAccessBits));
