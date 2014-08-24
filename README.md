@@ -109,4 +109,4 @@ Need more info? Check out my book [Beginning NFC: Near Field Communication with 
 
 ## License
 
-[BSD License](https://github.com/don/Ndef/blob/master/LICENSE.txt) (c) 2013, Don Coleman
+[BSD License](https://github.com/don/Ndef/blob/master/LICENSE.txt) (c) 2013-2014, Don Coleman
