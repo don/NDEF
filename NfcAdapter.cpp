@@ -54,7 +54,7 @@ boolean NfcAdapter::format()
     if (uidLength == 4)
     {
         MifareClassic mifareClassic = MifareClassic(*shield);
-        success = mifareClassic.formatNDEF(uid,uidLength);
+        success = mifareClassic.formatNDEF(uid, uidLength);
     }
     else
     {
@@ -70,7 +70,7 @@ boolean NfcAdapter::erase()
     if (uidLength == 4)
     {
         MifareClassic mifareClassic = MifareClassic(*shield);
-        success = mifareClassic.formatMifare(uid,uidLength);
+        success = mifareClassic.formatMifare(uid, uidLength);
     }
     else
     {
