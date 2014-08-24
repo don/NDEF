@@ -29,13 +29,11 @@ class NfcAdapter {
         boolean tagPresent(unsigned long timeout=0); // tagAvailable
         NfcTag read();
         boolean write(NdefMessage& ndefMessage);
-        // FUTURE boolean share(NdefMessage& ndefMessage);
-        // FUTURE boolean unshare();
         boolean erase(); // brings MifareClassic at original state
-        boolean format();// format MifareClassic to NDEF
+        boolean format(); // format MifareClassic to NDEF
     private:
         PN532* shield;
-        byte uid[7];    // Buffer to store the returned UID
+        byte uid[7];  // Buffer to store the returned UID
         unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
         unsigned int guessTagType();
 };
