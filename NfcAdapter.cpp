@@ -15,15 +15,19 @@ void NfcAdapter::begin(boolean verbose)
     shield->begin();
 
     uint32_t versiondata = shield->getFirmwareVersion();
-    if (! versiondata) {
+
+    if (! versiondata)
+    {
         Serial.print(F("Didn't find PN53x board"));
         while (1); // halt
     }
-    if(verbose) {
-	    Serial.print(F("Found chip PN5")); Serial.println((versiondata>>24) & 0xFF, HEX);
-    	Serial.print(F("Firmware ver. ")); Serial.print((versiondata>>16) & 0xFF, DEC);
-    	Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
-	}
+
+    if (verbose)
+    {
+        Serial.print(F("Found chip PN5")); Serial.println((versiondata>>24) & 0xFF, HEX);
+        Serial.print(F("Firmware ver. ")); Serial.print((versiondata>>16) & 0xFF, DEC);
+        Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+    }
     // configure board to read RFID tags
     shield->SAMConfig();
 }
@@ -33,43 +37,51 @@ boolean NfcAdapter::tagPresent(unsigned long timeout)
     uint8_t success;
     uidLength = 0;
 
-    // TODO is cast of uidLength OK?
-    if(timeout == 0)
-    	success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, (uint8_t*)&uidLength);
+    if (timeout == 0)
+    {
+        success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, (uint8_t*)&uidLength);
+    }
     else
-    	success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, (uint8_t*)&uidLength,timeout);
+    {
+        success = shield->readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, (uint8_t*)&uidLength, timeout);
+    }
     return success;
 }
 
-boolean NfcAdapter::format() {
-  boolean success;
-  if (uidLength == 4)
-  {
-    MifareClassic mifareClassic = MifareClassic(*shield);
-    success = mifareClassic.formatNDEF(uid,uidLength);
-  } else {
-    Serial.print(F("Unsupported Tag. Length is "));Serial.println(uidLength);
-    success = false;
-  }
-  return success;
+boolean NfcAdapter::format()
+{
+    boolean success;
+    if (uidLength == 4)
+    {
+        MifareClassic mifareClassic = MifareClassic(*shield);
+        success = mifareClassic.formatNDEF(uid,uidLength);
+    }
+    else
+    {
+        Serial.print(F("Unsupported Tag. Length is "));Serial.println(uidLength);
+        success = false;
+    }
+    return success;
 }
 
-boolean NfcAdapter::erase() {
-  boolean success;
-  if (uidLength == 4)
-  {
-    MifareClassic mifareClassic = MifareClassic(*shield);
-    success = mifareClassic.formatMifare(uid,uidLength);
-  } else {
-    Serial.print(F("Unsupported Tag. Length is "));Serial.println(uidLength);
-    success = false;
-  }
-  return success;
+boolean NfcAdapter::erase()
+{
+    boolean success;
+    if (uidLength == 4)
+    {
+        MifareClassic mifareClassic = MifareClassic(*shield);
+        success = mifareClassic.formatMifare(uid,uidLength);
+    }
+    else
+    {
+        Serial.print(F("Unsupported Tag. Length is "));Serial.println(uidLength);
+        success = false;
+    }
+    return success;
 }
 
 NfcTag NfcAdapter::read()
 {
-
     uint8_t type = guessTagType();
 
     if (type == TAG_TYPE_MIFARE_CLASSIC)
