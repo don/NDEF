@@ -25,7 +25,7 @@ void setup(void) {
 
 void loop(void) {
     
-    Serial.println("\nPlace an Unformatted Mifare Classic tag on the reader");
+    Serial.println("\nPlace an unformatted Mifare Classic tag on the reader.");
     if (nfc.tagPresent()) {
 
         bool success = nfc.format();
