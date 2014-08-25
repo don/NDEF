@@ -1,3 +1,6 @@
+// Clean resets a tag back to factory-like state
+// For Mifare Classic, tag is zero'd and reformatted as Mifare Classic
+// For Mifare Ultralight, tags is zero'd and left empty
 
 #if 0
 #include <SPI.h>
@@ -25,9 +28,7 @@ void setup(void) {
 }
 
 void loop(void) {
-    // Clean resets back to factory-like state
-    // For Mifare Classic, tag is zero'd and reformatted as Mifare Classic
-    // For Mifare Ultralight, tags is zero'd and left empty
+
     Serial.println("\nPlace a tag on the NFC reader to clean.");
 
     if (nfc.tagPresent()) {

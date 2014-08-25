@@ -1,3 +1,7 @@
+// Formats a Mifare Classic tags as an NDEF tag
+// This will fail if the tag is already formatted NDEF
+// nfc.clean will turn a NDEF formatted Mifare Classic tag back to the Mifare Classic format
+
 #if 0
 #include <SPI.h>
 #include <PN532_SPI.h>

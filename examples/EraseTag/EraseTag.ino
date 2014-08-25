@@ -1,3 +1,4 @@
+// Erases a NFC tag by writing an empty NDEF message 
 
 #if 0
 #include <SPI.h>
