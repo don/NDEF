@@ -186,9 +186,12 @@ bool MifareClassic::decodeTlv(byte *data, int &messageLength, int &messageStartI
     return true;
 }
 
+// Intialized NDEF tag contains one empty NDEF TLV 03 00 FE - AN1304 6.3.1
+// We are formatting in read/write mode with a NDEF TLV 03 03 and an empty NDEF record D0 00 00 FE - AN1304 6.3.2
 boolean MifareClassic::formatNDEF(byte * uid, unsigned int uidLength)
 {
     uint8_t keya[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+    uint8_t emptyNdefMesg[16] = {0x03, 0x03, 0xD0, 0x00, 0x00, 0xFE, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t sectorbuffer0[16] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     uint8_t sectorbuffer4[16] = {0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7, 0x7F, 0x07, 0x88, 0x40, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
@@ -207,10 +210,21 @@ boolean MifareClassic::formatNDEF(byte * uid, unsigned int uidLength)
     {
         for (int i=4; i<64; i+=4) {
             success = _nfcShield->mifareclassic_AuthenticateBlock (uid, uidLength, i, 0, keya);
+
             if (success) {
-                if (!(_nfcShield->mifareclassic_WriteDataBlock (i, sectorbuffer0)))
+                if (i == 4)  // special handling for block 4
                 {
-                    Serial.print(F("Unable to write block "));Serial.println(i);
+                    if (!(_nfcShield->mifareclassic_WriteDataBlock (i, emptyNdefMesg)))
+                    {
+                        Serial.print(F("Unable to write block "));Serial.println(i);
+                    }
+                }
+                else
+                {
+                    if (!(_nfcShield->mifareclassic_WriteDataBlock (i, sectorbuffer0)))
+                    {
+                        Serial.print(F("Unable to write block "));Serial.println(i);
+                    }
                 }
                 if (!(_nfcShield->mifareclassic_WriteDataBlock (i+1, sectorbuffer0)))
                 {

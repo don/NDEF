@@ -29,8 +29,12 @@ class NfcAdapter {
         boolean tagPresent(unsigned long timeout=0); // tagAvailable
         NfcTag read();
         boolean write(NdefMessage& ndefMessage);
-        boolean erase(); // brings MifareClassic at original state
-        boolean format(); // format MifareClassic to NDEF
+        // erase tag by writing an empty NDEF record
+        boolean erase();
+        // format a tag as NDEF
+        boolean format();
+        // reset tag back to factory state
+        boolean clean();
     private:
         PN532* shield;
         byte uid[7];  // Buffer to store the returned UID

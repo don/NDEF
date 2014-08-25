@@ -48,6 +48,14 @@ boolean NfcAdapter::tagPresent(unsigned long timeout)
     return success;
 }
 
+boolean NfcAdapter::erase()
+{
+    boolean success;
+    NdefMessage message = NdefMessage();
+    message.addEmptyRecord();
+    return write(message);
+}
+
 boolean NfcAdapter::format()
 {
     boolean success;
@@ -64,21 +72,34 @@ boolean NfcAdapter::format()
     return success;
 }
 
-boolean NfcAdapter::erase()
+boolean NfcAdapter::clean()
 {
-    boolean success;
-    if (uidLength == 4)
+    uint8_t type = guessTagType();
+
+    if (type == TAG_TYPE_MIFARE_CLASSIC)
     {
+        #ifdef NDEF_DEBUG
+        Serial.println(F("Cleaning Mifare Classic"));
+        #endif
         MifareClassic mifareClassic = MifareClassic(*shield);
-        success = mifareClassic.formatMifare(uid, uidLength);
+        return mifareClassic.formatMifare(uid, uidLength);
+    }
+    else if (type == TAG_TYPE_2)
+    {
+        #ifdef NDEF_DEBUG
+        Serial.println(F("Cleaning Mifare Ultralight"));
+        #endif
+        MifareUltralight ultralight = MifareUltralight(*shield);
+        return ultralight.clean();
     }
     else
     {
-        Serial.print(F("Unsupported Tag. Length is "));Serial.println(uidLength);
-        success = false;
+        Serial.print(F("No driver for card type "));Serial.println(type);
+        return false;
     }
-    return success;
+
 }
+
 
 NfcTag NfcAdapter::read()
 {
