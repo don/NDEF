@@ -57,8 +57,29 @@ Write a message to a tag
     if (nfc.tagPresent()) {
         NdefMessage message = NdefMessage();
         message.addTextRecord("Hello, Arduino!");
-        nfc.write(message);
+        success = nfc.write(message);
     }
+
+Erase a tag. Tags are erased by writing an empty NDEF message. Tags are not zeroed out the old data may still be read off a tag using an application like [NXP's TagInfo](https://play.google.com/store/apps/details?id=com.nxp.taginfolite&hl=en).
+
+    if (nfc.tagPresent()) {
+        success = nfc.erase();
+    }
+
+
+Format a Mifare Classic tag as NDEF.
+
+    if (nfc.tagPresent()) {
+        success = nfc.format();
+    }
+
+
+Clean a tag. Cleaning resets a tag back to a factory-like state. For Mifare Classic, tag is zeroed and reformatted as Mifare Classic (non-NDEF). For Mifare Ultralight, the tag is zeroed and left empty.
+
+    if (nfc.tagPresent()) {
+        success = nfc.clean();
+    }
+
 
 ### NfcTag 
 
