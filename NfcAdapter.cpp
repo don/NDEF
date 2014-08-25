@@ -66,7 +66,7 @@ boolean NfcAdapter::format()
     }
     else
     {
-        Serial.print(F("Unsupported Tag. Length is "));Serial.println(uidLength);
+        Serial.print(F("Unsupported Tag.");
         success = false;
     }
     return success;
