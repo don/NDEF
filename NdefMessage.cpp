@@ -44,12 +44,12 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         }
         else
         {
-        payloadLength =
-              (static_cast<uint32_t>(data[index])   << 24)
-            | (static_cast<uint32_t>(data[index+1]) << 16)
-            | (static_cast<uint32_t>(data[index+2]) << 8)
-            |  static_cast<uint32_t>(data[index+3]);
-        index += 4;
+            payloadLength =
+                  (static_cast<uint32_t>(data[index])   << 24)
+                | (static_cast<uint32_t>(data[index+1]) << 16)
+                | (static_cast<uint32_t>(data[index+2]) << 8)
+                |  static_cast<uint32_t>(data[index+3]);
+            index += 4;
         }
 
         int idLength = 0;
