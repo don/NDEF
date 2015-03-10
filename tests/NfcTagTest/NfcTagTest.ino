@@ -14,16 +14,16 @@ test(getUid)
   byte uidFromTag[sizeof(uid)]; 
 
   NfcTag tag = NfcTag(uid, sizeof(uid));
-  
+
   assertEqual(sizeof(uid), tag.getUidLength());
-  
+
   tag.getUid(uidFromTag, sizeof(uidFromTag));
-  
+
   // make sure the 2 uids are the same
   for (int i = 0; i < sizeof(uid); i++) {
     assertEqual(uid[i], uidFromTag[i]);
   }
-  
+
   // check contents, to ensure the original uid wasn't overwritten
   assertEqual(0x00, uid[0]);
   assertEqual(0xFF, uid[1]);

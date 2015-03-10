@@ -301,6 +301,7 @@ void NdefRecord::setId(const byte * id, const unsigned int numBytes)
     memcpy(_id, id, numBytes);
     _idLength = numBytes;
 }
+#ifdef NDEF_USE_SERIAL
 
 void NdefRecord::print()
 {
@@ -350,3 +351,4 @@ void NdefRecord::print()
     Serial.print(F("    Record is "));Serial.print(getEncodedSize());Serial.println(" bytes");
 
 }
+#endif

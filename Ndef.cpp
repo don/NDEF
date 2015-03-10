@@ -1,5 +1,6 @@
 #include "Ndef.h"
 
+#ifdef NDEF_USE_SERIAL
 // Borrowed from Adafruit_NFCShield_I2C
 void PrintHex(const byte * data, const long numBytes)
 {
@@ -55,3 +56,4 @@ void DumpHex(const byte * data, const long numBytes, const unsigned int blockSiz
         data += blockSize;
     }
 }
+#endif

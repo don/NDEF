@@ -157,7 +157,9 @@ boolean NdefMessage::addRecord(NdefRecord& record)
     }
     else
     {
+#ifdef NDEF_USE_SERIAL
         Serial.println(F("WARNING: Too many records. Increase MAX_NDEF_RECORDS."));
+#endif
         return false;
     }
 }
@@ -261,6 +263,7 @@ NdefRecord NdefMessage::operator[](int index)
     return getRecord(index);
 }
 
+#ifdef NDEF_USE_SERIAL
 void NdefMessage::print()
 {
     Serial.print(F("\nNDEF Message "));Serial.print(_recordCount);Serial.print(F(" record"));
@@ -272,3 +275,4 @@ void NdefMessage::print()
          _records[i].print();
     }
 }
+#endif

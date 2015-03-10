@@ -105,6 +105,7 @@ NdefMessage NfcTag::getNdefMessage()
 {
     return *_ndefMessage;
 }
+#ifdef NDEF_USE_SERIAL
 
 void NfcTag::print()
 {
@@ -119,3 +120,4 @@ void NfcTag::print()
         _ndefMessage->print();
     }
 }
+#endif
