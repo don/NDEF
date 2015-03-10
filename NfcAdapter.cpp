@@ -50,7 +50,6 @@ boolean NfcAdapter::tagPresent(unsigned long timeout)
 
 boolean NfcAdapter::erase()
 {
-    boolean success;
     NdefMessage message = NdefMessage();
     message.addEmptyRecord();
     return write(message);
@@ -113,7 +112,8 @@ NfcTag NfcAdapter::read()
         MifareClassic mifareClassic = MifareClassic(*shield);
         return mifareClassic.read(uid, uidLength);
     }
-    else if (type == TAG_TYPE_2)
+    else
+    if (type == TAG_TYPE_2)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Reading Mifare Ultralight"));
@@ -128,7 +128,7 @@ NfcTag NfcAdapter::read()
     }
     else
     {
-        Serial.print(F("No driver for card type "));Serial.println(type);
+        // Serial.print(F("No driver for card type "));Serial.println(type);
         // TODO should set type here
         return NfcTag(uid, uidLength);
     }

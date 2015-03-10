@@ -357,7 +357,7 @@ boolean MifareClassic::write(NdefMessage& m, byte * uid, unsigned int uidLength)
     }
 
     // Write to tag
-    int index = 0;
+    unsigned int index = 0;
     int currentBlock = 4;
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 }; // this is Sector 1 - 15 key
 
