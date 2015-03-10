@@ -62,12 +62,14 @@ boolean NfcAdapter::erase()
 boolean NfcAdapter::format()
 {
     boolean success;
+#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
     if (uidLength == 4)
     {
         MifareClassic mifareClassic = MifareClassic(*shield);
         success = mifareClassic.formatNDEF(uid, uidLength);
     }
     else
+#endif
     {
 #ifdef NDEF_USE_SERIAL
         Serial.print(F("Unsupported Tag."));
@@ -81,6 +83,7 @@ boolean NfcAdapter::clean()
 {
     uint8_t type = guessTagType();
 
+#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
     if (type == TAG_TYPE_MIFARE_CLASSIC)
     {
         #ifdef NDEF_DEBUG
@@ -89,7 +92,9 @@ boolean NfcAdapter::clean()
         MifareClassic mifareClassic = MifareClassic(*shield);
         return mifareClassic.formatMifare(uid, uidLength);
     }
-    else if (type == TAG_TYPE_2)
+    else
+#endif
+    if (type == TAG_TYPE_2)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Cleaning Mifare Ultralight"));
@@ -112,6 +117,7 @@ NfcTag NfcAdapter::read()
 {
     uint8_t type = guessTagType();
 
+#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
     if (type == TAG_TYPE_MIFARE_CLASSIC)
     {
         #ifdef NDEF_DEBUG
@@ -121,6 +127,7 @@ NfcTag NfcAdapter::read()
         return mifareClassic.read(uid, uidLength);
     }
     else
+#endif
     if (type == TAG_TYPE_2)
     {
         #ifdef NDEF_DEBUG
@@ -150,6 +157,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     boolean success;
     uint8_t type = guessTagType();
 
+#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
     if (type == TAG_TYPE_MIFARE_CLASSIC)
     {
         #ifdef NDEF_DEBUG
@@ -158,7 +166,9 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
         MifareClassic mifareClassic = MifareClassic(*shield);
         success = mifareClassic.write(ndefMessage, uid, uidLength);
     }
-    else if (type == TAG_TYPE_2)
+    else
+#endif
+    if (type == TAG_TYPE_2)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Writing Mifare Ultralight"));
