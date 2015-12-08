@@ -170,14 +170,14 @@ void NdefRecord::encode(byte *data, bool firstRecord, bool lastRecord)
     memcpy(data_ptr, _type, _typeLength);
     data_ptr += _typeLength;
 
-    memcpy(data_ptr, _payload, _payloadLength);
-    data_ptr += _payloadLength;
-
     if (_idLength)
     {
         memcpy(data_ptr, _id, _idLength);
         data_ptr += _idLength;
     }
+    
+    memcpy(data_ptr, _payload, _payloadLength);
+    data_ptr += _payloadLength;
 }
 
 byte NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
