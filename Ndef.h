@@ -7,6 +7,7 @@
 
 #include <Arduino.h>
 
+//#define NDEF_DEBUG 1
 //#define NULL (void *)0
 
 void PrintHex(const byte *data, const long numBytes);
