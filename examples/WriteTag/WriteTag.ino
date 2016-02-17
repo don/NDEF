@@ -24,7 +24,7 @@ void setup() {
 }
 
 void loop() {
-    Serial.println("\nPlace a formatted Mifare Classic NFC tag on the reader.");
+    Serial.println("\nPlace a formatted Mifare Classic or Ultralight NFC tag on the reader.");
     if (nfc.tagPresent()) {
         NdefMessage message = NdefMessage();
         message.addUriRecord("http://arduino.cc");
