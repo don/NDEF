@@ -187,6 +187,17 @@ void NdefMessage::addMimeMediaRecord(String mimeType, uint8_t* payload, int payl
     addRecord(r);
 }
 
+void NdefMessage::addUnknownRecord(byte *payload, int payloadLength)
+{
+    NdefRecord r = NdefRecord();
+    r.setTnf(TNF_UNKNOWN);
+
+    r.setType(payload, 0);
+    r.setPayload(payload, payloadLength);
+    addRecord(r);
+}
+
+
 void NdefMessage::addTextRecord(String text)
 {
     addTextRecord(text, "en");

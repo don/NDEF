@@ -7,6 +7,8 @@
 
 #include <Arduino.h>
 
+//#define NDEF_DEBUG 1
+
 #ifdef NDEF_USE_SERIAL
 void PrintHex(const byte *data, const long numBytes);
 void PrintHexChar(const byte *data, const long numBytes);

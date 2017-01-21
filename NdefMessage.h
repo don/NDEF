@@ -24,6 +24,7 @@ class NdefMessage
         void addTextRecord(String text);
         void addTextRecord(String text, String encoding);
         void addUriRecord(String uri);
+        void addUnknownRecord(byte *payload, int payloadLength);
         void addEmptyRecord();
 
         unsigned int getRecordCount();
