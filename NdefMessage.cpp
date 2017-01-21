@@ -249,6 +249,20 @@ void NdefMessage::addUriRecord(String uri)
     delete(r);
 }
 
+void NdefMessage::addAndroidApplicationRecord(char *packageName)
+{
+    NdefRecord* r = new NdefRecord();
+    r->setTnf(TNF_EXTERNAL_TYPE);
+
+    char *RTD_AAR = "android.com:pkg"; // TODO this should be a constant or preprocessor
+    r->setType((uint8_t *)RTD_AAR, strlen(RTD_AAR));
+
+    r->setPayload((uint8_t *)packageName, strlen(packageName));
+
+    addRecord(*r);
+    delete(r);
+}
+
 void NdefMessage::addEmptyRecord()
 {
     NdefRecord* r = new NdefRecord();

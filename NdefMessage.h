@@ -24,6 +24,16 @@ class NdefMessage
         void addTextRecord(String text);
         void addTextRecord(String text, String encoding);
         void addUriRecord(String uri);
+
+		/** 
+		 * Creates an Android Application Record (AAR) http://developer.android.com/guide/topics/connectivity/nfc/nfc.html#aar
+		 * Use an AAR record to cause a P2P message pushed to your Android phone to launch your app even if it's not running.
+		 * Note, Android version must be >= 4.0 and your app must have the package you pass to this method
+		 * 
+		 * @param packageName example: "com.acme.myapp" 
+		 */
+        void addAndroidApplicationRecord(char *packageName);
+
         void addUnknownRecord(byte *payload, int payloadLength);
         void addEmptyRecord();
 
