@@ -2,7 +2,7 @@
 #include <PN532.h>
 #include <NdefMessage.h>
 #include <NdefRecord.h>
-  #include <ArduinoUnit.h>
+#include <ArduinoUnit.h>
 
 void leakCheck(void (*callback)())
 {
@@ -30,7 +30,9 @@ void record()
 void emptyRecord()
 {
   NdefRecord* r = new NdefRecord();
+#ifdef NDEF_USE_SERIAL
   r->print();
+#endif
   delete r;
 }
 
@@ -42,7 +44,9 @@ void textRecord()
   r->setType(type, sizeof(type));
   uint8_t payload[] = { 0x1A, 0x1B, 0x1C };
   r->setPayload(payload, sizeof(payload));
+#ifdef NDEF_USE_SERIAL
   r->print();
+#endif
   delete r;
 }
 
@@ -66,7 +70,9 @@ void emptyMessage()
 void printEmptyMessage()
 {
   NdefMessage* m = new NdefMessage();
+#ifdef NDEF_USE_SERIAL
   m->print();
+#endif
   delete m;
 }
 
@@ -74,14 +80,18 @@ void printEmptyMessage()
 void printEmptyMessageNoNew()
 {
   NdefMessage m = NdefMessage();
+#ifdef NDEF_USE_SERIAL
   m.print();
+#endif
 }
 
 void messageWithTextRecord()
 {
   NdefMessage m = NdefMessage();
   m.addTextRecord("foo");
+#ifdef NDEF_USE_SERIAL
   m.print();
+#endif
 }
 
 void messageWithEmptyRecord()
@@ -89,7 +99,9 @@ void messageWithEmptyRecord()
   NdefMessage m = NdefMessage();
   NdefRecord r = NdefRecord();
   m.addRecord(r);
+#ifdef NDEF_USE_SERIAL
   m.print();
+#endif
 }
 
 void messageWithoutHelper()
@@ -102,7 +114,9 @@ void messageWithoutHelper()
   uint8_t payload[] = { 0x02, 0x65, 0x6E, 0x66, 0x6F, 0x6F };
   r.setPayload(payload, sizeof(payload));
   m.addRecord(r);
+#ifdef NDEF_USE_SERIAL
   m.print();
+#endif
 }
 
 void messageWithId()
@@ -117,28 +131,36 @@ void messageWithId()
   uint8_t id[] = { 0x0, 0x0, 0x0 };
   r.setId(id, sizeof(id));
   m.addRecord(r);
+#ifdef NDEF_USE_SERIAL
   m.print();
+#endif
 }
 
 void message80()
 {
   NdefMessage message = NdefMessage();
   message.addTextRecord("This record is 80 characters.X01234567890123456789012345678901234567890123456789");
+#ifdef NDEF_USE_SERIAL
   //message.print();
+#endif
 }
 
 void message100()
 {
   NdefMessage message = NdefMessage();
   message.addTextRecord("This record is 100 characters.0123456789012345678901234567890123456789012345678901234567890123456789");
+#ifdef NDEF_USE_SERIAL
   //message.print();
+#endif
 }
 
 void message120()
 {
   NdefMessage message = NdefMessage();
   message.addTextRecord("This record is 120 characters.012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789");
+#ifdef NDEF_USE_SERIAL
   //message.print();
+#endif
 }
 
 void setup() {

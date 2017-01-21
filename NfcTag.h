@@ -21,7 +21,9 @@ class NfcTag
         String getTagType();
         boolean hasNdefMessage();
         NdefMessage getNdefMessage();
+#ifdef NDEF_USE_SERIAL
         void print();
+#endif
     private:
         byte *_uid;
         unsigned int _uidLength;

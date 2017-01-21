@@ -1,9 +1,10 @@
 #include "Ndef.h"
 
+#ifdef NDEF_USE_SERIAL
 // Borrowed from Adafruit_NFCShield_I2C
 void PrintHex(const byte * data, const long numBytes)
 {
-  uint32_t szPos;
+  int32_t szPos;
   for (szPos=0; szPos < numBytes; szPos++)
   {
     Serial.print("0x");
@@ -22,7 +23,7 @@ void PrintHex(const byte * data, const long numBytes)
 // Borrowed from Adafruit_NFCShield_I2C
 void PrintHexChar(const byte * data, const long numBytes)
 {
-  uint32_t szPos;
+  int32_t szPos;
   for (szPos=0; szPos < numBytes; szPos++)
   {
     // Append leading 0 for small values
@@ -55,3 +56,4 @@ void DumpHex(const byte * data, const long numBytes, const unsigned int blockSiz
         data += blockSize;
     }
 }
+#endif

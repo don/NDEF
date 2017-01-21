@@ -25,7 +25,9 @@ NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
 {
     if (isUnformatted())
     {
+#ifdef NDEF_USE_SERIAL
         Serial.println(F("WARNING: Tag is not formatted."));
+#endif
         return NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2);
     }
 
@@ -56,7 +58,9 @@ NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
         }
         else
         {
+#ifdef NDEF_USE_SERIAL
             Serial.print(F("Read failed "));Serial.println(page);
+#endif
             // TODO error handling
             messageLength = 0;
             break;
@@ -86,7 +90,9 @@ boolean MifareUltralight::isUnformatted()
     }
     else
     {
+#ifdef NDEF_USE_SERIAL
         Serial.print(F("Error. Failed read page "));Serial.println(page);
+#endif
         return false;
     }
 }
@@ -166,7 +172,9 @@ boolean MifareUltralight::write(NdefMessage& m, byte * uid, unsigned int uidLeng
 {
     if (isUnformatted())
     {
+#ifdef NDEF_USE_SERIAL
         Serial.println(F("WARNING: Tag is not formatted."));
+#endif
         return false;
     }
     readCapabilityContainer(); // meta info for tag

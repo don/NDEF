@@ -73,7 +73,7 @@ void NfcTag::getUid(byte *uid, unsigned int uidLength)
 String NfcTag::getUidString()
 {
     String uidString = "";
-    for (int i = 0; i < _uidLength; i++)
+    for (unsigned int i = 0; i < _uidLength; i++)
     {
         if (i > 0)
         {
@@ -105,6 +105,7 @@ NdefMessage NfcTag::getNdefMessage()
 {
     return *_ndefMessage;
 }
+#ifdef NDEF_USE_SERIAL
 
 void NfcTag::print()
 {
@@ -119,3 +120,4 @@ void NfcTag::print()
         _ndefMessage->print();
     }
 }
+#endif
