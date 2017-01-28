@@ -164,111 +164,97 @@ boolean NdefMessage::addRecord(NdefRecord& record)
     }
 }
 
-void NdefMessage::addMimeMediaRecord(String mimeType, String payload)
+void NdefMessage::addMimeMediaRecord(char *mimeType, char* payload)
 {
-
-    byte payloadBytes[payload.length() + 1];
-    payload.getBytes(payloadBytes, sizeof(payloadBytes));
-
-    addMimeMediaRecord(mimeType, payloadBytes, payload.length());
+	addMimeMediaRecord(mimeType, reinterpret_cast<byte*>(payload), strlen(payload));
 }
 
-void NdefMessage::addMimeMediaRecord(String mimeType, uint8_t* payload, int payloadLength)
+void NdefMessage::addMimeMediaRecord(char *mimeType, byte* payload, int payloadLength)
 {
-    NdefRecord r = NdefRecord();
+    NdefRecord  r;
     r.setTnf(TNF_MIME_MEDIA);
 
-    byte type[mimeType.length() + 1];
-    mimeType.getBytes(type, sizeof(type));
-    r.setType(type, mimeType.length());
-
+    r.setType(reinterpret_cast<byte*>(mimeType), strlen(mimeType));
     r.setPayload(payload, payloadLength);
-
     addRecord(r);
+
 }
 
 void NdefMessage::addUnknownRecord(byte *payload, int payloadLength)
 {
-    NdefRecord r = NdefRecord();
+    NdefRecord  r;
     r.setTnf(TNF_UNKNOWN);
 
     r.setType(payload, 0);
     r.setPayload(payload, payloadLength);
     addRecord(r);
+
 }
 
 
-void NdefMessage::addTextRecord(String text)
+void NdefMessage::addTextRecord(char *text)
 {
-    addTextRecord(text, "en");
+    addTextRecord(text, "");
 }
 
-void NdefMessage::addTextRecord(String text, String encoding)
+void NdefMessage::addTextRecord(char *text, char *encoding)
 {
-    NdefRecord r = NdefRecord();
+    NdefRecord  r;
     r.setTnf(TNF_WELL_KNOWN);
 
     uint8_t RTD_TEXT[1] = { 0x54 }; // TODO this should be a constant or preprocessor
     r.setType(RTD_TEXT, sizeof(RTD_TEXT));
 
-    // X is a placeholder for encoding length
-    // TODO is it more efficient to build w/o string concatenation?
-    String payloadString = "X" + encoding + text;
+    // encoding length
+	const uint8_t prefixSize = 5;
+	byte prefix[prefixSize];
+	byte encodingSize = strlen(encoding);
+	prefix[0] = encodingSize;
+	for (uint8_t i=0; encoding[i] && (i+1) < prefixSize; ++i) // limit encoding to max 4 bytes
+		prefix[i+1] = encoding[i];
 
-    byte payload[payloadString.length() + 1];
-    payloadString.getBytes(payload, sizeof(payload));
-
-    // replace X with the real encoding length
-    payload[0] = encoding.length();
-
-    r.setPayload(payload, payloadString.length());
+	// set payload	
+    r.setPayload(prefix, prefixSize, reinterpret_cast<byte*>(text), strlen(text));
 
     addRecord(r);
 }
 
-void NdefMessage::addUriRecord(String uri)
+void NdefMessage::addUriRecord(char *uri)
 {
-    NdefRecord* r = new NdefRecord();
-    r->setTnf(TNF_WELL_KNOWN);
+    NdefRecord  r;
+    r.setTnf(TNF_WELL_KNOWN);
 
     uint8_t RTD_URI[1] = { 0x55 }; // TODO this should be a constant or preprocessor
-    r->setType(RTD_URI, sizeof(RTD_URI));
+    r.setType(RTD_URI, sizeof(RTD_URI));
 
-    // X is a placeholder for identifier code
-    String payloadString = "X" + uri;
+    // encoding prefix
+	const uint8_t prefixSize = 1;
+    byte prefix[prefixSize] = {0};
 
-    byte payload[payloadString.length() + 1];
-    payloadString.getBytes(payload, sizeof(payload));
+    // set payload
+    r.setPayload(prefix, prefixSize, reinterpret_cast<byte*>(uri), strlen(uri));
 
-    // add identifier code 0x0, meaning no prefix substitution
-    payload[0] = 0x0;
-
-    r->setPayload(payload, payloadString.length());
-
-    addRecord(*r);
-    delete(r);
+    addRecord(r);
 }
 
 void NdefMessage::addAndroidApplicationRecord(char *packageName)
 {
-    NdefRecord* r = new NdefRecord();
-    r->setTnf(TNF_EXTERNAL_TYPE);
+    NdefRecord  r;
+    r.setTnf(TNF_EXTERNAL_TYPE);
 
     char *RTD_AAR = "android.com:pkg"; // TODO this should be a constant or preprocessor
-    r->setType((uint8_t *)RTD_AAR, strlen(RTD_AAR));
+    r.setType((uint8_t *)RTD_AAR, strlen(RTD_AAR));
 
-    r->setPayload((uint8_t *)packageName, strlen(packageName));
+    r.setPayload((uint8_t *)packageName, strlen(packageName));
 
-    addRecord(*r);
-    delete(r);
+    addRecord(r);
 }
 
 void NdefMessage::addEmptyRecord()
 {
-    NdefRecord* r = new NdefRecord();
-    r->setTnf(TNF_EMPTY);
-    addRecord(*r);
-    delete(r);
+    NdefRecord  r;
+    r.setTnf(TNF_EMPTY);
+    addRecord(r);
 }
 
 NdefRecord NdefMessage::getRecord(int index)

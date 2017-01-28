@@ -233,21 +233,12 @@ unsigned int NdefRecord::getIdLength()
     return _idLength;
 }
 
-String NdefRecord::getType()
+const byte *NdefRecord::getType()
 {
-    char type[_typeLength + 1];
-    memcpy(type, _type, _typeLength);
-    type[_typeLength] = '\0'; // null terminate
-    return String(type);
+    return _type;
 }
 
-// this assumes the caller created type correctly
-void NdefRecord::getType(uint8_t* type)
-{
-    memcpy(type, _type, _typeLength);
-}
-
-void NdefRecord::setType(const byte * type, const unsigned int numBytes)
+void NdefRecord::setType(const byte * type, unsigned int numBytes)
 {
     if(_typeLength)
     {
@@ -259,45 +250,49 @@ void NdefRecord::setType(const byte * type, const unsigned int numBytes)
     _typeLength = numBytes;
 }
 
-// assumes the caller sized payload properly
-void NdefRecord::getPayload(byte *payload)
+const byte *NdefRecord::getPayload()
 {
-    memcpy(payload, _payload, _payloadLength);
+	return _payload;
 }
 
-void NdefRecord::setPayload(const byte * payload, const int numBytes)
+void NdefRecord::setPayload(const byte * payload, int numBytes)
 {
-    if (_payloadLength)
+	setPayload(NULL, 0, payload, numBytes);
+}
+
+void NdefRecord::setPayload(const byte *prefix, int prefixSize, const byte *payload, int numBytes)
+{
+	int size = prefixSize + numBytes;
+    if (_payloadLength && _payloadLength < size)
     {
         free(_payload);
     }
-
-    _payload = (byte*)malloc(numBytes);
-    memcpy(_payload, payload, numBytes);
-    _payloadLength = numBytes;
+    if (_payloadLength < size)
+	{	
+		_payload = (byte*)malloc(size);
+	}
+	if ( prefixSize )
+		memcpy(_payload, prefix, prefixSize);
+	if ( numBytes )		
+		memcpy(_payload + prefixSize, payload, numBytes);
+    _payloadLength = size;
 }
 
-String NdefRecord::getId()
+const byte *NdefRecord::getId()
 {
-    char id[_idLength + 1];
-    memcpy(id, _id, _idLength);
-    id[_idLength] = '\0'; // null terminate
-    return String(id);
-}
-
-void NdefRecord::getId(byte *id)
-{
-    memcpy(id, _id, _idLength);
+    return _id;
 }
 
 void NdefRecord::setId(const byte * id, const unsigned int numBytes)
 {
-    if (_idLength)
+    if (_idLength && _payloadLength < numBytes)
     {
-        free(_id);
+	    free(_id);
     }
-
-    _id = (byte*)malloc(numBytes);
+    if (_idLength < numBytes)
+    {
+	    _id = (byte*)malloc(numBytes);
+    }
     memcpy(_id, id, numBytes);
     _idLength = numBytes;
 }

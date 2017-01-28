@@ -19,11 +19,11 @@ class NdefMessage
         void encode(byte *data);
 
         boolean addRecord(NdefRecord& record);
-        void addMimeMediaRecord(String mimeType, String payload);
-        void addMimeMediaRecord(String mimeType, byte *payload, int payloadLength);
-        void addTextRecord(String text);
-        void addTextRecord(String text, String encoding);
-        void addUriRecord(String uri);
+        void addMimeMediaRecord(char *mimeType, char *payload);
+        void addMimeMediaRecord(char *mimeType, byte *payload, int payloadLength);
+        void addTextRecord(char *text);
+        void addTextRecord(char *text, char *encoding);
+        void addUriRecord(char *uri);
 
 		/** 
 		 * Creates an Android Application Record (AAR) http://developer.android.com/guide/topics/connectivity/nfc/nfc.html#aar
