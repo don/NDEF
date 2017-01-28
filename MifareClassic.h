@@ -1,8 +1,6 @@
 #ifndef MifareClassic_h
 #define MifareClassic_h
 
-#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
-
 #include <Due.h>
 #include <PN532.h>
 #include <Ndef.h>
@@ -24,5 +22,4 @@ class MifareClassic
         bool decodeTlv(byte *data, int &messageLength, int &messageStartIndex);
 };
 
-#endif
 #endif

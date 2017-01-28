@@ -1,4 +1,3 @@
-#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
 #include "MifareClassic.h"
 
 #define BLOCK_SIZE 16
@@ -448,4 +447,3 @@ boolean MifareClassic::write(NdefMessage& m, byte * uid, unsigned int uidLength)
 
     return true;
 }
-#endif

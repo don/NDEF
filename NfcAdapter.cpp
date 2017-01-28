@@ -94,6 +94,7 @@ boolean NfcAdapter::clean()
     }
     else
 #endif
+#ifdef NDEF_SUPPORT_MIFARE_ULTRA
     if (type == TAG_TYPE_2)
     {
         #ifdef NDEF_DEBUG
@@ -103,6 +104,7 @@ boolean NfcAdapter::clean()
         return ultralight.clean();
     }
     else
+#endif
     {
 #ifdef NDEF_USE_SERIAL
         Serial.print(F("No driver for card type "));Serial.println(type);
@@ -128,6 +130,7 @@ NfcTag NfcAdapter::read()
     }
     else
 #endif
+#ifdef NDEF_SUPPORT_MIFARE_ULTRA
     if (type == TAG_TYPE_2)
     {
         #ifdef NDEF_DEBUG
@@ -136,7 +139,9 @@ NfcTag NfcAdapter::read()
         MifareUltralight ultralight = MifareUltralight(*shield);
         return ultralight.read(uid, uidLength);
     }
-    else if (type == TAG_TYPE_UNKNOWN)
+    else 
+#endif	
+	if (type == TAG_TYPE_UNKNOWN)
     {
 #ifdef NDEF_USE_SERIAL
         Serial.print(F("Can not determine tag type"));
@@ -168,6 +173,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     }
     else
 #endif
+#ifdef NDEF_SUPPORT_MIFARE_ULTRA
     if (type == TAG_TYPE_2)
     {
         #ifdef NDEF_DEBUG
@@ -176,7 +182,9 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
         MifareUltralight mifareUltralight = MifareUltralight(*shield);
         success = mifareUltralight.write(ndefMessage, uid, uidLength);
     }
-    else if (type == TAG_TYPE_UNKNOWN)
+    else
+#endif
+	if (type == TAG_TYPE_UNKNOWN)
     {
 #ifdef NDEF_USE_SERIAL
         Serial.print(F("Can not determine tag type"));

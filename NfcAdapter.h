@@ -6,10 +6,20 @@
 #include <NfcTag.h>
 #include <Ndef.h>
 
-// Drivers
-#include <MifareClassic.h>
-#include <MifareUltralight.h>
+// choose supported formats
+//#define NDEF_SUPPORT_MIFARE_CLASSIC
+#define NDEF_SUPPORT_MIFARE_ULTRA
 
+// Drivers
+#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
+	#include <MifareClassic.h>
+#endif
+#ifdef NDEF_SUPPORT_MIFARE_ULTRA
+	#include <MifareUltralight.h>
+#endif
+
+
+// tag types
 #define TAG_TYPE_MIFARE_CLASSIC (0)
 #define TAG_TYPE_1 (1)
 #define TAG_TYPE_2 (2)
