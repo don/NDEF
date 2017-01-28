@@ -164,23 +164,23 @@ boolean NdefMessage::addRecord(NdefRecord& record)
     }
 }
 
-void NdefMessage::addMimeMediaRecord(char *mimeType, char* payload)
+void NdefMessage::addMimeMediaRecord(const char *mimeType, const char* payload)
 {
-	addMimeMediaRecord(mimeType, reinterpret_cast<byte*>(payload), strlen(payload));
+	addMimeMediaRecord(mimeType, reinterpret_cast<const byte*>(payload), strlen(payload));
 }
 
-void NdefMessage::addMimeMediaRecord(char *mimeType, byte* payload, int payloadLength)
+void NdefMessage::addMimeMediaRecord(const char *mimeType, const byte* payload, int payloadLength)
 {
     NdefRecord  r;
     r.setTnf(TNF_MIME_MEDIA);
 
-    r.setType(reinterpret_cast<byte*>(mimeType), strlen(mimeType));
+    r.setType(reinterpret_cast<const byte*>(mimeType), strlen(mimeType));
     r.setPayload(payload, payloadLength);
     addRecord(r);
 
 }
 
-void NdefMessage::addUnknownRecord(byte *payload, int payloadLength)
+void NdefMessage::addUnknownRecord(const byte *payload, int payloadLength)
 {
     NdefRecord  r;
     r.setTnf(TNF_UNKNOWN);
@@ -192,12 +192,12 @@ void NdefMessage::addUnknownRecord(byte *payload, int payloadLength)
 }
 
 
-void NdefMessage::addTextRecord(char *text)
+void NdefMessage::addTextRecord(const char *text)
 {
     addTextRecord(text, "");
 }
 
-void NdefMessage::addTextRecord(char *text, char *encoding)
+void NdefMessage::addTextRecord(const char *text, const char *encoding)
 {
     NdefRecord  r;
     r.setTnf(TNF_WELL_KNOWN);
@@ -214,12 +214,12 @@ void NdefMessage::addTextRecord(char *text, char *encoding)
 		prefix[i+1] = encoding[i];
 
 	// set payload	
-    r.setPayload(prefix, prefixSize, reinterpret_cast<byte*>(text), strlen(text));
+    r.setPayload(prefix, prefixSize, reinterpret_cast<const byte*>(text), strlen(text));
 
     addRecord(r);
 }
 
-void NdefMessage::addUriRecord(char *uri)
+void NdefMessage::addUriRecord(const char *uri)
 {
     NdefRecord  r;
     r.setTnf(TNF_WELL_KNOWN);
@@ -232,22 +232,31 @@ void NdefMessage::addUriRecord(char *uri)
     byte prefix[prefixSize] = {0};
 
     // set payload
-    r.setPayload(prefix, prefixSize, reinterpret_cast<byte*>(uri), strlen(uri));
+    r.setPayload(prefix, prefixSize, reinterpret_cast<const byte*>(uri), strlen(uri));
 
     addRecord(r);
 }
 
-void NdefMessage::addAndroidApplicationRecord(char *packageName)
+
+void NdefMessage::addExternalRecord(const char *type,const char* payload)
 {
-    NdefRecord  r;
-    r.setTnf(TNF_EXTERNAL_TYPE);
+	addExternalRecord(type, reinterpret_cast<const byte*>(payload), strlen(payload));
+}
 
-    char *RTD_AAR = "android.com:pkg"; // TODO this should be a constant or preprocessor
-    r.setType((uint8_t *)RTD_AAR, strlen(RTD_AAR));
+void NdefMessage::addExternalRecord(const char *type, const byte *payload, int payloadLength)
+{
+	NdefRecord  r;
+	r.setTnf(TNF_EXTERNAL_TYPE);
+	
+	r.setType(reinterpret_cast<const byte*>(type), strlen(type));
+    r.setPayload(payload, payloadLength);
+	addRecord(r);
+}
 
-    r.setPayload((uint8_t *)packageName, strlen(packageName));
 
-    addRecord(r);
+void NdefMessage::addAndroidApplicationRecord(const char *packageName)
+{
+	addExternalRecord("android.com:pkg", packageName);
 }
 
 void NdefMessage::addEmptyRecord()

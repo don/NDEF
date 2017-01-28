@@ -19,11 +19,14 @@ class NdefMessage
         void encode(byte *data);
 
         boolean addRecord(NdefRecord& record);
-        void addMimeMediaRecord(char *mimeType, char *payload);
-        void addMimeMediaRecord(char *mimeType, byte *payload, int payloadLength);
-        void addTextRecord(char *text);
-        void addTextRecord(char *text, char *encoding);
-        void addUriRecord(char *uri);
+        void addMimeMediaRecord(const char *mimeType, const char *payload);
+        void addMimeMediaRecord(const char *mimeType, const byte *payload, int payloadLength);
+        void addTextRecord(const char *text);
+        void addTextRecord(const char *text, const char *encoding);
+        void addUriRecord(const char *uri);
+
+        void addExternalRecord(const char *type, const char *payload);
+        void addExternalRecord(const char *type, const byte *payload, int payloadLength);
 
 		/** 
 		 * Creates an Android Application Record (AAR) http://developer.android.com/guide/topics/connectivity/nfc/nfc.html#aar
@@ -32,9 +35,9 @@ class NdefMessage
 		 * 
 		 * @param packageName example: "com.acme.myapp" 
 		 */
-        void addAndroidApplicationRecord(char *packageName);
+        void addAndroidApplicationRecord(const char *packageName);
 
-        void addUnknownRecord(byte *payload, int payloadLength);
+        void addUnknownRecord(const byte *payload, int payloadLength);
         void addEmptyRecord();
 
         unsigned int getRecordCount();
