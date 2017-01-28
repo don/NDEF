@@ -9,9 +9,11 @@
 #define ULTRALIGHT_MAX_PAGE 63
 
 
-MifareUltralight::MifareUltralight(PN532& nfcShield)
+MifareUltralight::MifareUltralight(PN532& nfcShield, uint8_t *staticBuf, unsigned int staticBufSize)
 {
     nfc = &nfcShield;
+	_staticBufSize = staticBufSize;
+	_staticBuf = staticBuf;	
     ndefStartIndex = 0;
     messageLength = 0;
 }
@@ -43,7 +45,16 @@ NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
     boolean success;
     uint8_t page;
     uint8_t index = 0;
-    byte buffer[bufferSize];
+    // use shared static buffer
+    if ( _staticBufSize < bufferSize )
+    {
+	    #ifdef NDEF_USE_SERIAL
+	    Serial.print(F("Error. Static buffer to small. is: "));Serial.print(_staticBufSize);
+	    Serial.print(F("required: "));Serial.print(bufferSize);
+	    #endif
+	    return NfcTag(uid, uidLength, NfcTag::UNKNOWN);
+    }
+    byte *buffer = _staticBuf;
     for (page = ULTRALIGHT_DATA_START_PAGE; page < ULTRALIGHT_MAX_PAGE; page++)
     {
         // read the data
@@ -188,8 +199,17 @@ boolean MifareUltralight::write(NdefMessage& m, byte * uid, unsigned int uidLeng
     	return false;
     }
 
-    uint8_t encoded[bufferSize];
-    uint8_t *  src = encoded;
+	// use shared static buffer
+	if ( _staticBufSize < bufferSize )
+	{
+		#ifdef NDEF_USE_SERIAL
+		Serial.print(F("Error. Static buffer to small. is: "));Serial.print(_staticBufSize);
+		Serial.print(F("required: "));Serial.print(bufferSize);
+		#endif
+		return false;
+	}
+	uint8_t *encoded = _staticBuf;
+    uint8_t *src = encoded;
     unsigned int position = 0;
     uint8_t page = ULTRALIGHT_DATA_START_PAGE;
 

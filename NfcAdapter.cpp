@@ -1,8 +1,10 @@
 #include <NfcAdapter.h>
 
-NfcAdapter::NfcAdapter(PN532Interface &interface)
+NfcAdapter::NfcAdapter(PN532Interface &interface, uint8_t *staticBuf, unsigned int staticBufSize)
 {
     shield = new PN532(interface);
+	_staticBufSize = staticBufSize;
+	_staticBuf = staticBuf;	
 }
 
 NfcAdapter::~NfcAdapter(void)
@@ -65,7 +67,7 @@ boolean NfcAdapter::format()
 #ifdef NDEF_SUPPORT_MIFARE_CLASSIC
     if (uidLength == 4)
     {
-        MifareClassic mifareClassic = MifareClassic(*shield);
+        MifareClassic mifareClassic = MifareClassic(*shield, _staticBuf, _staticBufSize);
         success = mifareClassic.formatNDEF(uid, uidLength);
     }
     else
@@ -89,7 +91,7 @@ boolean NfcAdapter::clean()
         #ifdef NDEF_DEBUG
         Serial.println(F("Cleaning Mifare Classic"));
         #endif
-        MifareClassic mifareClassic = MifareClassic(*shield);
+        MifareClassic mifareClassic = MifareClassic(*shield, _staticBuf, _staticBufSize);
         return mifareClassic.formatMifare(uid, uidLength);
     }
     else
@@ -100,7 +102,7 @@ boolean NfcAdapter::clean()
         #ifdef NDEF_DEBUG
         Serial.println(F("Cleaning Mifare Ultralight"));
         #endif
-        MifareUltralight ultralight = MifareUltralight(*shield);
+        MifareUltralight ultralight = MifareUltralight(*shield, _staticBuf, _staticBufSize);
         return ultralight.clean();
     }
     else
@@ -125,7 +127,7 @@ NfcTag NfcAdapter::read()
         #ifdef NDEF_DEBUG
         Serial.println(F("Reading Mifare Classic"));
         #endif
-        MifareClassic mifareClassic = MifareClassic(*shield);
+        MifareClassic mifareClassic = MifareClassic(*shield, _staticBuf, _staticBufSize);
         return mifareClassic.read(uid, uidLength);
     }
     else
@@ -136,7 +138,7 @@ NfcTag NfcAdapter::read()
         #ifdef NDEF_DEBUG
         Serial.println(F("Reading Mifare Ultralight"));
         #endif
-        MifareUltralight ultralight = MifareUltralight(*shield);
+        MifareUltralight ultralight = MifareUltralight(*shield, _staticBuf, _staticBufSize);
         return ultralight.read(uid, uidLength);
     }
     else 
@@ -168,7 +170,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
         #ifdef NDEF_DEBUG
         Serial.println(F("Writing Mifare Classic"));
         #endif
-        MifareClassic mifareClassic = MifareClassic(*shield);
+        MifareClassic mifareClassic = MifareClassic(*shield, _staticBuf, _staticBufSize);
         success = mifareClassic.write(ndefMessage, uid, uidLength);
     }
     else
@@ -179,7 +181,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
         #ifdef NDEF_DEBUG
         Serial.println(F("Writing Mifare Ultralight"));
         #endif
-        MifareUltralight mifareUltralight = MifareUltralight(*shield);
+        MifareUltralight mifareUltralight = MifareUltralight(*shield, _staticBuf, _staticBufSize);
         success = mifareUltralight.write(ndefMessage, uid, uidLength);
     }
     else

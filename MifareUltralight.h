@@ -8,13 +8,15 @@
 class MifareUltralight
 {
     public:
-        MifareUltralight(PN532& nfcShield);
+        MifareUltralight(PN532& nfcShield, uint8_t *staticBuf, unsigned int staticBufSize);
         ~MifareUltralight();
         NfcTag read(byte *uid, unsigned int uidLength);
         boolean write(NdefMessage& ndefMessage, byte *uid, unsigned int uidLength);
         boolean clean();
     private:
         PN532* nfc;
+		unsigned int _staticBufSize;
+		uint8_t *_staticBuf;		
         unsigned int tagCapacity;
         unsigned int messageLength;
         unsigned int bufferSize;

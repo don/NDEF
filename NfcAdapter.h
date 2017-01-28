@@ -32,7 +32,7 @@
 
 class NfcAdapter {
     public:
-        NfcAdapter(PN532Interface &interface);
+        NfcAdapter(PN532Interface &interface, uint8_t *staticBuf, unsigned int staticBufSize);
 
         ~NfcAdapter(void);
         void begin(boolean verbose=true);
@@ -49,6 +49,8 @@ class NfcAdapter {
         PN532* shield;
         byte uid[7];  // Buffer to store the returned UID
         unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+		unsigned int _staticBufSize;
+		uint8_t *_staticBuf;		
         unsigned int guessTagType();
 };
 

@@ -4,9 +4,11 @@
 #define LONG_TLV_SIZE 4
 #define SHORT_TLV_SIZE 2
 
-MifareClassic::MifareClassic(PN532& nfcShield)
+MifareClassic::MifareClassic(PN532& nfcShield, uint8_t *staticBuf, unsigned int staticBufSize)
 {
-  _nfcShield = &nfcShield;
+	_nfcShield = &nfcShield;
+	_staticBufSize = staticBufSize;
+	_staticBuf = staticBuf;
 }
 
 MifareClassic::~MifareClassic()
@@ -52,7 +54,16 @@ NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
     // this should be nested in the message length loop
     int index = 0;
     int bufferSize = getBufferSize(messageLength);
-    uint8_t buffer[bufferSize];
+	// use shared static buffer	
+	if ( _staticBufSize < bufferSize )
+	{
+#ifdef NDEF_USE_SERIAL
+		Serial.print(F("Error. Static buffer to small. is: "));Serial.print(_staticBufSize);
+		Serial.print(F("required: "));Serial.print(bufferSize);
+#endif
+		return NfcTag(uid, uidLength, NfcTag::MIFARE_CLASSIC);
+	}	
+	uint8_t *buffer = _staticBuf;
 
     #ifdef MIFARE_CLASSIC_DEBUG
     Serial.print(F("Message Length "));Serial.println(messageLength);
@@ -366,32 +377,52 @@ boolean MifareClassic::formatMifare(byte * uid, unsigned int uidLength)
 boolean MifareClassic::write(NdefMessage& m, byte * uid, unsigned int uidLength)
 {
 
-    uint8_t encoded[m.getEncodedSize()];
+	int encodedSize = m.getEncodedSize();
+    // use shared static buffer
+    if ( _staticBufSize < encodedSize *2 )
+    {
+	    #ifdef NDEF_USE_SERIAL
+	    Serial.print(F("Error. Static buffer to small. is: "));Serial.print(_staticBufSize);
+	    Serial.print(F("required: "));Serial.print(encodedSize *2);
+	    #endif
+	    return false;
+    }
+    uint8_t *encoded = _staticBuf;
     m.encode(encoded);
 
-    uint8_t buffer[getBufferSize(sizeof(encoded))];
-    memset(buffer, 0, sizeof(buffer));
+    int bufferSize = getBufferSize(encodedSize);
+    // use shared static buffer
+    if ( _staticBufSize < encodedSize + bufferSize )
+    {
+	    #ifdef NDEF_USE_SERIAL
+	    Serial.print(F("Error. Static buffer to small. is: "));Serial.print(_staticBufSize);
+	    Serial.print(F("required: "));Serial.print(encodedSize + bufferSize);
+	    #endif
+	    return false;
+    }
+    uint8_t *buffer = _staticBuf + encodedSize;
+    memset(buffer, 0, bufferSize);
 
     #ifdef MIFARE_CLASSIC_DEBUG
-    Serial.print(F("sizeof(encoded) "));Serial.println(sizeof(encoded));
-    Serial.print(F("sizeof(buffer) "));Serial.println(sizeof(buffer));
+    Serial.print(F("sizeof(encoded) "));Serial.println(encodedSize);
+    Serial.print(F("sizeof(buffer) "));Serial.println(bufferSize);
     #endif
 
-    if (sizeof(encoded) < 0xFF)
+    if (encodedSize < 0xFF)
     {
         buffer[0] = 0x3;
-        buffer[1] = sizeof(encoded);
-        memcpy(&buffer[2], encoded, sizeof(encoded));
-        buffer[2+sizeof(encoded)] = 0xFE; // terminator
+        buffer[1] = encodedSize;
+        memcpy(&buffer[2], encoded, encodedSize);
+        buffer[2+encodedSize] = 0xFE; // terminator
     }
     else
     {
         buffer[0] = 0x3;
         buffer[1] = 0xFF;
-        buffer[2] = ((sizeof(encoded) >> 8) & 0xFF);
-        buffer[3] = (sizeof(encoded) & 0xFF);
-        memcpy(&buffer[4], encoded, sizeof(encoded));
-        buffer[4+sizeof(encoded)] = 0xFE; // terminator
+        buffer[2] = ((encodedSize >> 8) & 0xFF);
+        buffer[3] = (encodedSize & 0xFF);
+        memcpy(&buffer[4], encoded, encodedSize);
+        buffer[4+encodedSize] = 0xFE; // terminator
     }
 
     // Write to tag
@@ -399,7 +430,7 @@ boolean MifareClassic::write(NdefMessage& m, byte * uid, unsigned int uidLength)
     int currentBlock = 4;
     uint8_t key[6] = { 0xD3, 0xF7, 0xD3, 0xF7, 0xD3, 0xF7 }; // this is Sector 1 - 15 key
 
-    while (index < sizeof(buffer))
+    while (index < bufferSize)
     {
 
         if (_nfcShield->mifareclassic_IsFirstBlock(currentBlock))
