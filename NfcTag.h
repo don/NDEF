@@ -8,17 +8,18 @@
 class NfcTag
 {
     public:
+		enum Type { MIFARE_CLASSIC = 0, TYPE_1, TYPE_2, TYPE_3, TYPE_4, UNKNOWN = 99 };
+	
         NfcTag();
         NfcTag(byte *uid, unsigned int uidLength);
-        NfcTag(byte *uid, unsigned int uidLength, String tagType);
-        NfcTag(byte *uid, unsigned int uidLength, String tagType, NdefMessage& ndefMessage);
-        NfcTag(byte *uid, unsigned int uidLength, String tagType, const byte *ndefData, const int ndefDataLength);
+        NfcTag(byte *uid, unsigned int uidLength, Type tagType);
+        NfcTag(byte *uid, unsigned int uidLength, Type tagType, NdefMessage& ndefMessage);
+        NfcTag(byte *uid, unsigned int uidLength, Type tagType, const byte *ndefData, const int ndefDataLength);
         ~NfcTag(void);
         NfcTag& operator=(const NfcTag& rhs);
         uint8_t getUidLength();
         void getUid(byte *uid, unsigned int uidLength);
-        String getUidString();
-        String getTagType();
+        Type getTagType();
         boolean hasNdefMessage();
         NdefMessage getNdefMessage();
 #ifdef NDEF_USE_SERIAL
@@ -27,7 +28,7 @@ class NfcTag
     private:
         byte *_uid;
         unsigned int _uidLength;
-        String _tagType; // Mifare Classic, NFC Forum Type {1,2,3,4}, Unknown
+        Type _tagType; // Mifare Classic, NFC Forum Type {1,2,3,4}, Unknown
         NdefMessage* _ndefMessage;
         // TODO capacity
         // TODO isFormatted

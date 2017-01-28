@@ -84,7 +84,7 @@ boolean NfcAdapter::clean()
     uint8_t type = guessTagType();
 
 #ifdef NDEF_SUPPORT_MIFARE_CLASSIC
-    if (type == TAG_TYPE_MIFARE_CLASSIC)
+    if (type == NfcTag::MIFARE_CLASSIC)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Cleaning Mifare Classic"));
@@ -95,7 +95,7 @@ boolean NfcAdapter::clean()
     else
 #endif
 #ifdef NDEF_SUPPORT_MIFARE_ULTRA
-    if (type == TAG_TYPE_2)
+    if (type == NfcTag::TYPE_2)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Cleaning Mifare Ultralight"));
@@ -120,7 +120,7 @@ NfcTag NfcAdapter::read()
     uint8_t type = guessTagType();
 
 #ifdef NDEF_SUPPORT_MIFARE_CLASSIC
-    if (type == TAG_TYPE_MIFARE_CLASSIC)
+    if (type == NfcTag::MIFARE_CLASSIC)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Reading Mifare Classic"));
@@ -131,7 +131,7 @@ NfcTag NfcAdapter::read()
     else
 #endif
 #ifdef NDEF_SUPPORT_MIFARE_ULTRA
-    if (type == TAG_TYPE_2)
+    if (type == NfcTag::TYPE_2)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Reading Mifare Ultralight"));
@@ -141,7 +141,7 @@ NfcTag NfcAdapter::read()
     }
     else 
 #endif	
-	if (type == TAG_TYPE_UNKNOWN)
+	if (type == NfcTag::UNKNOWN)
     {
 #ifdef NDEF_USE_SERIAL
         Serial.print(F("Can not determine tag type"));
@@ -163,7 +163,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     uint8_t type = guessTagType();
 
 #ifdef NDEF_SUPPORT_MIFARE_CLASSIC
-    if (type == TAG_TYPE_MIFARE_CLASSIC)
+    if (type == NfcTag::MIFARE_CLASSIC)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Writing Mifare Classic"));
@@ -174,7 +174,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     else
 #endif
 #ifdef NDEF_SUPPORT_MIFARE_ULTRA
-    if (type == TAG_TYPE_2)
+    if (type == NfcTag::TYPE_2)
     {
         #ifdef NDEF_DEBUG
         Serial.println(F("Writing Mifare Ultralight"));
@@ -184,7 +184,7 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     }
     else
 #endif
-	if (type == TAG_TYPE_UNKNOWN)
+	if (type == NfcTag::UNKNOWN)
     {
 #ifdef NDEF_USE_SERIAL
         Serial.print(F("Can not determine tag type"));
@@ -217,10 +217,10 @@ unsigned int NfcAdapter::guessTagType()
 
     if (uidLength == 4)
     {
-        return TAG_TYPE_MIFARE_CLASSIC;
+        return NfcTag::MIFARE_CLASSIC;
     }
     else
     {
-        return TAG_TYPE_2;
+        return NfcTag::TYPE_2;
     }
 }

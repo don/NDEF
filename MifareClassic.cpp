@@ -4,8 +4,6 @@
 #define LONG_TLV_SIZE 4
 #define SHORT_TLV_SIZE 2
 
-#define MIFARE_CLASSIC ("Mifare Classic")
-
 MifareClassic::MifareClassic(PN532& nfcShield)
 {
   _nfcShield = &nfcShield;
@@ -31,7 +29,7 @@ NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
         if (success)
         {
             if (!decodeTlv(data, messageLength, messageStartIndex)) {
-                return NfcTag(uid, uidLength, "ERROR"); // TODO should the error message go in NfcTag?
+                return NfcTag(uid, uidLength, NfcTag::UNKNOWN); // TODO should the error message go in NfcTag?
             }
         }
         else
@@ -39,7 +37,7 @@ NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
 #ifdef NDEF_USE_SERIAL
             Serial.print(F("Error. Failed read block "));Serial.println(currentBlock);
 #endif
-            return NfcTag(uid, uidLength, MIFARE_CLASSIC);
+            return NfcTag(uid, uidLength, NfcTag::MIFARE_CLASSIC);
         }
     }
     else
@@ -48,7 +46,7 @@ NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
         Serial.println(F("Tag is not NDEF formatted."));
 #endif
         // TODO set tag.isFormatted = false
-        return NfcTag(uid, uidLength, MIFARE_CLASSIC);
+        return NfcTag(uid, uidLength, NfcTag::MIFARE_CLASSIC);
     }
 
     // this should be nested in the message length loop
@@ -107,7 +105,7 @@ NfcTag MifareClassic::read(byte *uid, unsigned int uidLength)
         }
     }
 
-    return NfcTag(uid, uidLength, MIFARE_CLASSIC, &buffer[messageStartIndex], messageLength);
+    return NfcTag(uid, uidLength, NfcTag::MIFARE_CLASSIC, &buffer[messageStartIndex], messageLength);
 }
 
 int MifareClassic::getBufferSize(int messageLength)

@@ -7,7 +7,7 @@
 #include <Ndef.h>
 
 // choose supported formats
-//#define NDEF_SUPPORT_MIFARE_CLASSIC
+#define NDEF_SUPPORT_MIFARE_CLASSIC
 #define NDEF_SUPPORT_MIFARE_ULTRA
 
 // Drivers
