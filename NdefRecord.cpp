@@ -10,6 +10,19 @@ NdefRecord::NdefRecord()
     _type = (byte *)NULL;
     _payload = (byte *)NULL;
     _id = (byte *)NULL;
+    _noPayload = false;
+}
+
+NdefRecord::NdefRecord(const int payloadNumBytes) //: NdefRecord() (requires C++11)
+{
+    _tnf = 0;
+    _typeLength = 0;
+    _payloadLength = payloadNumBytes;
+    _idLength = 0;
+    _type = (byte *)NULL;
+    _payload = (byte *)NULL;
+    _id = (byte *)NULL;
+    _noPayload = true;
 }
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
@@ -54,7 +67,7 @@ NdefRecord::~NdefRecord()
         free(_type);
     }
 
-    if (_payloadLength)
+    if (_payloadLength && !_noPayload)
     {
         free(_payload);
     }
@@ -176,9 +189,26 @@ void NdefRecord::encode(byte *data, bool firstRecord, bool lastRecord)
         data_ptr += _idLength;
     }
     
-    memcpy(data_ptr, _payload, _payloadLength);
-    data_ptr += _payloadLength;
+    if (!_noPayload) {
+        memcpy(data_ptr, _payload, _payloadLength);
+        data_ptr += _payloadLength;
+    }
 }
+
+int NdefRecord::getHeaderSize() 
+{ 
+    return (getEncodedSize() - _payloadLength); 
+}
+
+void NdefRecord::getHeader(byte *data, bool firstRecord, bool lastRecord) { 
+    bool temp = _noPayload;
+
+    _noPayload = false;
+    encode(data, firstRecord, lastRecord);
+
+    _noPayload = temp;
+}
+
 
 byte NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)
 {
@@ -276,6 +306,7 @@ void NdefRecord::setPayload(const byte *prefix, int prefixSize, const byte *payl
 	if ( numBytes )		
 		memcpy(_payload + prefixSize, payload, numBytes);
     _payloadLength = size;
+    _noPayload = false;
 }
 
 const byte *NdefRecord::getId()
@@ -296,7 +327,16 @@ void NdefRecord::setId(const byte * id, const unsigned int numBytes)
     memcpy(_id, id, numBytes);
     _idLength = numBytes;
 }
-#ifdef NDEF_USE_SERIAL
+
+//#ifdef NDEF_USE_SERIAL
+
+static void PrintHexChar(byte* data, byte size){
+    for(int i=0;i<size;i++){
+        Serial.print(data[i],HEX);
+        Serial.print(" ");
+    }
+    Serial.println();
+}
 
 void NdefRecord::print()
 {
@@ -334,11 +374,14 @@ void NdefRecord::print()
     Serial.print(F("    Payload Length 0x"));Serial.print(_payloadLength, HEX);;Serial.print(" ");Serial.println(_payloadLength);
     if (_idLength)
     {
-        Serial.print(F("    Id Length 0x"));Serial.println(_idLength, HEX);
+        Serial.print(F("    Id Length 0x"));Serial.print(_idLength, HEX);Serial.print(" ");Serial.println(_idLength);
     }
     Serial.print(F("    Type "));PrintHexChar(_type, _typeLength);
     // TODO chunk large payloads so this is readable
-    Serial.print(F("    Payload "));PrintHexChar(_payload, _payloadLength);
+    Serial.print(F("    Payload "));
+    if (_noPayload) {
+        Serial.println(F("(not provided)"));
+    }else { PrintHexChar(_payload, _payloadLength); }
     if (_idLength)
     {
         Serial.print(F("    Id "));PrintHexChar(_id, _idLength);
@@ -346,4 +389,4 @@ void NdefRecord::print()
     Serial.print(F("    Record is "));Serial.print(getEncodedSize());Serial.println(" bytes");
 
 }
-#endif
+//#endif

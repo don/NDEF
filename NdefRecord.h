@@ -18,12 +18,16 @@ class NdefRecord
 {
     public:
         NdefRecord();
+        NdefRecord(const int payloadNumBytes);
         NdefRecord(const NdefRecord& rhs);
         ~NdefRecord();
         NdefRecord& operator=(const NdefRecord& rhs);
 
         int getEncodedSize();
         void encode(byte *data, bool firstRecord, bool lastRecord);
+
+        int getHeaderSize();
+        void getHeader(byte *data, bool firstRecord, bool lastRecord);
 
         unsigned int getTypeLength();
         int getPayloadLength();
@@ -40,9 +44,9 @@ class NdefRecord
         void setPayload(const byte *prefix, int prefixSize, const byte *payload, int numBytes);
         void setId(const byte *id, unsigned int numBytes);
 
-#ifdef NDEF_USE_SERIAL
+//#ifdef NDEF_USE_SERIAL
         void print();
-#endif
+//#endif
     private:
         byte getTnfByte(bool firstRecord, bool lastRecord);
         byte _tnf; // 3 bit
@@ -52,6 +56,7 @@ class NdefRecord
         byte *_type;
         byte *_payload;
         byte *_id;
+        bool _noPayload;
 };
 
 #endif
