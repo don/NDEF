@@ -6,6 +6,9 @@ NFC Data Exchange Format (NDEF) is a common data format that operates across all
 
 This code works with the [Adafruit NFC Shield](https://www.adafruit.com/products/789), [Seeed Studio NFC Shield v2.0](http://www.seeedstudio.com/depot/nfc-shield-v20-p-1370.html) and the [Seeed Studio NFC Shield](http://www.seeedstudio.com/depot/nfc-shield-p-916.html?cPath=73). The library supports I2C for the Adafruit shield and SPI with the Seeed shields. The Adafruit Shield can also be modified to use SPI. It should also work with the [Adafruit NFC Breakout Board](https://www.adafruit.com/products/364).
 
+### A note on this fork
+The purpose of this fork is to implement some memory-saving features to avoid stack overflows on Arduinos. Specifically, to make it possible to go through the process of defining NDEF records and messages and getting the header data, but without dragging payload data along with it. This will allow payload data to be moved around separately, and in whatever chunk size you desire. 
+
 ### Supports 
  - Reading from Mifare Classic Tags with 4 byte UIDs.
  - Writing to Mifare Classic Tags with 4 byte UIDs.
