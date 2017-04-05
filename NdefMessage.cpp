@@ -146,6 +146,24 @@ void NdefMessage::encode(uint8_t* data)
 
 }
 
+unsigned int NdefMessage::getHeaderSize() {
+    return 3 + (getEncodedSize() > 254 ? 2 : 0);
+}
+
+void NdefMessage::getHeader(byte* header)
+{
+    unsigned int payloadLength = getEncodedSize();
+    bool lengthy = payloadLength > 254;
+    header[0] = 0x3;
+    if (lengthy) {
+        header[1] = 0xFF;
+        header[2] = payloadLength >> 8;
+        header[3] = payloadLength;
+    } else {
+        header[1] = payloadLength;
+    }
+}
+
 boolean NdefMessage::addRecord(NdefRecord& record)
 {
 

@@ -4,7 +4,7 @@
 #include <Ndef.h>
 #include <NdefRecord.h>
 
-#define MAX_NDEF_RECORDS 4
+#define MAX_NDEF_RECORDS 8
 
 class NdefMessage
 {
@@ -16,7 +16,9 @@ class NdefMessage
         NdefMessage& operator=(const NdefMessage& rhs);
 
         int getEncodedSize(); // need so we can pass array to encode
-        void encode(byte *data);
+        void encode(byte *data); 
+        unsigned int getHeaderSize();
+        void getHeader(byte* header);
 
         boolean addRecord(NdefRecord& record);
         void addMimeMediaRecord(const char *mimeType, const char *payload);

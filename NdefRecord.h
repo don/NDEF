@@ -32,6 +32,7 @@ class NdefRecord
         unsigned int getTypeLength();
         int getPayloadLength();
         unsigned int getIdLength();
+        bool hasPayload(); 
 
         byte getTnf();
         const byte *getType();

@@ -263,6 +263,11 @@ unsigned int NdefRecord::getIdLength()
     return _idLength;
 }
 
+bool NdefRecord::hasPayload()
+{
+    return !_noPayload;
+}
+
 const byte *NdefRecord::getType()
 {
     return _type;

@@ -14,7 +14,6 @@
 #include <Bounce2.h>
 
 
-
 void setup(){
     Serial.begin(115200);
     Serial.println("start");
@@ -22,7 +21,7 @@ void setup(){
     NdefMessage message = NdefMessage();
 
     // Create an NDEF record with a dummy payload and examine header
-    NdefRecord rec = NdefRecord(10);
+    NdefRecord rec = NdefRecord(80);
     Serial.print("ID length: ");
     Serial.println(rec.getIdLength());
     rec.print();
@@ -30,8 +29,40 @@ void setup(){
     unsigned int header_len = rec.getHeaderSize();
     byte header[header_len];
     rec.getHeader(header, true, true);
-    Serial.println("\n Record header: ");
+    Serial.println(F("\n Record header: "));
     showBlockInHex(header, header_len);
+
+    Serial.print(F("\n Size of record in memory: "));
+    Serial.println(sizeof(rec));
+
+    if (message.addRecord(rec)) { Serial.println(F("Added record.")); }
+    unsigned int msgHeader_len = message.getHeaderSize();
+    byte msgHeader[msgHeader_len];
+    message.getHeader(msgHeader);
+    Serial.println("\n Message header: ");
+    showBlockInHex(msgHeader, msgHeader_len);
+
+    Serial.print("Record count: ");
+    Serial.println(message.getRecordCount());
+    
+    Serial.print(F("\n Size of message in memory: "));
+    Serial.println(sizeof(message));
+
+    Serial.println(F("\n (Adding more copies of record to message)"));
+    if (message.addRecord(rec)) { Serial.println(F("Added record.")); }
+    if (message.addRecord(rec)) { Serial.println(F("Added record.")); }
+
+    Serial.print("Record count: ");
+    Serial.println(message.getRecordCount());
+    msgHeader_len = message.getHeaderSize();
+    byte msgHeader2[msgHeader_len];
+    message.getHeader(msgHeader2);
+    Serial.println("\n Message header: ");
+    showBlockInHex(msgHeader2, msgHeader_len);
+
+    Serial.print("\n Size of message in memory: ");
+    Serial.println(sizeof(message));
+}
 
 void loop() {
   // put your main code here, to run repeatedly:
