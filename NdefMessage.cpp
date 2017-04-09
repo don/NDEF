@@ -147,7 +147,7 @@ void NdefMessage::encode(uint8_t* data)
 }
 
 unsigned int NdefMessage::getHeaderSize() {
-    return 3 + (getEncodedSize() > 254 ? 2 : 0);
+    return 2 + (getEncodedSize() > 254 ? 2 : 0);
 }
 
 void NdefMessage::getHeader(byte* header)
@@ -171,6 +171,7 @@ boolean NdefMessage::addRecord(NdefRecord& record)
     {
         _records[_recordCount] = record;
         _recordCount++;
+        Serial.println(F("Added record."));
         return true;
     }
     else

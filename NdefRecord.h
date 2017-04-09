@@ -57,7 +57,7 @@ class NdefRecord
         byte *_type;
         byte *_payload;
         byte *_id;
-        bool _noPayload;
+        bool _hasPayload;
 };
 
 #endif

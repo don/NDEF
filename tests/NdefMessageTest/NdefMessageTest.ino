@@ -3,6 +3,7 @@
 #include <NdefMessage.h>
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>
+#include <Bounce2.h>
 
 // Custom Assertion
 void assertNoLeak(void (*callback)())
@@ -60,10 +61,10 @@ test(assign)
     assertEqual(r1.getPayloadLength(), r2.getPayloadLength());
     assertEqual(r1.getIdLength(), r2.getIdLength());
       
-    byte p1[r1.getPayloadLength()];
-    byte p2[r2.getPayloadLength()];
-    r1.getPayload(p1);
-    r2.getPayload(p2);
+    //byte p1[r1.getPayloadLength()];
+    //byte p2[r2.getPayloadLength()];
+    const byte *p1 = r1.getPayload();
+    const byte *p2 = r2.getPayload();
       
     int size = r1.getPayloadLength();
     assertBytesEqual(p1, p2, size);
@@ -99,10 +100,10 @@ test(assign2)
   
     // TODO check type
   
-    byte p1[r1.getPayloadLength()];
-    byte p2[r2.getPayloadLength()];
-    r1.getPayload(p1);
-    r2.getPayload(p2);
+    //byte p1[r1.getPayloadLength()];
+    //byte p2[r2.getPayloadLength()];
+    const byte * p1 = r1.getPayload();
+    const byte * p2 = r2.getPayload();
  
     int size = r1.getPayloadLength();
     assertBytesEqual(p1, p2, size);
@@ -139,8 +140,8 @@ test(assign3)
     byte payload[s.length() + 1];
     s.getBytes(payload, sizeof(payload));
   
-    byte p[r.getPayloadLength()];
-    r.getPayload(p);
+    //byte p[r.getPayloadLength()];
+    const byte *p = r.getPayload();
     assertBytesEqual(payload, p+3, s.length());
   
     delete m2;

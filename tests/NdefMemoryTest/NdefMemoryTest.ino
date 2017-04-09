@@ -1,8 +1,11 @@
+#define NDEF_USE_SERIAL
+
 #include <Wire.h>
 #include <PN532.h>
 #include <NdefMessage.h>
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>
+#include <Bounce2.h>
 
 void leakCheck(void (*callback)())
 {
@@ -53,10 +56,10 @@ void textRecord()
 void recordMallocZero()
 {
   NdefRecord r = NdefRecord();
-  String type = r.getType();
-  String id = r.getId();
-  byte payload[r.getPayloadLength()];
-  r.getPayload(payload);
+  String type = (const char *) r.getType();
+  String id = (const char *) r.getId();
+  const byte *payload = r.getPayload();    //[r.getPayloadLength()];
+  //payload = r.getPayload();
 }
 
 // this is OK
@@ -85,6 +88,7 @@ void printEmptyMessageNoNew()
 #endif
 }
 
+// This is failing
 void messageWithTextRecord()
 {
   NdefMessage m = NdefMessage();
@@ -94,6 +98,7 @@ void messageWithTextRecord()
 #endif
 }
 
+// This is failing
 void messageWithEmptyRecord()
 {
   NdefMessage m = NdefMessage();
@@ -193,12 +198,19 @@ test(recordAccessorLeaks)
 
 test(messageLeaks)
 {
+  Serial.println(F("emptyMessage"));
   assertNoLeak(&emptyMessage);
+  Serial.println(F("printEmptyMessage"));
   assertNoLeak(&printEmptyMessage);
+  Serial.println(F("printEmptyMessageNoNew"));
   assertNoLeak(&printEmptyMessageNoNew);
+  Serial.println(F("messageWithTextRecord"));
   assertNoLeak(&messageWithTextRecord);
+  Serial.println(F("messageWithEmptyRecord"));
   assertNoLeak(&messageWithEmptyRecord);
+  Serial.println(F("messageWithoutHelper"));
   assertNoLeak(&messageWithoutHelper);
+  Serial.println(F("messageWithId"));
   assertNoLeak(&messageWithId);
 }
 
