@@ -114,9 +114,9 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 }
 
 // size of records in bytes
-int NdefRecord::getEncodedSize()
+unsigned int NdefRecord::getEncodedSize()
 {
-    int size = 2; // tnf + typeLength
+    unsigned int size = 2; // tnf + typeLength
     if (_payloadLength > 0xFF)
     {
         size += 4;

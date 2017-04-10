@@ -146,6 +146,42 @@ void NdefMessage::encode(uint8_t* data)
 
 }
 
+
+unsigned int NdefMessage::getHeaderSize() {
+    return 2 + (getEncodedSize() > 254 ? 2 : 0);
+    // TLV is 0x03 + 1 byte length 
+    // OR if size > 254, 0x03 + 3 byte length
+    // See getHeader()
+}
+
+void NdefMessage::getHeader(byte* header)
+{
+    unsigned int payloadLength = getEncodedSize();
+    bool lengthy = payloadLength > 254;
+    header[0] = 0x3;
+    if (lengthy) {
+        header[1] = 0xFF;
+        header[2] = payloadLength >> 8;
+        header[3] = payloadLength;
+    } else {
+        header[1] = payloadLength;
+    }
+}
+
+unsigned int NdefMessage::getPackagedSize()
+{
+    return getEncodedSize() + getHeaderSize() + 1;
+}
+
+
+uint8_t * NdefMessage::getPackaged()
+{
+    uint8_t *packaged;
+    Serial.println("Not yet implemented!")
+    return packaged;
+}
+
+
 boolean NdefMessage::addRecord(NdefRecord& record)
 {
 

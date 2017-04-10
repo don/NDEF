@@ -17,6 +17,11 @@ class NdefMessage
 
         int getEncodedSize(); // need so we can pass array to encode
         void encode(byte *data);
+        unsigned int getHeaderSize();
+        void getHeader(byte* header);
+        unsigned int getPackagedSize();
+        uint8_t * getPackaged();
+
 
         boolean addRecord(NdefRecord& record);
         void addMimeMediaRecord(const char *mimeType, const char *payload);

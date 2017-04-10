@@ -22,7 +22,7 @@ class NdefRecord
         ~NdefRecord();
         NdefRecord& operator=(const NdefRecord& rhs);
 
-        int getEncodedSize();
+        unsigned int getEncodedSize();
         void encode(byte *data, bool firstRecord, bool lastRecord);
 
         unsigned int getTypeLength();

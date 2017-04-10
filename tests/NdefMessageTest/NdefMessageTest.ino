@@ -231,6 +231,32 @@ test(doublePayload)
   assertEqual(0, (start-end));
 }
 
+
+test(message_packaging_size)
+{
+  NdefMessage m;
+  m.addTextRecord("012345678901234567890123456789012345678901234567890123456789");  // 60-char string (excluding \0)
+  m.addTextRecord("012345678901234567890123456789012345678901234567890123456789");
+  m.addTextRecord("012345678901234567890123456789012345678901234567890123456789");
+
+  NdefRecord r = m.getRecord(0);
+  uint8_t rSize = r.getEncodedSize();
+  Serial.print("Encoded record uses ");
+  Serial.print(rSize);
+  Serial.println(" bytes.");  
+
+  // Confirms expected headers when total message payload length < 254 bytes
+  assertEqual(rSize*3, m.getEncodedSize());
+  assertEqual(rSize*3 + 3, m.getPackagedSize());
+
+  m.addTextRecord("012345678901234567890123456789012345678901234567890123456789");
+
+  // Now 4*60 = 240 bytes, plus record headers, puts us over 254 bytes 
+  //  -> 3-byte TLV length specification + 0x03 (start) + 0xFE (end) = 5 bytes 
+  assertEqual(rSize*4, m.getEncodedSize());
+  assertEqual(rSize*4 + 5, m.getPackagedSize());
+}
+
 test(aaa_printFreeMemoryAtStart)  //  warning: relies on fact tests are run in alphabetical order
 {
   Serial.println(F("---------------------"));
