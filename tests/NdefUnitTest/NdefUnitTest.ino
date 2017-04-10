@@ -2,6 +2,7 @@
 #include <PN532.h>
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>
+#include <Bounce2.h>
 
 void assertBytesEqual(const uint8_t* expected, const uint8_t* actual, uint8_t size) {
   for (int i = 0; i < size; i++) {
@@ -33,18 +34,18 @@ test(accessors) {
   assertEqual(sizeof(id), record.getIdLength());
   assertEqual(6, record.getIdLength());
 
-  uint8_t typeCheck[record.getTypeLength()];
-  record.getType(typeCheck);
+  //uint8_t typeCheck[record.getTypeLength()];
+  const byte *typeCheck = record.getType(/*typeCheck*/);
 
   assertEqual(0x54, typeCheck[0]);
   assertBytesEqual(recordType, typeCheck, sizeof(recordType));
 
-  uint8_t payloadCheck[record.getPayloadLength()];
-  record.getPayload(&payloadCheck[0]);
+  //uint8_t payloadCheck[record.getPayloadLength()];
+  const byte * payloadCheck = record.getPayload(/*&payloadCheck[0]*/);
   assertBytesEqual(payload, payloadCheck, sizeof(payload));
 
-  uint8_t idCheck[record.getIdLength()];
-  record.getId(&idCheck[0]);
+  //uint8_t idCheck[record.getIdLength()];
+  const byte * idCheck = record.getId(/*&idCheck[0]*/);
   assertBytesEqual(id, idCheck, sizeof(id));
 }
 
@@ -68,15 +69,15 @@ test(newaccessors) {
   assertEqual(sizeof(id), record.getIdLength());
   assertEqual(6, record.getIdLength());
 
-  ::String typeCheck = record.getType();
+  ::String typeCheck = (const char *)record.getType();
   assertTrue(typeCheck.equals("T"));
 
-  byte payloadCheck[record.getPayloadLength()];
-  record.getPayload(payloadCheck);
+  //byte payloadCheck[record.getPayloadLength()];
+  const byte *payloadCheck = record.getPayload(/*payloadCheck*/);
   assertBytesEqual(payload, payloadCheck, sizeof(payload));
 
-  byte idCheck[record.getIdLength()];
-  record.getId(idCheck);
+  //byte idCheck[record.getIdLength()];
+  const byte *idCheck = record.getId(/*idCheck*/);
   assertBytesEqual(id, idCheck, sizeof(id));
 }
 
@@ -101,15 +102,15 @@ test(assignment)
   assertEqual(sizeof(payload), record2.getPayloadLength());
   assertEqual(sizeof(id), record2.getIdLength());
 
-  ::String typeCheck = record.getType();
+  ::String typeCheck = (const char *)record.getType();
   assertTrue(typeCheck.equals("T"));
 
-  byte payload2[record2.getPayloadLength()];
-  record2.getPayload(payload2);
+  //byte payload2[record2.getPayloadLength()];
+  const byte *payload2 = record2.getPayload(/*payload2*/);
   assertBytesEqual(payload, payload2, sizeof(payload));
 
-  byte id2[record.getIdLength()];
-  record2.getId(id2);
+  //byte id2[record.getIdLength()];
+  const byte *id2 = record2.getId(/*id2*/);
   assertBytesEqual(id, id2, sizeof(id));
 }
 
@@ -119,15 +120,15 @@ test(getEmptyPayload)
   assertEqual(TNF_EMPTY, r.getTnf());
   assertEqual(0, r.getPayloadLength());
 
-  byte payload[r.getPayloadLength()];
-  r.getPayload(payload);
+  //byte payload[r.getPayloadLength()];
+  const byte *payload = r.getPayload(/*payload*/);
 
-  byte id[r.getIdLength()];
-  r.getId(id);
+  //byte id[r.getIdLength()];
+  const byte *id = r.getId(/*id*/);
 
   byte empty[0];
-  assertBytesEqual(empty, payload, sizeof(payload));
-  assertBytesEqual(empty, id, sizeof(id));
+  assertBytesEqual(empty, payload, r.getPayloadLength());
+  assertBytesEqual(empty, id, r.getIdLength());
 }
 
 test(encoding_without_record_id) {

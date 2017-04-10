@@ -3,6 +3,7 @@
 #include <NdefMessage.h>
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>
+#include <Bounce2.h>
 
 // Custom Assertion
 void assertNoLeak(void (*callback)())
@@ -16,6 +17,10 @@ void assertNoLeak(void (*callback)())
 void assertBytesEqual(const uint8_t* expected, const uint8_t* actual, int size) {
   for (int i = 0; i < size; i++) {
     // Serial.print("> ");Serial.print(expected[i]);Serial.print(" ");Serial.println(actual[i]);
+    if (expected[i] != actual[i]) {
+      Serial.print("\nassertBytesEqual() failing at index ");
+      Serial.println(i);
+    }
     assertEqual(expected[i], actual[i]);
   }
 }
@@ -60,10 +65,10 @@ test(assign)
     assertEqual(r1.getPayloadLength(), r2.getPayloadLength());
     assertEqual(r1.getIdLength(), r2.getIdLength());
       
-    byte p1[r1.getPayloadLength()];
-    byte p2[r2.getPayloadLength()];
-    r1.getPayload(p1);
-    r2.getPayload(p2);
+    //byte p1[r1.getPayloadLength()];
+    //byte p2[r2.getPayloadLength()];
+    const byte *p1 = r1.getPayload();
+    const byte *p2 = r2.getPayload();
       
     int size = r1.getPayloadLength();
     assertBytesEqual(p1, p2, size);
@@ -99,10 +104,10 @@ test(assign2)
   
     // TODO check type
   
-    byte p1[r1.getPayloadLength()];
-    byte p2[r2.getPayloadLength()];
-    r1.getPayload(p1);
-    r2.getPayload(p2);
+    //byte p1[r1.getPayloadLength()];
+    //byte p2[r2.getPayloadLength()];
+    const byte * p1 = r1.getPayload();
+    const byte * p2 = r2.getPayload();
  
     int size = r1.getPayloadLength();
     assertBytesEqual(p1, p2, size);
@@ -120,7 +125,11 @@ test(assign3)
   {
 
     NdefMessage* m1 = new NdefMessage();
-    m1->addTextRecord("We the People of the United States, in Order to form a more perfect Union...");
+    const char text[77] = "We the People of the United States, in Order to form a more perfect Union...";
+    Serial.print("strlen() of 77-char c-string: ");
+    Serial.println(strlen(text));
+
+    m1->addTextRecord(text);
     
     NdefMessage* m2 = new NdefMessage();
     
@@ -132,16 +141,20 @@ test(assign3)
       
     assertEqual(TNF_WELL_KNOWN, r.getTnf());
     assertEqual(1, r.getTypeLength());
-    assertEqual(79, r.getPayloadLength());
+    assertEqual(81, r.getPayloadLength());    // 76 chars (excluding \0) of payload + 5-byte prefix
     assertEqual(0, r.getIdLength());
     
     ::String s = "We the People of the United States, in Order to form a more perfect Union...";
+    Serial.print("length() of String: ");
+    Serial.println(s.length());
+
     byte payload[s.length() + 1];
-    s.getBytes(payload, sizeof(payload));
-  
-    byte p[r.getPayloadLength()];
-    r.getPayload(p);
-    assertBytesEqual(payload, p+3, s.length());
+    s.getBytes(payload, sizeof(payload));   // This should copy 77 characters, so include the \0
+    PrintHex(payload, 10);
+    //byte p[r.getPayloadLength()];
+    const byte *p = r.getPayload();
+    PrintHex(p, 10);
+    assertBytesEqual(payload, p+5, s.length());   // Offset must be 81 - 76 = 5
   
     delete m2;
   }

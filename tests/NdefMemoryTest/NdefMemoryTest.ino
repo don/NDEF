@@ -3,6 +3,7 @@
 #include <NdefMessage.h>
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>
+#include <Bounce2.h>
 
 void leakCheck(void (*callback)())
 {
@@ -53,10 +54,10 @@ void textRecord()
 void recordMallocZero()
 {
   NdefRecord r = NdefRecord();
-  String type = r.getType();
-  String id = r.getId();
-  byte payload[r.getPayloadLength()];
-  r.getPayload(payload);
+  String type = (const char *) r.getType();
+  String id = (const char *) r.getId();
+  const byte *payload = r.getPayload();    //[r.getPayloadLength()];
+  //payload = r.getPayload();
 }
 
 // this is OK
@@ -193,12 +194,19 @@ test(recordAccessorLeaks)
 
 test(messageLeaks)
 {
+  Serial.println(F("emptyMessage"));
   assertNoLeak(&emptyMessage);
+  Serial.println(F("printEmptyMessage"));
   assertNoLeak(&printEmptyMessage);
+  Serial.println(F("printEmptyMessageNoNew"));
   assertNoLeak(&printEmptyMessageNoNew);
+  Serial.println(F("messageWithTextRecord"));
   assertNoLeak(&messageWithTextRecord);
+  Serial.println(F("messageWithEmptyRecord"));
   assertNoLeak(&messageWithEmptyRecord);
+  Serial.println(F("messageWithoutHelper"));
   assertNoLeak(&messageWithoutHelper);
+  Serial.println(F("messageWithId"));
   assertNoLeak(&messageWithId);
 }
 
