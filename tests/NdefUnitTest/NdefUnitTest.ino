@@ -1,5 +1,8 @@
+#define NDEF_USE_SERIAL
+
 #include <Wire.h>
 #include <PN532.h>
+#include <NdefMessage.h>
 #include <NdefRecord.h>
 #include <ArduinoUnit.h>
 #include <Bounce2.h>
@@ -167,6 +170,19 @@ test(encoding_with_record_id) {
   uint8_t expectedBytes[] = { 217, 1, 12, 6, 84, 116, 101, 115, 116, 105, 100, 2, 101, 110, 85, 110, 105, 116, 32, 84, 101, 115, 116 };
 
   assertBytesEqual(encodedBytes, expectedBytes, sizeof(encodedBytes));
+}
+
+test(create_text_record) {
+  NdefMessage message = NdefMessage();
+  message.addTextRecord("This record is 100 characters.0123456789012345678901234567890123456789012345678901234567890123456789");
+  NdefRecord rec = message.getRecord(0);
+  //assertFalse(rec.hasPayload());
+  //byte payload[10] = {0xAA};
+  //rec.setPayload(payload, 10);
+  Serial.print("hasPayload returns: ");
+  Serial.println(rec.hasPayload(), 10);
+  assertTrue(rec.hasPayload());
+  rec.print();
 }
 
 void loop() {
