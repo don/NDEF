@@ -257,6 +257,28 @@ test(message_packaging_size)
   assertEqual(rSize*4 + 5, m.getPackagedSize());
 }
 
+
+test(message_packaged_content)
+{
+  NdefMessage m;
+  NdefRecord r;
+  byte payload[3] = {0xAA, 0xBB, 0xCC};
+
+  r.setTnf(TNF_UNKNOWN);
+  r.setPayload(payload, 3);
+  m.addRecord(r);
+
+  uint8_t len = m.getPackagedSize();
+  uint8_t p[len];
+  m.getPackaged(p);
+
+  PrintHex(p, len);
+  assertEqual(0x03, p[0]);      // Start of message tag
+  assertEqual(0xFE, p[len-1]);  // End of message terminator
+  assertEqual(0xCC, p[len-2]);  // End of record contents
+}
+
+
 test(aaa_printFreeMemoryAtStart)  //  warning: relies on fact tests are run in alphabetical order
 {
   Serial.println(F("---------------------"));

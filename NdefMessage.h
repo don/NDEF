@@ -20,7 +20,7 @@ class NdefMessage
         unsigned int getHeaderSize();
         void getHeader(byte* header);
         unsigned int getPackagedSize();
-        uint8_t * getPackaged();
+        void getPackaged(uint8_t *data); 
 
 
         boolean addRecord(NdefRecord& record);

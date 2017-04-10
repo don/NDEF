@@ -38,7 +38,7 @@ public:
     bool readConfigBlock(byte *data); 
     bool setContainerClass(); 
     bool setContainerClass(byte* ccdata);
-    bool writeNdef(word address, NdefMessage &message, bool sprint);     // absolute address (user mem starts at 1)
+    bool writeNdef(word address, NdefMessage &message, bool sprint);     // absolute address (user mem starts at 16)
     bool zeroEeprom();
     bool readEeprom(word address, byte* pdata, byte length);//starts at address 0
     bool writeEeprom(word address, byte* pdata, byte length);//starts at address 0
@@ -59,6 +59,8 @@ private:
     static const byte DEFAULT_I2C_ADDRESS=0x55;
     static const word EEPROM_BASE_ADDR=0x1<<4;
     static const word SRAM_BASE_ADDR=0xF8<<4;
+    static const byte STARTUP_REG_ADDR=0x3A; 
+    static const byte SESSION_REG_ADDR=0xFE;
     bool write(BLOCK_TYPE bt, word address, byte* pdata, byte length);
     bool read(BLOCK_TYPE bt, word address, byte* pdata,  byte length);
     bool readBlock(BLOCK_TYPE bt, byte memBlockAddress, byte *p_data, byte data_size);

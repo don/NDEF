@@ -181,6 +181,21 @@ bool Ntag::writeNdef(word address, NdefMessage &message, bool sprint=true){
     // If assumption is wrong, the write operations will (and should) fail.
     BLOCK_TYPE bt = SRAM;
     if(address/NTAG_BLOCK_SIZE < 0xF8 || address/NTAG_BLOCK_SIZE > 0xFB){ bt = USERMEM; }   // See isAddressValid
+
+    uint8_t size = message.getPackagedSize();
+    byte data[size];
+    if (size > 254) {
+        Serial.print("Packaging large message...");
+        delay(100);
+    }
+    message.getPackaged(data);
+    if (size > 254) {
+        Serial.println("success. Now writing...");
+        delay(100);
+    }
+
+    return write(bt, address, data, size);
+    /*
     // Get & write the NDEF header, incrementing address
     uint8_t ndefHeaderSize = message.getHeaderSize(); 
     byte ndefHeader[ndefHeaderSize];
@@ -250,7 +265,7 @@ bool Ntag::writeNdef(word address, NdefMessage &message, bool sprint=true){
         Serial.println(address);
     }
     */
-    return true;
+    //return true;
 }
 
 bool Ntag::zeroEeprom()
@@ -332,7 +347,7 @@ bool Ntag::write(BLOCK_TYPE bt, word address, byte* pdata, byte length)
         wptr+=writeLength;
         blockNr++;
     }
-    _lastMemBlockWritten = --blockNr;
+    if (bt == USERMEM) { _lastMemBlockWritten = --blockNr; }
     return true;
 }
 
@@ -420,7 +435,7 @@ bool Ntag::readRegister(REGISTER_NR regAddr, byte& value)
 {
     value=0;
     bool bRetVal=true;
-    if(regAddr>6 || !writeBlockAddress(REGISTER, 0xFE)){
+    if(regAddr>6 || !writeBlockAddress(REGISTER, SESSION_REG_ADDR)){
         return false;
     }
     if(HWire.write(regAddr)!=1){
@@ -441,7 +456,7 @@ bool Ntag::readRegister(REGISTER_NR regAddr, byte& value)
 bool Ntag::writeRegister(REGISTER_NR regAddr, byte mask, byte regdat)
 {
     bool bRetVal=false;
-    if(regAddr>7 || !writeBlockAddress(REGISTER, 0xFE)){    // Note that 0xFE is session registers, volatile if power cycles!
+    if(regAddr>7 || !writeBlockAddress(REGISTER, SESSION_REG_ADDR)){    // Note that 0xFE is session registers, volatile if power cycles!
         return false;
     }
     if (HWire.write(regAddr)==1 &&
@@ -496,7 +511,7 @@ bool Ntag::isAddressValid(BLOCK_TYPE type, byte blocknr){
         }
         break;
     case REGISTER:
-        if(blocknr != 0xFE){
+        if(blocknr != SESSION_REG_ADDR && blocknr != STARTUP_REG_ADDR){
             return false;
         }
         break;

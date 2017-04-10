@@ -174,11 +174,13 @@ unsigned int NdefMessage::getPackagedSize()
 }
 
 
-uint8_t * NdefMessage::getPackaged()
+void NdefMessage::getPackaged(uint8_t *data)
 {
-    uint8_t *packaged;
-    Serial.println("Not yet implemented!");
-    return packaged;
+    uint8_t size = getPackagedSize();
+
+    getHeader(data); 
+    encode(&data[getHeaderSize()]);
+    data[size-1] = 0xFE;                // Termination byte for TLV
 }
 
 
