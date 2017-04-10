@@ -50,12 +50,37 @@ bool Ntag::isReaderPresent()
 
 void Ntag::detectI2cDevices(){
     for(byte i=0;i<0x80;i++){
+
         HWire.beginTransmission(i);
         if(HWire.endTransmission()==0)
         {
-            Serial.print("Found I²C device on : 0x");
+            Serial.print(F("Found I2C device at 0x"));
             Serial.println(i,HEX);
+            delay(100);
+
+/* This is broken and will hang the I2C bus
+            if (i != _i2c_address) {
+                byte setAddress = _i2c_address;
+                _i2c_address = i;
+
+                byte config[NTAG_BLOCK_SIZE] = {0x0};
+                if (readBlock(CONFIG, 0, config, NTAG_BLOCK_SIZE) && config[0] == NXP_MFR_ID) {
+                    Serial.print(F("Found NXP device (mfr code 0x04). Reassigning address to "));
+                    Serial.println(setAddress, HEX);
+                    delay(100);
+                    config[0] = setAddress << 1;
+                   //if (writeBlock(CONFIG, 0, config)) { Serial.println(" ...success."); }
+                } else { 
+                    Serial.println("Does not respond as NTAG."); 
+                    delay(100);
+                    //Wire.begin();
+                }
+                //HWire.endTransmission();
+                _i2c_address = setAddress;
+            }          
+*/
         }
+        Serial.print(i); Serial.print(" "); delay(100);
     }
 }
 
@@ -113,7 +138,7 @@ bool Ntag::isRfBusy(){
     if(_triggered && millis()<_rfBusyStartTime+30)
     {
         //a zero has been read, but monostable hasn't run out yet
-        return true;
+        return true; 
     }
     return false;
 }
@@ -130,6 +155,115 @@ bool Ntag::setSramMirrorRf(bool bEnable, byte mirrorBaseBlockNr){
     //enable/disable SRAM memory mirror
     return writeRegister(NC_REG, 0x42, bEnable ? 0x02 : 0x00);
 }
+
+bool Ntag::readConfigBlock(byte *data) { 
+    return readBlock(CONFIG, 0, data, NTAG_BLOCK_SIZE);
+}
+
+bool Ntag::setContainerClass() {
+    byte ccdata[4] = NTAG_CC_NDEF_FULL;
+    return setContainerClass(ccdata);
+}
+
+// TODO augment to write lock bits as well, with #defined intelligent defaults to pick from
+bool Ntag::setContainerClass(byte* ccdata)
+{
+    byte config[NTAG_BLOCK_SIZE];
+    read(CONFIG, 0, config, NTAG_BLOCK_SIZE);   // Read existing configuration block
+    config[0] = DEFAULT_I2C_ADDRESS << 1;       // Byte 0 always reads as 0x04, but must be written
+                                                // as I2C address in top 7 bits
+    memcpy(&config[12], ccdata, 4);             // Container class is last 4 of 16 byte config block
+    write(CONFIG, 0, config, NTAG_BLOCK_SIZE);
+}
+
+bool Ntag::writeNdef(word address, NdefMessage &message, bool sprint=true){
+    // Determine whether address is SRAM; if not assume EEPROM (user).
+    // If assumption is wrong, the write operations will (and should) fail.
+    BLOCK_TYPE bt = SRAM;
+    if(address/NTAG_BLOCK_SIZE < 0xF8 || address/NTAG_BLOCK_SIZE > 0xFB){ bt = USERMEM; }   // See isAddressValid
+    // Get & write the NDEF header, incrementing address
+    uint8_t ndefHeaderSize = message.getHeaderSize(); 
+    byte ndefHeader[ndefHeaderSize];
+    message.getHeader(ndefHeader);
+    if (sprint) {
+        Serial.print("Header at ");
+        Serial.print(address);
+        Serial.print(", data: ");
+        printHex(ndefHeader, ndefHeaderSize);
+    }
+    if (!write(bt, address, ndefHeader, ndefHeaderSize)) { 
+        if (sprint) {
+            Serial.print("Write failed to address ");
+            Serial.print(address);
+            Serial.print(", block type ");
+            Serial.println(bt, HEX);
+        }
+        return false; 
+    }
+    address += ndefHeaderSize;
+    /*
+    // Iterate over the records, writing each
+        // if no payload, then Serial.print the starting address, size, ending address
+    for (uint8_t i = 0; i < message.getRecordCount(); i++) {
+        NdefRecord rec = message.getRecord(i);
+        if (rec.hasPayload()) {
+            uint8_t encodedSize = rec.getEncodedSize();
+            byte encoded[encodedSize];
+            rec.encode(encoded, i == 0, i == message.getRecordCount()-1);
+            if (!write(bt, address, encoded, encodedSize)) { return false; }
+            if (sprint) {
+                Serial.print(F("Wrote record "));
+                Serial.print(i);
+                Serial.print(F(" starting at address "));
+                Serial.println(address);
+                rec.print();
+            }
+            address += encodedSize;
+        } else {
+            uint8_t headerSize = rec.getHeaderSize();
+            byte header[headerSize];
+            rec.getHeader(header, i == 0, i == message.getRecordCount()-1);
+            if (!write(bt, address, header, headerSize)) { 
+                Serial.print("Write failed to address ");
+                Serial.println(address);
+                return false; }
+            if (sprint) {
+                Serial.print(F("Wrote record "));
+                Serial.print(i);
+                Serial.print(F(" starting at address "));
+                Serial.print(address);
+                Serial.println(F(" (HEADER ONLY)"));
+                Serial.print(F("Payload starts at address "));
+                Serial.println(address + headerSize);
+                rec.print();
+            }
+            address += rec.getEncodedSize();
+        }
+
+    }
+
+    // Write the 0xFE termination byte
+    byte term[1] = {0xFE};
+    if (!write(bt, address, term, 1)) { return false; }
+    if (sprint){
+        Serial.print("Finished writing NDEF. Termination byte at address ");
+        Serial.println(address);
+    }
+    */
+    return true;
+}
+
+bool Ntag::zeroEeprom()
+{
+    word blockNr = 1;
+    byte data[NTAG_BLOCK_SIZE] = {0};
+    while (writeBlock(USERMEM, blockNr, data)) {
+        blockNr++;
+    }
+    if (!isAddressValid(USERMEM, blockNr)) { return true; } // If we made it through all user mem
+    return false;
+}
+
 
 bool Ntag::readSram(word address, byte *pdata, byte length)
 {
@@ -303,10 +437,11 @@ bool Ntag::readRegister(REGISTER_NR regAddr, byte& value)
     return bRetVal;
 }
 
+
 bool Ntag::writeRegister(REGISTER_NR regAddr, byte mask, byte regdat)
 {
     bool bRetVal=false;
-    if(regAddr>7 || !writeBlockAddress(REGISTER, 0xFE)){
+    if(regAddr>7 || !writeBlockAddress(REGISTER, 0xFE)){    // Note that 0xFE is session registers, volatile if power cycles!
         return false;
     }
     if (HWire.write(regAddr)==1 &&
@@ -369,4 +504,14 @@ bool Ntag::isAddressValid(BLOCK_TYPE type, byte blocknr){
         return false;
     }
     return true;
+}
+
+
+void Ntag::printHex(byte* data, uint8_t len) {
+    for(int i=0;i<len;i++){
+        Serial.print(data[i],HEX);
+        Serial.print(" ");
+        _delay_ms(10);
+    }
+    Serial.println();
 }

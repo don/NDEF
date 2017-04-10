@@ -3,6 +3,10 @@
 
 #include "Arduino.h"
 #include <Bounce2.h>
+#include <NdefMessage.h>
+
+#define NTAG_CC_NDEF_FULL    {0xE1, 0x10, 0x6D, 0x00}    // Container class to use all of sector 0 for NDEF
+
 
 class Ntag
 {
@@ -20,6 +24,8 @@ public:
         I2C_CLOCK_STR,
         NS_REG
     }REGISTER_NR;
+    static const byte NTAG_BLOCK_SIZE=16;
+    static const byte NXP_MFR_ID=0x04; 
     Ntag(DEVICE_TYPE dt, byte fd_pin, byte vout_pin, byte i2c_address = DEFAULT_I2C_ADDRESS);
     void detectI2cDevices();//Comes in handy when you accidentally changed the I²C address of the NTAG.
     bool begin();
@@ -29,13 +35,18 @@ public:
     bool isReaderPresent();
     bool setSramMirrorRf(bool bEnable, byte mirrorBaseBlockNr);
     bool setFd_ReaderHandshake();
+    bool readConfigBlock(byte *data); 
+    bool setContainerClass(); 
+    bool setContainerClass(byte* ccdata);
+    bool writeNdef(word address, NdefMessage &message, bool sprint);     // absolute address (user mem starts at 1)
+    bool zeroEeprom();
     bool readEeprom(word address, byte* pdata, byte length);//starts at address 0
     bool writeEeprom(word address, byte* pdata, byte length);//starts at address 0
     bool readSram(word address, byte* pdata, byte length);//starts at address 0
     bool writeSram(word address, byte* pdata, byte length);//starts at address 0
     bool readRegister(REGISTER_NR regAddr, byte &value);
     bool writeRegister(REGISTER_NR regAddr, byte mask, byte regdat);
-    bool setLastNdefBlock();
+    bool setLastNdefBlock();    // The block whose memory read governs FD pin toggle rules
     void releaseI2c();
 private:
     typedef enum{
@@ -46,7 +57,6 @@ private:
     }BLOCK_TYPE;
     static const byte UID_LENGTH=7;
     static const byte DEFAULT_I2C_ADDRESS=0x55;
-    static const byte NTAG_BLOCK_SIZE=16;
     static const word EEPROM_BASE_ADDR=0x1<<4;
     static const word SRAM_BASE_ADDR=0xF8<<4;
     bool write(BLOCK_TYPE bt, word address, byte* pdata, byte length);
@@ -57,6 +67,7 @@ private:
     bool end_transmission(void);
     bool isAddressValid(BLOCK_TYPE dt, byte blocknr);
     bool setLastNdefBlock(byte memBlockAddress);
+    void printHex(byte* data, uint8_t len);
     byte _i2c_address;
     DEVICE_TYPE _dt;
     byte _fd_pin;

@@ -177,7 +177,7 @@ unsigned int NdefMessage::getPackagedSize()
 uint8_t * NdefMessage::getPackaged()
 {
     uint8_t *packaged;
-    Serial.println("Not yet implemented!")
+    Serial.println("Not yet implemented!");
     return packaged;
 }
 
