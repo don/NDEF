@@ -279,6 +279,59 @@ test(message_packaged_content)
 }
 
 
+// Opportunities for screw-ups in size type width and header logic exist once records are >254 bytes
+test(big_record_handling)
+{
+  NdefRecord r;
+  uint16_t len = 256;
+  byte payload[len];
+  payload[0] = 0xAA;
+  payload[len-1] = 0xBB;
+
+  r.setPayload(payload, len);
+  r.setTnf(TNF_UNKNOWN);
+
+  assertEqual(len, r.getPayloadLength());
+
+  Serial.print("Record with payload size ");
+  Serial.print(len);
+  Serial.print(" bytes has encoded size ");
+  uint16_t e_len = r.getEncodedSize();
+  Serial.println(e_len);
+  assertTrue(e_len > len);
+
+  NdefMessage m;
+  m.addRecord(r);
+  assertEqual(r.getEncodedSize(), m.getEncodedSize());
+  assertEqual(r.getEncodedSize() + 5, m.getPackagedSize());
+  Serial.print("NDEF package size: ");
+  Serial.println(m.getPackagedSize());
+
+  NdefRecord r2;
+  uint16_t len2 = 64;
+  byte payload2[len2];
+  payload2[0] = 0xCC;
+  r2.setPayload(payload2, len2);
+  r2.setTnf(TNF_UNKNOWN);
+
+  m.addRecord(r2);
+  assertEqual(r.getEncodedSize() + r2.getEncodedSize() + 5, m.getPackagedSize());
+
+  Serial.print("Memory before packaging: ");
+  Serial.println(freeMemory());
+  byte package[m.getPackagedSize()];
+  m.getPackaged(package);
+  Serial.print("Memory after packaging: ");
+  Serial.println(freeMemory());
+
+  bool found = false;
+  for (uint16_t i = 0; i < m.getPackagedSize(); i++) {
+    if (package[i] == 0xCC) { found = true; break; }
+  }
+  assertTrue(found);
+}
+
+
 test(aaa_printFreeMemoryAtStart)  //  warning: relies on fact tests are run in alphabetical order
 {
   Serial.println(F("---------------------"));

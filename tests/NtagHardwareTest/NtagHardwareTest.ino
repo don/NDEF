@@ -116,6 +116,30 @@ test(eeprom_read_write) {
 }
 
 
+test(write_big_ndef) {
+  NdefRecord r;
+  uint16_t len = 512;
+  byte payload[len];
+
+  r.setPayload(payload, len);
+
+  assertEqual(len, r.getPayloadLength());
+
+  NdefMessage m;
+  m.addRecord(r);
+  assertEqual(r.getEncodedSize(), m.getEncodedSize());
+  assertEqual(r.getEncodedSize() + 5, m.getPackagedSize());
+  Serial.print("NDEF package size: ");
+  Serial.println(m.getPackagedSize());
+
+  //byte data[m.getPackagedSize()];
+  //m.getPackaged(data);
+  //ntag.writeEeprom(0, data, m.getPackagedSize());
+  ntag.writeNdef(16, m, true);
+  Serial.println("Completed message write.");
+}
+
+
 void loop() {
   Test::run();
 }

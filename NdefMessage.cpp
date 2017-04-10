@@ -121,10 +121,10 @@ unsigned int NdefMessage::getRecordCount()
     return _recordCount;
 }
 
-int NdefMessage::getEncodedSize()
+uint16_t NdefMessage::getEncodedSize()
 {
-    int size = 0;
-    for (unsigned int i = 0; i < _recordCount; i++)
+    uint16_t size = 0;
+    for (uint8_t i = 0; i < _recordCount; i++)
     {
         size += _records[i].getEncodedSize();
     }
@@ -168,7 +168,7 @@ void NdefMessage::getHeader(byte* header)
     }
 }
 
-unsigned int NdefMessage::getPackagedSize()
+uint16_t NdefMessage::getPackagedSize()
 {
     return getEncodedSize() + getHeaderSize() + 1;
 }

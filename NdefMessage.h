@@ -15,11 +15,11 @@ class NdefMessage
         ~NdefMessage();
         NdefMessage& operator=(const NdefMessage& rhs);
 
-        int getEncodedSize(); // need so we can pass array to encode
+        uint16_t getEncodedSize(); // need so we can pass array to encode
         void encode(byte *data);
         unsigned int getHeaderSize();
         void getHeader(byte* header);
-        unsigned int getPackagedSize();
+        uint16_t getPackagedSize();
         void getPackaged(uint8_t *data); 
 
 

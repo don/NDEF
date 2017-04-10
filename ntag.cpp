@@ -8,6 +8,8 @@ HardWire HWire(1, I2C_REMAP);// | I2C_BUS_RESET); // I2c1
 #endif
 #include <stdio.h>
 
+#include <ArduinoUnit.h>
+
 
 Ntag::Ntag(DEVICE_TYPE dt, byte fd_pin, byte vout_pin, byte i2c_address):
     _dt(dt),
@@ -182,17 +184,16 @@ bool Ntag::writeNdef(word address, NdefMessage &message, bool sprint=true){
     BLOCK_TYPE bt = SRAM;
     if(address/NTAG_BLOCK_SIZE < 0xF8 || address/NTAG_BLOCK_SIZE > 0xFB){ bt = USERMEM; }   // See isAddressValid
 
-    uint8_t size = message.getPackagedSize();
+    uint16_t size = message.getPackagedSize();
     byte data[size];
-    if (size > 254) {
-        Serial.print("Packaging large message...");
-        delay(100);
-    }
     message.getPackaged(data);
-    if (size > 254) {
-        Serial.println("success. Now writing...");
-        delay(100);
-    }
+
+#ifdef NDEF_USE_SERIAL
+    Serial.println("success.\n Now writing...");
+    Serial.print("Free memory just before write: ");
+    Serial.println(freeMemory());
+    Serial.flush();
+#endif
 
     return write(bt, address, data, size);
     /*
@@ -416,6 +417,10 @@ bool Ntag::writeBlock(BLOCK_TYPE bt, byte memBlockAddress, byte *p_data)
         }
     }
     if(!end_transmission()){
+#ifdef  NDEF_USE_SERIAL
+        Serial.print("NTAG: I2C block write failed at block 0x");
+        Serial.println(memBlockAddress, HEX);
+#endif
         return false;
     }
     switch(bt){
@@ -470,6 +475,13 @@ bool Ntag::writeRegister(REGISTER_NR regAddr, byte mask, byte regdat)
 bool Ntag::writeBlockAddress(BLOCK_TYPE dt, byte addr)
 {
     if(!isAddressValid(dt, addr)){
+#ifdef NDEF_USE_SERIAL
+        Serial.print("NTAG: Invalid block : 0x");
+        Serial.print(addr, HEX);
+        Serial.print(" for type ");
+        Serial.println(dt);
+        Serial.flush();
+#endif
         return false;
     }
     HWire.beginTransmission(_i2c_address);
@@ -497,7 +509,7 @@ bool Ntag::isAddressValid(BLOCK_TYPE type, byte blocknr){
             }
             break;
         case NTAG_I2C_2K:
-            if(blocknr < 1 || blocknr > 0x78){
+            if(blocknr < 1 || blocknr > 0x78){      // Not consistent with observed failure at 0x3B
                 return false;
             }
             break;
