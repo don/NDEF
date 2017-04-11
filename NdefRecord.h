@@ -22,7 +22,7 @@ class NdefRecord
         ~NdefRecord();
         NdefRecord& operator=(const NdefRecord& rhs);
 
-        int getEncodedSize();
+        unsigned int getEncodedSize();
         void encode(byte *data, bool firstRecord, bool lastRecord);
 
         unsigned int getTypeLength();
@@ -30,20 +30,19 @@ class NdefRecord
         unsigned int getIdLength();
 
         byte getTnf();
-        void getType(byte *type);
-        void getPayload(byte *payload);
-        void getId(byte *id);
-
-        // convenience methods
-        String getType();
-        String getId();
+        const byte *getType();
+        const byte *getId();
+        const byte *getPayload();
 
         void setTnf(byte tnf);
-        void setType(const byte *type, const unsigned int numBytes);
-        void setPayload(const byte *payload, const int numBytes);
-        void setId(const byte *id, const unsigned int numBytes);
+        void setType(const byte *type, unsigned int numBytes);
+        void setPayload(const byte *payload, int numBytes);
+        void setPayload(const byte *prefix, int prefixSize, const byte *payload, int numBytes);
+        void setId(const byte *id, unsigned int numBytes);
 
+#ifdef NDEF_USE_SERIAL
         void print();
+#endif
     private:
         byte getTnfByte(bool firstRecord, bool lastRecord);
         byte _tnf; // 3 bit

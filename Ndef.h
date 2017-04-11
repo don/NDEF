@@ -7,12 +7,12 @@
 
 #include <Arduino.h>
 
-#ifndef NULL
-  #define NULL (void *)0
-#endif
+//#define NDEF_DEBUG 1
+#define NDEF_USE_SERIAL
 
+#ifdef NDEF_USE_SERIAL
 void PrintHex(const byte *data, const long numBytes);
 void PrintHexChar(const byte *data, const long numBytes);
 void DumpHex(const byte *data, const long numBytes, const int blockSize);
-
+#endif
 #endif

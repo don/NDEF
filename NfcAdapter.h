@@ -6,10 +6,20 @@
 #include <NfcTag.h>
 #include <Ndef.h>
 
-// Drivers
-#include <MifareClassic.h>
-#include <MifareUltralight.h>
+// choose supported formats
+#define NDEF_SUPPORT_MIFARE_CLASSIC
+#define NDEF_SUPPORT_MIFARE_ULTRA
 
+// Drivers
+#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
+	#include <MifareClassic.h>
+#endif
+#ifdef NDEF_SUPPORT_MIFARE_ULTRA
+	#include <MifareUltralight.h>
+#endif
+
+
+// tag types
 #define TAG_TYPE_MIFARE_CLASSIC (0)
 #define TAG_TYPE_1 (1)
 #define TAG_TYPE_2 (2)
@@ -22,7 +32,7 @@
 
 class NfcAdapter {
     public:
-        NfcAdapter(PN532Interface &interface);
+        NfcAdapter(PN532Interface &interface, uint8_t *staticBuf, unsigned int staticBufSize);
 
         ~NfcAdapter(void);
         void begin(boolean verbose=true);
@@ -39,6 +49,8 @@ class NfcAdapter {
         PN532* shield;
         byte uid[7];  // Buffer to store the returned UID
         unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+		unsigned int _staticBufSize;
+		uint8_t *_staticBuf;		
         unsigned int guessTagType();
 };
 

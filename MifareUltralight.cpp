@@ -8,11 +8,12 @@
 #define ULTRALIGHT_DATA_START_INDEX 2
 #define ULTRALIGHT_MAX_PAGE 63
 
-#define NFC_FORUM_TAG_TYPE_2 ("NFC Forum Type 2")
 
-MifareUltralight::MifareUltralight(PN532& nfcShield)
+MifareUltralight::MifareUltralight(PN532& nfcShield, uint8_t *staticBuf, unsigned int staticBufSize)
 {
     nfc = &nfcShield;
+	_staticBufSize = staticBufSize;
+	_staticBuf = staticBuf;	
     ndefStartIndex = 0;
     messageLength = 0;
 }
@@ -25,8 +26,10 @@ NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
 {
     if (isUnformatted())
     {
+#ifdef NDEF_USE_SERIAL
         Serial.println(F("WARNING: Tag is not formatted."));
-        return NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2);
+#endif
+        return NfcTag(uid, uidLength, NfcTag::TYPE_2);
     }
 
     readCapabilityContainer(); // meta info for tag
@@ -36,13 +39,22 @@ NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
     if (messageLength == 0) { // data is 0x44 0x03 0x00 0xFE
         NdefMessage message = NdefMessage();
         message.addEmptyRecord();
-        return NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2, message);
+        return NfcTag(uid, uidLength, NfcTag::TYPE_2, message);
     }
 
     boolean success;
     uint8_t page;
     uint8_t index = 0;
-    byte buffer[bufferSize];
+    // use shared static buffer
+    if ( _staticBufSize < bufferSize )
+    {
+	    #ifdef NDEF_USE_SERIAL
+	    Serial.print(F("Error. Static buffer to small. is: "));Serial.print(_staticBufSize);
+	    Serial.print(F("required: "));Serial.print(bufferSize);
+	    #endif
+	    return NfcTag(uid, uidLength, NfcTag::UNKNOWN);
+    }
+    byte *buffer = _staticBuf;
     for (page = ULTRALIGHT_DATA_START_PAGE; page < ULTRALIGHT_MAX_PAGE; page++)
     {
         // read the data
@@ -56,9 +68,10 @@ NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
         }
         else
         {
+#ifdef NDEF_USE_SERIAL
             Serial.print(F("Read failed "));Serial.println(page);
-            // TODO error handling
-            messageLength = 0;
+#endif
+            return NfcTag(uid, uidLength, NfcTag::TYPE_2);            messageLength = 0;
             break;
         }
 
@@ -71,7 +84,7 @@ NfcTag MifareUltralight::read(byte * uid, unsigned int uidLength)
     }
 
     NdefMessage ndefMessage = NdefMessage(&buffer[ndefStartIndex], messageLength);
-    return NfcTag(uid, uidLength, NFC_FORUM_TAG_TYPE_2, ndefMessage);
+    return NfcTag(uid, uidLength, NfcTag::TYPE_2, ndefMessage);
 
 }
 
@@ -86,7 +99,9 @@ boolean MifareUltralight::isUnformatted()
     }
     else
     {
+#ifdef NDEF_USE_SERIAL
         Serial.print(F("Error. Failed read page "));Serial.println(page);
+#endif
         return false;
     }
 }
@@ -166,7 +181,9 @@ boolean MifareUltralight::write(NdefMessage& m, byte * uid, unsigned int uidLeng
 {
     if (isUnformatted())
     {
+#ifdef NDEF_USE_SERIAL
         Serial.println(F("WARNING: Tag is not formatted."));
+#endif
         return false;
     }
     readCapabilityContainer(); // meta info for tag
@@ -182,8 +199,17 @@ boolean MifareUltralight::write(NdefMessage& m, byte * uid, unsigned int uidLeng
     	return false;
     }
 
-    uint8_t encoded[bufferSize];
-    uint8_t *  src = encoded;
+	// use shared static buffer
+	if ( _staticBufSize < bufferSize )
+	{
+		#ifdef NDEF_USE_SERIAL
+		Serial.print(F("Error. Static buffer to small. is: "));Serial.print(_staticBufSize);
+		Serial.print(F("required: "));Serial.print(bufferSize);
+		#endif
+		return false;
+	}
+	uint8_t *encoded = _staticBuf;
+    uint8_t *src = encoded;
     unsigned int position = 0;
     uint8_t page = ULTRALIGHT_DATA_START_PAGE;
 
