@@ -24,7 +24,7 @@ public:
         I2C_CLOCK_STR,
         NS_REG
     }REGISTER_NR;
-    static const byte NTAG_BLOCK_SIZE=16;
+    static const uint16_t NTAG_BLOCK_SIZE=16;
     static const byte NXP_MFR_ID=0x04; 
     Ntag(DEVICE_TYPE dt, byte fd_pin, byte vout_pin, byte i2c_address = DEFAULT_I2C_ADDRESS);
     void detectI2cDevices();//Comes in handy when you accidentally changed the I²C address of the NTAG.
@@ -38,12 +38,12 @@ public:
     bool readConfigBlock(byte *data); 
     bool setContainerClass(); 
     bool setContainerClass(byte* ccdata);
-    bool writeNdef(word address, NdefMessage &message, bool sprint);     // absolute address (user mem starts at 16)
+    bool writeNdef(uint16_t address, NdefMessage &message, bool sprint);     // absolute address (user mem starts at 16)
     bool zeroEeprom();
-    bool readEeprom(word address, byte* pdata, byte length);//starts at address 0
-    bool writeEeprom(word address, byte* pdata, byte length);//starts at address 0
-    bool readSram(word address, byte* pdata, byte length);//starts at address 0
-    bool writeSram(word address, byte* pdata, byte length);//starts at address 0
+    bool readEeprom(uint16_t address, byte* pdata, uint16_t length);//starts at address 0
+    bool writeEeprom(uint16_t address, byte* pdata, uint16_t length);//starts at address 0
+    bool readSram(uint16_t address, byte* pdata, uint16_t length);//starts at address 0
+    bool writeSram(uint16_t address, byte* pdata, uint16_t length);//starts at address 0
     bool readRegister(REGISTER_NR regAddr, byte &value);
     bool writeRegister(REGISTER_NR regAddr, byte mask, byte regdat);
     bool setLastNdefBlock();    // The block whose memory read governs FD pin toggle rules
@@ -57,12 +57,12 @@ private:
     }BLOCK_TYPE;
     static const byte UID_LENGTH=7;
     static const byte DEFAULT_I2C_ADDRESS=0x55;
-    static const word EEPROM_BASE_ADDR=0x1<<4;
-    static const word SRAM_BASE_ADDR=0xF8<<4;
-    static const byte STARTUP_REG_ADDR=0x3A; 
-    static const byte SESSION_REG_ADDR=0xFE;
-    bool write(BLOCK_TYPE bt, word address, byte* pdata, byte length);
-    bool read(BLOCK_TYPE bt, word address, byte* pdata,  byte length);
+    static const uint16_t EEPROM_BASE_ADDR=0x1<<4;
+    static const uint16_t SRAM_BASE_ADDR=0xF8<<4;
+    static const uint16_t STARTUP_REG_ADDR=0x3A; 
+    static const uint16_t SESSION_REG_ADDR=0xFE;
+    bool write(BLOCK_TYPE bt, uint16_t address, byte* pdata, uint16_t length);
+    bool read(BLOCK_TYPE bt, uint16_t address, byte* pdata,  uint16_t length);
     bool readBlock(BLOCK_TYPE bt, byte memBlockAddress, byte *p_data, byte data_size);
     bool writeBlock(BLOCK_TYPE bt, byte memBlockAddress, byte *p_data);
     bool writeBlockAddress(BLOCK_TYPE dt, byte addr);

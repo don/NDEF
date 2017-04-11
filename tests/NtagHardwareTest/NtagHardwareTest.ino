@@ -120,6 +120,7 @@ test(write_big_ndef) {
   NdefRecord r;
   uint16_t len = 512;
   byte payload[len];
+  for (uint16_t i = 0x0; i < len; payload[i++] = i);
 
   r.setPayload(payload, len);
 
@@ -129,14 +130,30 @@ test(write_big_ndef) {
   m.addRecord(r);
   assertEqual(r.getEncodedSize(), m.getEncodedSize());
   assertEqual(r.getEncodedSize() + 5, m.getPackagedSize());
-  Serial.print("NDEF package size: ");
-  Serial.println(m.getPackagedSize());
 
-  //byte data[m.getPackagedSize()];
-  //m.getPackaged(data);
+  ntag.zeroEeprom();
+  uint16_t p_len = m.getPackagedSize();
+  Serial.print("Packaged length in bytes: ");
+  Serial.println(p_len);
+
+  byte data[p_len];
+  m.getPackaged(data);
   //ntag.writeEeprom(0, data, m.getPackagedSize());
+  Serial.println("End of package: ");
+  PrintHex(&data[p_len-8], 16);
+  assertEqual(0xFE, data[p_len-1]);
+  assertEqual(0x03, data[0]);
+
   ntag.writeNdef(16, m, true);
   Serial.println("Completed message write.");
+  byte readback[16];
+  ntag.readEeprom(m.getPackagedSize()-1, readback, 16);
+  Serial.print("Confirming termination byte at page 0x"); Serial.println((m.getPackagedSize()-1)/4 + 4, HEX); Serial.flush();
+  PrintHex(readback, 16);
+  assertEqual(0xFE, readback[0]);                       // Confirm termination byte in right place
+
+  ntag.readEeprom(0, readback, 16);
+  assertEqual(0x03, readback[0]);                       // Confirm TLV start byte
 }
 
 

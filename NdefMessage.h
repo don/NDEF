@@ -17,7 +17,7 @@ class NdefMessage
 
         uint16_t getEncodedSize(); // need so we can pass array to encode
         void encode(byte *data);
-        unsigned int getHeaderSize();
+        uint16_t getHeaderSize();
         void getHeader(byte* header);
         uint16_t getPackagedSize();
         void getPackaged(uint8_t *data); 

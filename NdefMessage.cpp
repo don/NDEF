@@ -176,7 +176,7 @@ uint16_t NdefMessage::getPackagedSize()
 
 void NdefMessage::getPackaged(uint8_t *data)
 {
-    uint8_t size = getPackagedSize();
+    uint16_t size = getPackagedSize();
 
     getHeader(data); 
     encode(&data[getHeaderSize()]);

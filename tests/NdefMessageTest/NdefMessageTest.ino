@@ -283,10 +283,12 @@ test(message_packaged_content)
 test(big_record_handling)
 {
   NdefRecord r;
-  uint16_t len = 256;
+  uint16_t len = 300;
   byte payload[len];
-  payload[0] = 0xAA;
-  payload[len-1] = 0xBB;
+  randomSeed(0xB8);
+  for (uint16_t i = 0; i < len; i++) {
+    payload[i] = random(len);
+  }
 
   r.setPayload(payload, len);
   r.setTnf(TNF_UNKNOWN);
@@ -310,7 +312,7 @@ test(big_record_handling)
   NdefRecord r2;
   uint16_t len2 = 64;
   byte payload2[len2];
-  payload2[0] = 0xCC;
+  payload2[0] = 0x12;
   r2.setPayload(payload2, len2);
   r2.setTnf(TNF_UNKNOWN);
 
@@ -326,9 +328,27 @@ test(big_record_handling)
 
   bool found = false;
   for (uint16_t i = 0; i < m.getPackagedSize(); i++) {
-    if (package[i] == 0xCC) { found = true; break; }
+    if (package[i] == 0x12) { found = true; break; }
   }
   assertTrue(found);
+
+  //Confirm that the termination byte is in the right spot
+  assertEqual(0xFE, package[m.getPackagedSize()-1]);
+
+  //Confirm that the entire payload was copied into place (sounds paranoid, right?)
+  uint16_t offset = m.getHeaderSize() + r.getEncodedSize() - len;
+  for (uint16_t i = 0; i < len; i++) {
+    if (payload[i] != package[i+offset]) {
+      Serial.print("Package inconsistency at payload index ");
+      Serial.print(i);
+      Serial.println("; data:");
+      PrintHex(&payload[i], 8);
+      Serial.print("Package data at index ");
+      Serial.println(i+offset);
+      PrintHex(&package[i+offset], 8);
+    }
+    assertEqual(payload[i], package[i+offset]);
+  } 
 }
 
 

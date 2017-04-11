@@ -178,7 +178,7 @@ bool Ntag::setContainerClass(byte* ccdata)
     write(CONFIG, 0, config, NTAG_BLOCK_SIZE);
 }
 
-bool Ntag::writeNdef(word address, NdefMessage &message, bool sprint=true){
+bool Ntag::writeNdef(uint16_t address, NdefMessage &message, bool sprint=true){
     // Determine whether address is SRAM; if not assume EEPROM (user).
     // If assumption is wrong, the write operations will (and should) fail.
     BLOCK_TYPE bt = SRAM;
@@ -271,9 +271,9 @@ bool Ntag::writeNdef(word address, NdefMessage &message, bool sprint=true){
 
 bool Ntag::zeroEeprom()
 {
-    word blockNr = 1;
+    byte blockNr = 1;
     byte data[NTAG_BLOCK_SIZE] = {0};
-    while (writeBlock(USERMEM, blockNr, data)) {
+    while ( blockNr < 0x3B && writeBlock(USERMEM, blockNr, data)) {      // Figure out why this is and code appropriately
         blockNr++;
     }
     if (!isAddressValid(USERMEM, blockNr)) { return true; } // If we made it through all user mem
@@ -281,22 +281,22 @@ bool Ntag::zeroEeprom()
 }
 
 
-bool Ntag::readSram(word address, byte *pdata, byte length)
+bool Ntag::readSram(uint16_t address, byte *pdata, uint16_t length)
 {
     return read(SRAM, address+SRAM_BASE_ADDR, pdata, length);
 }
 
-bool Ntag::writeSram(word address, byte *pdata, byte length)
+bool Ntag::writeSram(uint16_t address, byte *pdata, uint16_t length)
 {
     return write(SRAM, address+SRAM_BASE_ADDR, pdata, length);
 }
 
-bool Ntag::readEeprom(word address, byte *pdata, byte length)
+bool Ntag::readEeprom(uint16_t address, byte *pdata, uint16_t length)
 {
     return read(USERMEM, address+EEPROM_BASE_ADDR, pdata, length);
 }
 
-bool Ntag::writeEeprom(word address, byte *pdata, byte length)
+bool Ntag::writeEeprom(uint16_t address, byte *pdata, uint16_t length)
 {
     return write(USERMEM, address+EEPROM_BASE_ADDR, pdata, length);
 }
@@ -307,10 +307,10 @@ void Ntag::releaseI2c()
     writeRegister(NS_REG,0x40,0);
 }
 
-bool Ntag::write(BLOCK_TYPE bt, word address, byte* pdata, byte length)
+bool Ntag::write(BLOCK_TYPE bt, uint16_t address, byte* pdata, uint16_t length)
 {
     byte readbuffer[NTAG_BLOCK_SIZE];
-    byte writeLength;
+    uint16_t writeLength;
     byte* wptr=pdata;
     byte blockNr=address/NTAG_BLOCK_SIZE;
 
@@ -352,10 +352,10 @@ bool Ntag::write(BLOCK_TYPE bt, word address, byte* pdata, byte length)
     return true;
 }
 
-bool Ntag::read(BLOCK_TYPE bt, word address, byte* pdata,  byte length)
+bool Ntag::read(BLOCK_TYPE bt, uint16_t address, byte* pdata,  uint16_t length)
 {
     byte readbuffer[NTAG_BLOCK_SIZE];
-    byte readLength;
+    uint16_t readLength;
     byte* wptr=pdata;
 
     readLength=min(NTAG_BLOCK_SIZE, (address % NTAG_BLOCK_SIZE) + length);
