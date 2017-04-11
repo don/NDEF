@@ -352,6 +352,34 @@ test(big_record_handling)
 }
 
 
+test(payload_offset_calculation) {
+  NdefRecord r;
+  uint16_t len = 300;
+  byte payload[len];
+  payload[0] = 0xAA;
+  r.setPayload(payload, len);
+  r.setTnf(TNF_UNKNOWN);
+
+
+  NdefRecord r2(r);
+  payload[0] = 0xBB;
+  r2.setPayload(payload, len);
+
+  NdefMessage m;
+  m.addRecord(r);
+  m.addRecord(r2);
+
+  uint16_t pSize = m.getPackagedSize();
+  byte package[pSize];
+  m.getPackaged(package);
+
+  PrintHex(&package[m.getOffset(0)-3], 8);
+
+  assertEqual(0xAA, package[m.getOffset(0)]);
+  assertEqual(0xBB, package[m.getOffset(1)]);
+}
+
+
 test(aaa_printFreeMemoryAtStart)  //  warning: relies on fact tests are run in alphabetical order
 {
   Serial.println(F("---------------------"));
@@ -366,6 +394,8 @@ test(zzz_printFreeMemoryAtEnd)   // warning: relies on fact tests are run in alp
   Serial.print("Free Memory End ");Serial.println(freeMemory());
   Serial.println(F("====================="));
 }
+
+
 
 void loop() {
   Test::run();

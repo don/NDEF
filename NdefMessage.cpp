@@ -5,7 +5,7 @@ NdefMessage::NdefMessage(void)
     _recordCount = 0;
 }
 
-NdefMessage::NdefMessage(const byte * data, const int numBytes)
+NdefMessage::NdefMessage(const byte * data, const uint16_t numBytes)
 {
     #ifdef NDEF_DEBUG
     Serial.print(F("Decoding "));Serial.print(numBytes);Serial.println(F(" bytes"));
@@ -15,7 +15,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
 
     _recordCount = 0;
 
-    int index = 0;
+    uint16_t index = 0;
 
     while (index <= numBytes)
     {
@@ -34,7 +34,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         record.setTnf(tnf);
 
         index++;
-        int typeLength = data[index];
+        uint8_t typeLength = data[index];
 
         uint32_t payloadLength = 0;
         if (sr)
@@ -52,7 +52,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
             index += 4;
         }
 
-        int idLength = 0;
+        uint8_t idLength = 0;
         if (il)
         {
             index++;
@@ -83,7 +83,7 @@ NdefMessage::NdefMessage(const NdefMessage& rhs)
 {
 
     _recordCount = rhs._recordCount;
-    for (unsigned int i = 0; i < _recordCount; i++)
+    for (uint8_t i = 0; i < _recordCount; i++)
     {
         _records[i] = rhs._records[i];
     }
@@ -101,14 +101,14 @@ NdefMessage& NdefMessage::operator=(const NdefMessage& rhs)
     {
 
         // delete existing records
-        for (unsigned int i = 0; i < _recordCount; i++)
+        for (uint8_t i = 0; i < _recordCount; i++)
         {
             // TODO Dave: is this the right way to delete existing records?
             _records[i] = NdefRecord();
         }
 
         _recordCount = rhs._recordCount;
-        for (unsigned int i = 0; i < _recordCount; i++)
+        for (uint8_t i = 0; i < _recordCount; i++)
         {
             _records[i] = rhs._records[i];
         }
@@ -116,7 +116,7 @@ NdefMessage& NdefMessage::operator=(const NdefMessage& rhs)
     return *this;
 }
 
-unsigned int NdefMessage::getRecordCount()
+uint8_t NdefMessage::getRecordCount()
 {
     return _recordCount;
 }
@@ -136,18 +136,23 @@ void NdefMessage::encode(uint8_t* data)
 {
     // assert sizeof(data) >= getEncodedSize()
     uint8_t* data_ptr = &data[0];
+    uint16_t offset = getHeaderSize();
 
-    for (unsigned int i = 0; i < _recordCount; i++)
+    for (uint8_t i = 0; i < _recordCount; i++)
     {
         _records[i].encode(data_ptr, i == 0, (i + 1) == _recordCount);
-        // TODO can NdefRecord.encode return the record size?
-        data_ptr += _records[i].getEncodedSize();
+
+        uint16_t encodedSize = _records[i].getEncodedSize();
+        _offsets[i] = offset + encodedSize - _records[i].getPayloadLength();
+
+        offset += encodedSize;
+        data_ptr += encodedSize;
     }
 
 }
 
 
-unsigned int NdefMessage::getHeaderSize() {
+uint16_t NdefMessage::getHeaderSize() {
     return 2 + (getEncodedSize() > 254 ? 2 : 0);
     // TLV is 0x03 + 1 byte length 
     // OR if size > 254, 0x03 + 3 byte length
@@ -156,7 +161,7 @@ unsigned int NdefMessage::getHeaderSize() {
 
 void NdefMessage::getHeader(byte* header)
 {
-    unsigned int payloadLength = getEncodedSize();
+    uint16_t payloadLength = getEncodedSize();
     bool lengthy = payloadLength > 254;
     header[0] = 0x3;
     if (lengthy) {
@@ -207,7 +212,7 @@ void NdefMessage::addMimeMediaRecord(const char *mimeType, const char* payload)
 	addMimeMediaRecord(mimeType, reinterpret_cast<const byte*>(payload), strlen(payload));
 }
 
-void NdefMessage::addMimeMediaRecord(const char *mimeType, const byte* payload, int payloadLength)
+void NdefMessage::addMimeMediaRecord(const char *mimeType, const byte* payload, uint16_t payloadLength)
 {
     NdefRecord  r;
     r.setTnf(TNF_MIME_MEDIA);
@@ -281,7 +286,7 @@ void NdefMessage::addExternalRecord(const char *type,const char* payload)
 	addExternalRecord(type, reinterpret_cast<const byte*>(payload), strlen(payload));
 }
 
-void NdefMessage::addExternalRecord(const char *type, const byte *payload, int payloadLength)
+void NdefMessage::addExternalRecord(const char *type, const byte *payload, uint16_t payloadLength)
 {
 	NdefRecord  r;
 	r.setTnf(TNF_EXTERNAL_TYPE);
@@ -304,7 +309,7 @@ void NdefMessage::addEmptyRecord()
     addRecord(r);
 }
 
-NdefRecord NdefMessage::getRecord(int index)
+NdefRecord NdefMessage::getRecord(uint8_t index)
 {
     if (index > -1 && index < static_cast<int>(_recordCount))
     {
@@ -316,7 +321,15 @@ NdefRecord NdefMessage::getRecord(int index)
     }
 }
 
-NdefRecord NdefMessage::operator[](int index)
+uint16_t NdefMessage::getOffset(uint8_t index)
+{
+    if (index < _recordCount) {
+        return _offsets[index];
+    }
+    return 0;
+}
+
+NdefRecord NdefMessage::operator[](uint8_t index)
 {
     return getRecord(index);
 }
