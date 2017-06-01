@@ -5,8 +5,9 @@
 #include <Bounce2.h>
 #include <NdefMessage.h>
 
-#define NTAG_CC_NDEF_FULL    {0xE1, 0x10, 0x6D, 0x00}    // Container class to use all of sector 0 for NDEF
+#define NDEF_USE_SERIAL
 
+#define NTAG_CC_NDEF_FULL    {0xE1, 0x10, 0x6D, 0x00}    // Container class to use all of sector 0 for NDEF
 
 class Ntag
 {
@@ -33,9 +34,16 @@ public:
     byte getUidLength();
     bool isRfBusy();
     bool isReaderPresent();
+
+    // TODO: There is a choice of writing to configuration or session registers for the SRAM mirror setting.
+    // only startup (configuration) currently works, and is hard-coded default by consequence of
+    // writeRegister() implementation. 
+    // Session config is lost on power-on reset.
     bool setSramMirrorRf(bool bEnable, byte mirrorBaseBlockNr);
     bool setFd_ReaderHandshake();
     bool readConfigBlock(byte *data); 
+    bool readConfigBytes();     // Return false if unable to read *or* non-default values
+    bool resetConfigBytes();    // To factory defaults
     bool setContainerClass(); 
     bool setContainerClass(byte* ccdata);
     bool writeNdef(uint16_t address, NdefMessage &message, bool sprint);     // absolute address (user mem starts at 16)

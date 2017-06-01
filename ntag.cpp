@@ -162,6 +162,142 @@ bool Ntag::readConfigBlock(byte *data) {
     return readBlock(CONFIG, 0, data, NTAG_BLOCK_SIZE);
 }
 
+bool Ntag::readConfigBytes() {
+    byte data[16] = {0};
+    bool dump = false;
+    bool ok = true;
+
+    // Read and check block 56, dynamic lock bytes and access control
+    if (!readBlock(REGISTER, 56, data, NTAG_BLOCK_SIZE)) { 
+        Serial.println("Unable to read registers, may be bricked..."); 
+        ok = false;
+    } 
+    for (uint8_t i = 8; i < 15; i++) { 
+        if (data[i] != 0) { 
+            Serial.println("Non-zero lock byte!"); 
+            dump = true;
+            ok = false;
+        }
+    }
+    if (data[15] != 0xFF) {
+        Serial.print("Password protect range changed from default to: ");
+        Serial.println(data[15]);
+        ok = false;
+    }
+    if (dump) {
+        Serial.println("Dynamic lock bytes (block 56):");
+        printHex(&data[8], 4);
+        Serial.println("RFU & AUTH0");
+        printHex(&data[12], 4);
+    }
+
+    // Read and check block 57, password (reads as 0) and other locking bits
+    dump = false;
+    if (!readBlock(REGISTER, 57, data, NTAG_BLOCK_SIZE)) {
+        Serial.println("Unable to read registers in block 57, may be bricked..."); 
+        ok = false;
+    }
+    for (uint8_t i = 0; i < 16; i++) { 
+        if (data[i] != 0) { 
+            Serial.println("Non-zero byte in configuration register block 57!"); 
+            dump = true;
+            ok = false;
+            break;
+        }
+    }
+    if (dump) {
+        Serial.print("57:0-3 ");
+        printHex(data, 4);
+        Serial.print("ACCESS (NFC access restrict): ");
+        Serial.println(data[0],2);
+        Serial.print("57:4-7 ");
+        printHex(&data[4], 4);
+        Serial.print("57:8-11 ");
+        printHex(&data[8], 4);
+        Serial.print("57:12-15 ");
+        printHex(&data[12], 4);
+        Serial.print("PT_I2C (I2C access restrict): ");
+        Serial.println(data[12], 2);
+    }
+
+    // Read and check block 58, (startup) configuration registers
+    readBlock(REGISTER, 58, data, NTAG_BLOCK_SIZE);
+    uint8_t config_ref[7] = {0x01, 0x00, 0xF8, 0x48, 0x08, 0x01, 0x00};
+    dump = false;
+    for (uint8_t i = 0; i < 7; i++) {
+        if (data[i] != config_ref[i]) {
+            dump = true;
+            ok = false;
+            Serial.println("Bad values in config (startup) registers at 0x3A (58): ");
+            break;
+        }
+    }
+    if (dump) {
+        printHex(data, 7);
+        Serial.println("expected:");
+        printHex(config_ref, 7);
+    }
+
+    // Read and check block 254, session registers
+    readBlock(REGISTER, 254, data, NTAG_BLOCK_SIZE);
+    dump = false;
+    for (uint8_t i = 0; i < 7; i++) {
+        if (data[i] != config_ref[i]) {
+            dump = true;
+            ok = false;
+            Serial.println("Bad values in session registers at 0xFE (254): ");
+            break;
+        }
+    }
+    if (dump) {
+        printHex(data, 7);
+        Serial.println("expected:");
+        printHex(config_ref, 7);
+    }
+
+    return ok;
+}
+
+
+bool Ntag::resetConfigBytes() {
+    bool ok = true;
+
+    byte data[16] = {0};
+    // block 56, last 2 pages (8 bytes) should be all 0 except AUTH0 which should be 0xFF
+    data[15] = 0xFF;
+    // This hard-coded hack is block 56, byte 8
+    if (!write(REGISTER, 0x388, &data[8], 8)) { 
+        Serial.println("Colud not reset dynamic lock bytes and password protected region!");
+        ok = false;
+    }
+
+
+    // block 57  should be all 0's
+    data[15] = 0x00;
+    if (!writeBlock(REGISTER, 57, data)) { 
+        Serial.println("Could not reset configuration register block 57!");
+        ok = false;
+    }
+
+    // Block 58, configuration (startup) register should be as follows
+    byte config[7] = {0x01, 0x00, 0xF8, 0x48, 0x08, 0x01, 0x00};
+    if (!write(REGISTER, 58*16, config, 7)) { 
+        Serial.println("Could not set startup config registers!");
+        ok = false;
+    }
+
+    config[6] = 0x01;
+    if (!write(REGISTER, 254*16, config, 7)) { 
+        Serial.println("Could not set session config registers!");
+        ok = false;
+    }
+
+    if (ok) { Serial.println("\nConfiguration registers reset successful.\n"); }
+
+    return ok;
+}
+
+
 bool Ntag::setContainerClass() {
     byte ccdata[4] = NTAG_CC_NDEF_FULL;
     return setContainerClass(ccdata);
@@ -273,9 +409,10 @@ bool Ntag::zeroEeprom()
 {
     byte blockNr = 1;
     byte data[NTAG_BLOCK_SIZE] = {0};
-    while ( blockNr < 0x3B && writeBlock(USERMEM, blockNr, data)) {      // Figure out why this is and code appropriately
+    while ( blockNr < 0x38 && writeBlock(USERMEM, blockNr, data)) {      // Figure out why this is and code appropriately
         blockNr++;
     }
+    // TODO zero first 8 bytes of block 38...
     if (!isAddressValid(USERMEM, blockNr)) { return true; } // If we made it through all user mem
     return false;
 }
@@ -440,7 +577,7 @@ bool Ntag::readRegister(REGISTER_NR regAddr, byte& value)
 {
     value=0;
     bool bRetVal=true;
-    if(regAddr>6 || !writeBlockAddress(REGISTER, SESSION_REG_ADDR)){
+    if(regAddr>6 || !writeBlockAddress(REGISTER, STARTUP_REG_ADDR)){
         return false;
     }
     if(HWire.write(regAddr)!=1){
@@ -461,7 +598,7 @@ bool Ntag::readRegister(REGISTER_NR regAddr, byte& value)
 bool Ntag::writeRegister(REGISTER_NR regAddr, byte mask, byte regdat)
 {
     bool bRetVal=false;
-    if(regAddr>7 || !writeBlockAddress(REGISTER, SESSION_REG_ADDR)){    // Note that 0xFE is session registers, volatile if power cycles!
+    if(regAddr>7 || !writeBlockAddress(REGISTER, STARTUP_REG_ADDR)){    // Note that 0xFE is session registers, volatile if power cycles!
         return false;
     }
     if (HWire.write(regAddr)==1 &&
@@ -523,8 +660,10 @@ bool Ntag::isAddressValid(BLOCK_TYPE type, byte blocknr){
         }
         break;
     case REGISTER:
-        if(blocknr != SESSION_REG_ADDR && blocknr != STARTUP_REG_ADDR){
-            return false;
+        if(blocknr == SESSION_REG_ADDR || blocknr == STARTUP_REG_ADDR 
+            || (blocknr >= 56 && blocknr <= 58)
+            || blocknr == 254) {
+            return true;
         }
         break;
     default:
