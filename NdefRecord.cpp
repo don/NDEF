@@ -113,6 +113,49 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
     return *this;
 }
 
+
+byte NdefRecord::getHeaderSize() {
+    return getEncodedSize() - _payloadLength;
+}
+
+
+void NdefRecord::getHeader(byte *headerData, bool firstRecord, bool lastRecord) {
+    uint8_t* data_ptr = &headerData[0];
+
+    *data_ptr = getTnfByte(firstRecord, lastRecord);
+    data_ptr += 1;
+
+    *data_ptr = _typeLength;
+    data_ptr += 1;
+
+    if (_payloadLength <= 0xFF) {  // short record
+        *data_ptr = _payloadLength;
+        data_ptr += 1;
+    } else { // long format
+        // 4 bytes but we store length as an int
+        data_ptr[0] = 0x0; // (_payloadLength >> 24) & 0xFF;
+        data_ptr[1] = 0x0; // (_payloadLength >> 16) & 0xFF;
+        data_ptr[2] = (_payloadLength >> 8) & 0xFF;
+        data_ptr[3] = _payloadLength & 0xFF;
+        data_ptr += 4;
+    }
+
+    if (_idLength)
+    {
+        *data_ptr = _idLength;
+        data_ptr += 1;
+    }
+
+    memcpy(data_ptr, _type, _typeLength);
+    data_ptr += _typeLength;
+
+    if (_idLength)
+    {
+        memcpy(data_ptr, _id, _idLength);
+        data_ptr += _idLength;
+    }
+}
+
 // size of records in bytes
 unsigned int NdefRecord::getEncodedSize()
 {
@@ -140,44 +183,11 @@ void NdefRecord::encode(byte *data, bool firstRecord, bool lastRecord)
 {
     // assert data > getEncodedSize()
 
-    uint8_t* data_ptr = &data[0];
+    getHeader(data, firstRecord, lastRecord);
 
-    *data_ptr = getTnfByte(firstRecord, lastRecord);
-    data_ptr += 1;
-
-    *data_ptr = _typeLength;
-    data_ptr += 1;
-
-    if (_payloadLength <= 0xFF) {  // short record
-        *data_ptr = _payloadLength;
-        data_ptr += 1;
-    } else { // long format
-        // 4 bytes but we store length as an int
-        data_ptr[0] = 0x0; // (_payloadLength >> 24) & 0xFF;
-        data_ptr[1] = 0x0; // (_payloadLength >> 16) & 0xFF;
-        data_ptr[2] = (_payloadLength >> 8) & 0xFF;
-        data_ptr[3] = _payloadLength & 0xFF;
-        data_ptr += 4;
-    }
-
-    if (_idLength)
-    {
-        *data_ptr = _idLength;
-        data_ptr += 1;
-    }
-
-    //Serial.println(2);
-    memcpy(data_ptr, _type, _typeLength);
-    data_ptr += _typeLength;
-
-    if (_idLength)
-    {
-        memcpy(data_ptr, _id, _idLength);
-        data_ptr += _idLength;
-    }
-    
+    uint8_t* data_ptr = &data[getHeaderSize()];
+ 
     memcpy(data_ptr, _payload, _payloadLength);
-    data_ptr += _payloadLength;
 }
 
 byte NdefRecord::getTnfByte(bool firstRecord, bool lastRecord)

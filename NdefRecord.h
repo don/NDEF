@@ -22,6 +22,8 @@ class NdefRecord
         ~NdefRecord();
         NdefRecord& operator=(const NdefRecord& rhs);
 
+        byte getHeaderSize();
+        void getHeader(byte *headerData, bool firstRecord, bool lastRecord);
         unsigned int getEncodedSize();
         void encode(byte *data, bool firstRecord, bool lastRecord);
 

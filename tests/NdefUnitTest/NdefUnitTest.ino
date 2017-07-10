@@ -11,7 +11,7 @@ void assertBytesEqual(const uint8_t* expected, const uint8_t* actual, uint8_t si
 }
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
 }
 
 test(accessors) {
@@ -168,6 +168,34 @@ test(encoding_with_record_id) {
 
   assertBytesEqual(encodedBytes, expectedBytes, sizeof(encodedBytes));
 }
+
+// Tests ability to request the record header size and contents
+test(record_header) {
+  // This follows the same setup as the record id test
+  NdefRecord record = NdefRecord();
+  record.setTnf(TNF_WELL_KNOWN);
+  uint8_t recordType[] = { 0x54 }; // "T" Text Record
+  assertEqual(0x54, recordType[0]);
+  record.setType(recordType, sizeof(recordType));
+  // 2 + "en" + "Unit Test"
+  uint8_t payload[] = { 0x02, 0x65, 0x6e, 0x55, 0x6e, 0x69, 0x74, 0x20, 0x54, 0x65, 0x73, 0x74 };
+  record.setPayload(payload, sizeof(payload));
+  // testid
+  uint8_t id[] = { 0x74, 0x65, 0x73, 0x74, 0x69, 0x64};
+  record.setId(id, sizeof(id));
+
+  uint8_t encodedBytes[record.getEncodedSize()];
+  record.encode(encodedBytes, true, true);
+  uint8_t expectedBytes[] = { 217, 1, 12, 6, 84, 116, 101, 115, 116, 105, 100, 2, 101, 110, 85, 110, 105, 116, 32, 84, 101, 115, 116 };
+
+  // A little circular but does test the new logic
+  assertEqual(sizeof(payload), record.getEncodedSize() - record.getHeaderSize());
+  
+  byte header[record.getHeaderSize()];
+  record.getHeader(header, true, true);
+  assertBytesEqual(header, expectedBytes, record.getHeaderSize());
+}
+
 
 void loop() {
   Test::run();
