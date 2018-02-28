@@ -45,10 +45,11 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         else
         {
             payloadLength =
-		((0xFF & data[++index]) << 24)
-		| ((0xFF & data[++index]) << 16)
-		| ((0xFF & data[++index]) << 8)
-		| (0xFF & data[++index]);
+		((0xFF & data[index+1]) << 24)
+		| ((0xFF & data[index+2]) << 16)
+		| ((0xFF & data[index+3]) << 8)
+		| (0xFF & data[index+4]);
+	    index += 4;
         }
 
         int idLength = 0;
