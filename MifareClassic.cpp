@@ -1,5 +1,5 @@
-#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
 #include "MifareClassic.h"
+#ifdef NDEF_SUPPORT_MIFARE_CLASSIC
 
 #define BLOCK_SIZE 16
 #define LONG_TLV_SIZE 4
