@@ -23,11 +23,11 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         // decode tnf - first byte is tnf with bit flags
         // see the NFDEF spec for more info
         byte tnf_byte = data[index];
-        bool mb = (tnf_byte & 0x80) != 0;
-        bool me = (tnf_byte & 0x40) != 0;
-        bool cf = (tnf_byte & 0x20) != 0;
-        bool sr = (tnf_byte & 0x10) != 0;
-        bool il = (tnf_byte & 0x8) != 0;
+        // bool mb = tnf_byte & 0x80;
+        bool me = tnf_byte & 0x40;
+        // bool cf = tnf_byte & 0x20;
+        bool sr = tnf_byte & 0x10;
+        bool il = tnf_byte & 0x8;
         byte tnf = (tnf_byte & 0x7);
 
         NdefRecord record = NdefRecord();
@@ -36,7 +36,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         index++;
         int typeLength = data[index];
 
-        int payloadLength = 0;
+        uint32_t payloadLength = 0;
         if (sr)
         {
             index++;
@@ -45,10 +45,11 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
         else
         {
             payloadLength =
-		((0xFF & data[++index]) << 24)
-		| ((0xFF & data[++index]) << 16)
-		| ((0xFF & data[++index]) << 8)
-		| (0xFF & data[++index]);
+                  (static_cast<uint32_t>(data[index])   << 24)
+                | (static_cast<uint32_t>(data[index+1]) << 16)
+                | (static_cast<uint32_t>(data[index+2]) << 8)
+                |  static_cast<uint32_t>(data[index+3]);
+            index += 4;
         }
 
         int idLength = 0;
@@ -82,7 +83,7 @@ NdefMessage::NdefMessage(const NdefMessage& rhs)
 {
 
     _recordCount = rhs._recordCount;
-    for (int i = 0; i < _recordCount; i++)
+    for (unsigned int i = 0; i < _recordCount; i++)
     {
         _records[i] = rhs._records[i];
     }
@@ -100,14 +101,14 @@ NdefMessage& NdefMessage::operator=(const NdefMessage& rhs)
     {
 
         // delete existing records
-        for (int i = 0; i < _recordCount; i++)
+        for (unsigned int i = 0; i < _recordCount; i++)
         {
             // TODO Dave: is this the right way to delete existing records?
             _records[i] = NdefRecord();
         }
 
         _recordCount = rhs._recordCount;
-        for (int i = 0; i < _recordCount; i++)
+        for (unsigned int i = 0; i < _recordCount; i++)
         {
             _records[i] = rhs._records[i];
         }
@@ -123,7 +124,7 @@ unsigned int NdefMessage::getRecordCount()
 int NdefMessage::getEncodedSize()
 {
     int size = 0;
-    for (int i = 0; i < _recordCount; i++)
+    for (unsigned int i = 0; i < _recordCount; i++)
     {
         size += _records[i].getEncodedSize();
     }
@@ -136,7 +137,7 @@ void NdefMessage::encode(uint8_t* data)
     // assert sizeof(data) >= getEncodedSize()
     uint8_t* data_ptr = &data[0];
 
-    for (int i = 0; i < _recordCount; i++)
+    for (unsigned int i = 0; i < _recordCount; i++)
     {
         _records[i].encode(data_ptr, i == 0, (i + 1) == _recordCount);
         // TODO can NdefRecord.encode return the record size?
@@ -156,7 +157,9 @@ boolean NdefMessage::addRecord(NdefRecord& record)
     }
     else
     {
+#ifdef NDEF_USE_SERIAL
         Serial.println(F("WARNING: Too many records. Increase MAX_NDEF_RECORDS."));
+#endif
         return false;
     }
 }
@@ -245,7 +248,7 @@ void NdefMessage::addEmptyRecord()
 
 NdefRecord NdefMessage::getRecord(int index)
 {
-    if (index > -1 && index < _recordCount)
+    if (index > -1 && index < static_cast<int>(_recordCount))
     {
         return _records[index];
     }
@@ -260,15 +263,16 @@ NdefRecord NdefMessage::operator[](int index)
     return getRecord(index);
 }
 
+#ifdef NDEF_USE_SERIAL
 void NdefMessage::print()
 {
     Serial.print(F("\nNDEF Message "));Serial.print(_recordCount);Serial.print(F(" record"));
     _recordCount == 1 ? Serial.print(", ") : Serial.print("s, ");
     Serial.print(getEncodedSize());Serial.println(F(" bytes"));
 
-    int i;
-    for (i = 0; i < _recordCount; i++)
+    for (unsigned int i = 0; i < _recordCount; i++)
     {
          _records[i].print();
     }
 }
+#endif
