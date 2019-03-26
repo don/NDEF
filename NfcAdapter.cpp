@@ -194,6 +194,14 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     return success;
 }
 
+boolean NfcAdapter::enableRFField() {
+    return shield->setRFField(0, 1);
+}
+
+boolean NfcAdapter::disableRFField() {
+    return shield->setRFField(0, 0);
+}
+
 // TODO this should return a Driver MifareClassic, MifareUltralight, Type 4, Unknown
 // Guess Tag Type by looking at the ATQA and SAK values
 // Need to follow spec for Card Identification. Maybe AN1303, AN1305 and ???

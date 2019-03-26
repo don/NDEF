@@ -2,7 +2,6 @@
 
 NdefRecord::NdefRecord()
 {
-    //Serial.println("NdefRecord Constructor 1");
     _tnf = 0;
     _typeLength = 0;
     _payloadLength = 0;
@@ -14,8 +13,6 @@ NdefRecord::NdefRecord()
 
 NdefRecord::NdefRecord(const NdefRecord& rhs)
 {
-    //Serial.println("NdefRecord Constructor 2 (copy)");
-
     _tnf = rhs._tnf;
     _typeLength = rhs._typeLength;
     _payloadLength = rhs._payloadLength;
@@ -26,43 +23,52 @@ NdefRecord::NdefRecord(const NdefRecord& rhs)
 
     if (_typeLength)
     {
-        _type = (byte*)malloc(_typeLength);
+        if (!(_type = (byte*)malloc(_typeLength)))
+        {
+            goto cleanup;
+        }
         memcpy(_type, rhs._type, _typeLength);
     }
 
     if (_payloadLength)
     {
-        _payload = (byte*)malloc(_payloadLength);
+        if (!(_payload = (byte*)malloc(_payloadLength)))
+        {
+            goto cleanup;
+        }
         memcpy(_payload, rhs._payload, _payloadLength);
     }
 
     if (_idLength)
     {
-        _id = (byte*)malloc(_idLength);
+        if (!(_id = (byte*)malloc(_idLength)))
+        {
+            goto cleanup;
+        }
         memcpy(_id, rhs._id, _idLength);
     }
+    return;
 
+cleanup:
+    free(_type);
+    free(_payload);
+    free(_id);
+    _tnf = 0;
+    _typeLength = 0;
+    _payloadLength = 0;
+    _idLength = 0;
+    _type = (byte *)NULL;
+    _payload = (byte *)NULL;
+    _id = (byte *)NULL;
 }
 
 // TODO NdefRecord::NdefRecord(tnf, type, payload, id)
 
 NdefRecord::~NdefRecord()
 {
-    //Serial.println("NdefRecord Destructor");
-    if (_typeLength)
-    {
-        free(_type);
-    }
-
-    if (_payloadLength)
-    {
-        free(_payload);
-    }
-
-    if (_idLength)
-    {
-        free(_id);
-    }
+    free(_type);
+    free(_payload);
+    free(_id);
 }
 
 NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
@@ -72,20 +78,9 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
     if (this != &rhs)
     {
         // free existing
-        if (_typeLength)
-        {
-            free(_type);
-        }
-
-        if (_payloadLength)
-        {
-            free(_payload);
-        }
-
-        if (_idLength)
-        {
-            free(_id);
-        }
+        free(_type);
+        free(_payload);
+        free(_id);
 
         _tnf = rhs._tnf;
         _typeLength = rhs._typeLength;
@@ -94,22 +89,44 @@ NdefRecord& NdefRecord::operator=(const NdefRecord& rhs)
 
         if (_typeLength)
         {
-            _type = (byte*)malloc(_typeLength);
+            if (!(_type = (byte*)malloc(_typeLength)))
+            {
+                goto cleanup;
+            }
             memcpy(_type, rhs._type, _typeLength);
         }
 
         if (_payloadLength)
         {
-            _payload = (byte*)malloc(_payloadLength);
+            if (!(_payload = (byte*)malloc(_payloadLength)))
+            {
+                goto cleanup;
+            }
             memcpy(_payload, rhs._payload, _payloadLength);
         }
 
         if (_idLength)
         {
-            _id = (byte*)malloc(_idLength);
+            if (!(_id = (byte*)malloc(_idLength)))
+            {
+                goto cleanup;
+            }
             memcpy(_id, rhs._id, _idLength);
         }
     }
+    return *this;
+
+cleanup:
+    free(_type);
+    free(_payload);
+    free(_id);
+    _tnf = 0;
+    _typeLength = 0;
+    _payloadLength = 0;
+    _idLength = 0;
+    _type = (byte *)NULL;
+    _payload = (byte *)NULL;
+    _id = (byte *)NULL;
     return *this;
 }
 
@@ -249,14 +266,14 @@ void NdefRecord::getType(uint8_t* type)
 
 void NdefRecord::setType(const byte * type, const unsigned int numBytes)
 {
-    if(_typeLength)
-    {
-        free(_type);
-    }
+    free(_type);
+    _typeLength = 0;
 
-    _type = (uint8_t*)malloc(numBytes);
-    memcpy(_type, type, numBytes);
-    _typeLength = numBytes;
+    if (_type = (uint8_t*)malloc(numBytes))
+    {
+        memcpy(_type, type, numBytes);
+        _typeLength = numBytes;
+    }
 }
 
 // assumes the caller sized payload properly
@@ -267,14 +284,14 @@ void NdefRecord::getPayload(byte *payload)
 
 void NdefRecord::setPayload(const byte * payload, const int numBytes)
 {
-    if (_payloadLength)
-    {
-        free(_payload);
-    }
+    free(_payload);
+    _payloadLength = 0;
 
-    _payload = (byte*)malloc(numBytes);
-    memcpy(_payload, payload, numBytes);
-    _payloadLength = numBytes;
+    if (_payload = (byte*)malloc(numBytes))
+    {
+        memcpy(_payload, payload, numBytes);
+        _payloadLength = numBytes;        
+    }
 }
 
 String NdefRecord::getId()
@@ -292,14 +309,14 @@ void NdefRecord::getId(byte *id)
 
 void NdefRecord::setId(const byte * id, const unsigned int numBytes)
 {
-    if (_idLength)
-    {
-        free(_id);
-    }
+    free(_id);
+    _idLength = 0;
 
-    _id = (byte*)malloc(numBytes);
-    memcpy(_id, id, numBytes);
-    _idLength = numBytes;
+    if (_id = (byte*)malloc(numBytes))
+    {
+        memcpy(_id, id, numBytes);
+        _idLength = numBytes;
+    }
 }
 #ifdef NDEF_USE_SERIAL
 
