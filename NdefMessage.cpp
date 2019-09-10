@@ -17,7 +17,7 @@ NdefMessage::NdefMessage(const byte * data, const int numBytes)
 
     int index = 0;
 
-    while (index <= numBytes)
+    while (index < numBytes)
     {
         // decode tnf - first byte is tnf with bit flags
         // see the NFDEF spec for more info
