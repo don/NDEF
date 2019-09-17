@@ -35,6 +35,10 @@ class NfcAdapter {
         boolean format();
         // reset tag back to factory state
         boolean clean();
+        // disable RF field
+        boolean enableRFField();
+        // enable RF field
+        boolean disableRFField();
     private:
         PN532* shield;
         byte uid[7];  // Buffer to store the returned UID
