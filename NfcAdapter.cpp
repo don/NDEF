@@ -1,6 +1,6 @@
 #include <NfcAdapter.h>
 
-NfcAdapter::NfcAdapter(PN532Interface &interface, uint8_t irqPin = -1)
+NfcAdapter::NfcAdapter(PN532Interface &interface, uint8_t irqPin)
 {
     shield = new PN532(interface);
 
