@@ -22,7 +22,7 @@
 
 class NfcAdapter {
     public:
-        NfcAdapter(PN532Interface &interface);
+        NfcAdapter(PN532Interface &interface, uint8_t irqPin = -1);
 
         ~NfcAdapter(void);
         void begin(boolean verbose=true);
@@ -35,9 +35,12 @@ class NfcAdapter {
         boolean format();
         // reset tag back to factory state
         boolean clean();
+        // enter passive detection mode (IRQ). For use with I2C ONLY.
+        boolean startPassive();
     private:
         PN532* shield;
         byte uid[7];  // Buffer to store the returned UID
+        uint8_t _irqPin; // stores the IRQ pin for I2C mode
         unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
         unsigned int guessTagType();
 };

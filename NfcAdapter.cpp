@@ -1,8 +1,17 @@
 #include <NfcAdapter.h>
 
-NfcAdapter::NfcAdapter(PN532Interface &interface)
+NfcAdapter::NfcAdapter(PN532Interface &interface, uint8_t irqPin)
 {
     shield = new PN532(interface);
+
+    //set the IRQ pin
+    _irqPin = irqPin;
+
+    // if defined, set the pin to input mode
+    if (irqPin > -1)
+    {
+        pinMode(irqPin, INPUT);
+    }
 }
 
 NfcAdapter::~NfcAdapter(void)
@@ -192,6 +201,20 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     }
 
     return success;
+}
+
+
+boolean NfcAdapter::startPassive()
+{
+    if (_irqPin > -1)
+    {
+        #ifdef NDEF_DEBUG
+        Serial.println(F("IRQ pin not specified"));
+        #endif
+        shield->startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A);
+        return 1;
+    }
+    return 0;
 }
 
 // TODO this should return a Driver MifareClassic, MifareUltralight, Type 4, Unknown
