@@ -6,4 +6,4 @@ class NfcDriver
         virtual boolean write(NdefMessage& message, uint8_t * uid, int uidLength) = 0;
         // erase()
         // format()
-}
+};
